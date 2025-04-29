@@ -1,8 +1,8 @@
+// import bcrypt from "bcrypt";   // convert password to hash
 import { NextResponse } from "next/server";
 import * as mongoose from "mongoose";
 import connectToDatabase from "@/app/api/models/connectDB";
-import Usermast from "@/app/api/models/user.model";
-// import bcrypt from "bcrypt";   // convert password to hash
+import User from "@/app/api/models/user.model";
 
 export async function POST(req) {
   try {
@@ -11,7 +11,7 @@ export async function POST(req) {
     await connectToDatabase(); // Connect to the database
 
     if (data.agree) {
-      await new Usermast({
+      await new User({
         name: data.name,
         email: data.email,
         phone: data.phone,
