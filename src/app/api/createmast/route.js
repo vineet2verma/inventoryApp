@@ -22,6 +22,7 @@ export async function POST(req) {
     console.log("Received data:", req); // Log the received data
     const data = await req.json();
     await connectToDatabase();
+    console.log("Parsed data:", data); // Log the parsed data
 
     const newRecord = new createInvMaster(data);
     await newRecord.save();

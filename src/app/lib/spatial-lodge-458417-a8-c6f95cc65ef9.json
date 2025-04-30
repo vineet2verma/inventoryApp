@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "spatial-lodge-458417-a8",
+  "private_key_id": "c6f95cc65ef989052ba7bfc6b6445d11bf9b596c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCvXbFzihDK8F1W\nROF59a5zUsADPkvZaFKfekYPgeQXpde6/L/vuLPBRTAngqtkFwTlCsAmUtInVp0/\n32doyojOOKlziEZDPRgn+CVi67Hd5/rHbHx3fYAiwE3gOCHhgKFeeSgKHUZagVd9\ny0sMukCtYDvoUgh5pdhaoBRkDNNuRses0nz10b5973IWGQO29dVlEtSuT2+/HlWp\nGs4eOQkG/nAEQ7I+v9wmrjOHxMtAv2Bk7EuKmuBOrpQGuqAbKFUeRlUee5j+e129\nP4TK8y+9ZT5M61bLflsu+5wA+R6c+kaZiFLpIDC9ts0JhMt294V4TeHk4ymwKx/+\noVTsjVotAgMBAAECggEAEWX0QwhBnkC2oeZ3kEgFpL9i+W9myw0ElXnmFYfHf2ke\nvBhzWm8ytkwM+P6HzohSHf8xDRxOaUS4mSuq8MSXSg5pEWNFxUn8aYq++s9zeBaZ\n1Ms4lgpHeismDsbC5cKDQAI5LLe20Sff7EUNDxgzboALsYLiAF+p1WPoYfy7xUbq\nYY+Iidxp84/QvX7RRpKNVm4rFe5QJ2HZ60ILTA/gymc2FsUXKr8HTaIzhEhI73m9\nAMhpiHwE4MlGTRvkR1ZpWWaTljKu+7F6SN1AYeOG8zu4hVA/ESS515z4Lb8NPUY0\ngYl8g6MqNu3KiSNrd6iwY9AiVLsv4LDiN/lzfsKaKQKBgQDUh2s0qeXukvlhGb8O\ntzYgofl5PVE0Hm6pCiECjbB909vmCR/vMMIBZAwSUbh0l50LP8KcNknDVvQ6N28x\ntlcuCtN4G8jztCummFVCQAfT3eDDJUvmgDS3n/gQBmmE+oasUGMp4OTqHUlnnNZg\nQ/cOSrsQY+0mjw2VoIzDn+OlbwKBgQDTPFJVE70Lh1uisO5cakww01cImQTsQ8RV\nP8ZGKpdQceUFD2jS44pVaz7xyZ/Hq0/8YQg0sCax18BfEhAU5B7Yz5LLf6fPo+ex\nsoRQl9ZNCgNtfb1YxfsDOHDuihCLrxKY9Qu5P64/2dULsoenAMGgBuOa5j78IDge\n2Mcun6gEIwKBgBlvF1pXFshFWIjRTvcQ3+5p0/Q5bVViavXZ23d1w3BbgU53OxYh\n7KXD9lne48c4ObgV6lFNgehZqKKq7aiyXJ6K9yHBmXvozOyEAHgMN6OYQwS3muy7\n3RM4lrQ8QDaE0McgW62wV1TZKma280TT/WX9dYORodjid8q3SwFCSjkLAoGBALJS\nIPr7T8LUwNHl5UMU5T7umnGCo/pD9xE0ZlBDkjtx+rE74fTt65DSmW+KEx1/DGX1\nD/VSo0fM5/QaDoNkVHoZOUYbfPG331dOaY6Tr3CXvG8JD/hKIe4FDqkA2pjg8aU4\ncG4xSQtT/BsE2qlr5QkP58KTDqbPGDFKNVOxqifbAoGBAI1ZKyOx2cxbnoP9ApjO\nkkgF9wSJ2WcjrYXTtXRPzHRT88WPPprj/U4VA+rSy30V2WPqvhf5LCxODMuoSFDR\nUff0YzLGKTcMDqGp5BDreZl4kWnfkDDhU6JLFfm0wpOaMnMGtvAGYjz7oPwEOxqK\nBrtZI1s+O1bzn6f8FMsUTHFY\n-----END PRIVATE KEY-----\n",
+  "client_email": "invapp@spatial-lodge-458417-a8.iam.gserviceaccount.com",
+  "client_id": "104850981058249095019",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/invapp%40spatial-lodge-458417-a8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

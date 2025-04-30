@@ -19,4 +19,4 @@ const CreateInvSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.models.CreateInvMaster || mongoose.model("CreateInvMaster", CreateInvSchema );
+export default mongoose.models.CreateInvMaster || mongoose.model("CreateInvMaster", CreateInvSchema);

@@ -8,20 +8,29 @@ export default function InventoryMaster() {
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [typeList, setTypeList] = useState([]);
   const router = useRouter();
 
   const fetchRecords = async () => {
-    const res = await fetch("/api/createinv");
+    const res = await fetch("/api/createmast");
     const data = await res.json();
     setRecords(data);
   };
 
+  const fetchTypeList = async () => {
+    const res = await fetch("/api/typemast");
+    const data = await res.json();
+    const typelist = data.map((item) => item.type);
+    setTypeList(typelist);
+  }
+
   useEffect(() => {
     fetchRecords();
+    fetchTypeList();
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch("/api/createinv", {
+    await fetch("/api/createmast", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
@@ -46,7 +55,7 @@ export default function InventoryMaster() {
     const method = editingId ? "PUT" : "POST";
     const body = editingId ? { id: editingId, ...formData } : formData;
 
-    await fetch("/api/createinv", {
+    await fetch("/api/createmast", {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -80,18 +89,37 @@ export default function InventoryMaster() {
           className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-2 gap-4"
         >
           {[
-            "designName", "coName", "batchNo", "type", "Size", "Weight",
-            "pcPerBox", "Location", "opStock", "purPrice", "holdStock",
-            "closingStock", "createdBy",
+            "designname", "coname", "batchno", "type", "size", "weight",
+            "pcperbox", "location", "opstock", "purprice", "holdstock",
+            "closingstock", "createdby",
           ].map((field) => (
-            <input
-              key={field}
-              required={field === "designName"}
-              placeholder={field}
-              value={formData[field] || ""}
-              onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-              className="p-2 border rounded-xl"
-            />
+            field === "type" ? (
+              <select
+                key={field}
+                required={field === "designName"}
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                className="p-2 border rounded-xl"
+              >
+                <option value="" disabled>Select {field}</option>
+                {typeList.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            ) :
+              (
+                <input
+                  key={field}
+                  required={field === "designName"}
+                  placeholder={field}
+                  value={formData[field] || ""}
+                  onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                  className="p-2 border rounded-xl"
+                />
+              )
+
+
           ))}
           <button
             type="submit"
@@ -100,7 +128,8 @@ export default function InventoryMaster() {
             {editingId ? "Update Record" : "Create Record"}
           </button>
         </form>
-      )}
+      )
+      }
 
       <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
         <table className="min-w-full text-sm text-left">
@@ -126,19 +155,19 @@ export default function InventoryMaster() {
           <tbody>
             {records.map((rec) => (
               <tr key={rec._id} className="border-t">
-                <td className="p-2">{rec.designName}</td>
-                <td className="p-2">{rec.coName}</td>
-                <td className="p-2">{rec.batchNo}</td>
+                <td className="p-2">{rec.designname}</td>
+                <td className="p-2">{rec.coname}</td>
+                <td className="p-2">{rec.batchno}</td>
                 <td className="p-2">{rec.type}</td>
-                <td className="p-2">{rec.Size}</td>
-                <td className="p-2">{rec.Weight}</td>
-                <td className="p-2">{rec.pcPerBox}</td>
-                <td className="p-2">{rec.Location}</td>
-                <td className="p-2">{rec.opStock}</td>
-                <td className="p-2">{rec.purPrice}</td>
-                <td className="p-2">{rec.holdStock}</td>
-                <td className="p-2">{rec.closingStock}</td>
-                <td className="p-2">{rec.createdBy}</td>
+                <td className="p-2">{rec.size}</td>
+                <td className="p-2">{rec.weight}</td>
+                <td className="p-2">{rec.pcperbox}</td>
+                <td className="p-2">{rec.location}</td>
+                <td className="p-2">{rec.opstock}</td>
+                <td className="p-2">{rec.purprice}</td>
+                <td className="p-2">{rec.holdstock}</td>
+                <td className="p-2">{rec.closingstock}</td>
+                <td className="p-2">{rec.createdby}</td>
                 <td className="p-2 text-gray-500">
                   {new Date(rec.createdAt).toLocaleString()}
                 </td>
@@ -168,6 +197,6 @@ export default function InventoryMaster() {
           </tbody>
         </table>
       </div>
-    </div>
+    </div >
   );
 }

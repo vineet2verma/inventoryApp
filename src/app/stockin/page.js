@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link } from "lucide-react";
 
 export default function StockInPage() {
   const [records, setRecords] = useState([]);
@@ -19,10 +20,27 @@ export default function StockInPage() {
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mastdata, setMastdata] = useState([]);
+  const [mastdesigname, setdesignname] = useState([]);
+  const [selectedDesign, setSelectedDesign] = useState("");
 
   // Fetch records from the API
+  const fetchMastRecords = async () => {
+    try {
+      const res = await fetch("/api/createmast");
+      const data = await res.json();
+      setMastdata(data);
+      const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
+      setdesignname(mstdesign)
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  }
+
   useEffect(() => {
     fetchRecords();
+    fetchMastRecords(); // Fetch mast records on component mount
+
   }, []);
 
   const fetchRecords = async () => {
@@ -35,9 +53,17 @@ export default function StockInPage() {
     }
   };
 
+  const handleSelectedDesign = (e) => {
+    setSelectedDesign(e.target.value);
+  }
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log(e.target.name)
+    e.target.name == "designName" ? handleSelectedDesign(e) : null;
   };
+
+  console.log(mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -127,52 +153,52 @@ export default function StockInPage() {
       </button>
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full bg-white rounded shadow-md">
+      <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
+        <table className="min-w-full text-sm text-left">
           <thead className="bg-gray-200">
             <tr>
-              <th className="p-4 text-left">Date</th>
-              <th className="p-4 text-left">Design Name</th>
-              <th className="p-4 text-left">Company Name</th>
-              <th className="p-4 text-left">Batch No</th>
-              <th className="p-4 text-left">Type</th>
-              <th className="p-4 text-left">Size</th>
-              <th className="p-4 text-left">Weight</th>
-              <th className="p-4 text-left">Pieces Per Box</th>
-              <th className="p-4 text-left">Location</th>
-              <th className="p-4 text-left">Purchase Price</th>
-              <th className="p-4 text-left">Current Stock</th>
-              <th className="p-4 text-left">Created By</th>
-              <th className="p-4 text-left">Actions</th>
+              <th className="p-2">Date</th>
+              <th className="p-2">Design Name</th>
+              <th className="p-2">Company Name</th>
+              <th className="p-2">Batch No</th>
+              <th className="p-2">Type</th>
+              <th className="p-2">Size</th>
+              <th className="p-2">Weight</th>
+              <th className="p-2">Pieces Per Box</th>
+              <th className="p-2">Location</th>
+              <th className="p-2">Purchase Price</th>
+              <th className="p-2">Current Stock</th>
+              <th className="p-2">Created By</th>
+              <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {records.map((record) => (
               <tr key={record._id} className="border-t">
-                <td className="p-4">{record.date}</td>
-                <td className="p-4">{record.designName}</td>
-                <td className="p-4">{record.coName}</td>
-                <td className="p-4">{record.batchNo}</td>
-                <td className="p-4">{record.type}</td>
-                <td className="p-4">{record.size}</td>
-                <td className="p-4">{record.weight}</td>
-                <td className="p-4">{record.pcPerBox}</td>
-                <td className="p-4">{record.location}</td>
-                <td className="p-4">{record.purPrice}</td>
-                <td className="p-4">{record.currStock}</td>
-                <td className="p-4">{record.createdBy}</td>
-                <td className="p-4">
+                <td className="p-2">{record.date}</td>
+                <td className="p-2">{record.designName}</td>
+                <td className="p-2">{record.coName}</td>
+                <td className="p-2">{record.batchNo}</td>
+                <td className="p-2">{record.type}</td>
+                <td className="p-2">{record.size}</td>
+                <td className="p-2">{record.weight}</td>
+                <td className="p-2">{record.pcPerBox}</td>
+                <td className="p-2">{record.location}</td>
+                <td className="p-2">{record.purPrice}</td>
+                <td className="p-2">{record.currStock}</td>
+                <td className="p-2">{record.createdBy}</td>
+                <td className="p-2 flex gap-2">
                   <button
                     onClick={() => handleEdit(record)}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 mr-2"
+                    className="text-blue-600 hover:underline"
                   >
-                    Edit
+                    <Pencil className="w-4 h-4 inline" />
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    className="text-red-600 hover:underline"
                   >
-                    Delete
+                    <Trash2 className="w-4 h-4 inline" />
                   </button>
                 </td>
               </tr>
@@ -191,26 +217,35 @@ export default function StockInPage() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <input
-                  type="text"
+                  type="date"
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
                   placeholder="Date"
                   className="border p-2 rounded w-full"
                 />
-                <input
-                  type="text"
+                <select
+                  // type="text"
                   name="designName"
                   value={formData.designName}
                   onChange={handleChange}
                   placeholder="Design Name"
                   className="border p-2 rounded w-full"
                   required
-                />
+                >
+                  <option value="">Select Design Name</option>
+                  {mastdesigname.map((item, i) => (
+                    <option key={i} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+
+
                 <input
                   type="text"
                   name="coName"
-                  value={formData.coName}
+                  value={mastdata.filter((item) => item.designname == selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.coname}
                   onChange={handleChange}
                   placeholder="Company Name"
                   className="border p-2 rounded w-full"

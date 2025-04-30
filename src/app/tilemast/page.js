@@ -24,22 +24,29 @@ export default function TileMasterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const method = editingId ? "PUT" : "POST";
-    const payload = editingId ? { ...formData, id: editingId } : formData;
+
+    const form = new FormData();
+    form.append("tile", formData.tile);
+    form.append("createdBy", formData.createdBy);
+    form.append("status", formData.status);
+    form.append("image", formData.imageUrl); // file object
 
     const res = await fetch("/api/tilemast", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      method: "POST",
+      body: form,
     });
 
     if (res.ok) {
       fetchTiles();
       setFormData({ tile: "", createdBy: "", status: "Active", imageUrl: "" });
-      setEditingId(null);
       setShowForm(false);
+      setEditingId(null);
     }
   };
+
+
+
+
 
   const handleDelete = async (id) => {
     await fetch("/api/tilemast", {
@@ -115,13 +122,15 @@ export default function TileMasterPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Image URL</label>
+
             <input
-              type="text"
-              value={formData.imageUrl}
-              onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFormData({ ...formData, imageUrl: e.target.files[0] })}
               className="mt-1 block w-full p-2 border border-gray-300 rounded-xl"
             />
           </div>
+
           <div className="flex items-center gap-2">
             <button
               type="submit"
