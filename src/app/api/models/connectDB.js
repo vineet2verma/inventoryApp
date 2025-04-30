@@ -14,6 +14,7 @@ if (!cached) {
 }
 
 async function connectToDatabase() {
+  console.log("Connecting to database..."); // Log the connection attempt
   if (cached.conn) return cached.conn; // Return cached connection if it exists
 
   if (!cached.promise) { // If no promise is cached, create a new one
