@@ -61,10 +61,11 @@ export async function PUT(req) {
 // DELETE a type record by ID
 export async function DELETE(req) {
     try {
+        console.log("-----------",req)
         const { id } = await req.json();
         await connectToDatabase();
 
-        const deleted = await TypeMaster.findByIdAndDelete(id);
+        const deleted = await locationMast.findByIdAndDelete(id);
 
         if (!deleted) {
             return NextResponse.json({ message: "Record not found" }, { status: 404 });

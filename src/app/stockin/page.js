@@ -23,7 +23,13 @@ export default function StockInPage() {
   const [mastdata, setMastdata] = useState([]);
   const [mastdesigname, setdesignname] = useState([]);
   const [selectedDesign, setSelectedDesign] = useState("");
-
+  const [masttype, setMasttype] = useState([]);
+  const [mastsize, setMastsize] = useState([]);
+  const [mastweight, setMastweight] = useState([]);
+  const [mastpcperbox, setMastpcperbox] = useState([]);
+  const [mastlocation, setMastlocation] = useState([]);
+  const [mastcurrstock, setMastcurrstock] = useState([]);
+  
   // Fetch records from the API
   const fetchMastRecords = async () => {
     try {
@@ -31,18 +37,49 @@ export default function StockInPage() {
       const data = await res.json();
       setMastdata(data);
       const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
+      const msttype = Array.from(new Set(data.map((item) => item.type)));
+      const mstsize = Array.from(new Set(data.map((item) => item.size)));
+      // const mstweight = Array.from(new Set(data.map((item) => item.weight)));
+      // const mstpcperbox = Array.from(new Set(data.map((item) => item.pcperbox)));
+      // const mstlocation = Array.from(new Set(data.map((item) => item.location)));  // come from location mast later on
+      const mstcurrstock = Array.from(new Set(data.map((item) => item.currstock)));
+
+      setMasttype(msttype)
+      setMastsize(mstsize)
+      // setMastweight(mstweight)
+      // setMastpcperbox(mstpcperbox)
+      setMastcurrstock(mstcurrstock)
       setdesignname(mstdesign)
+
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
   }
+  // console.log(mastdata)
 
   useEffect(() => {
     fetchRecords();
     fetchMastRecords(); // Fetch mast records on component mount
+    fetchLocations(); // Fetch locations on component mount
 
   }, []);
+// lcoation mast
+  const fetchLocations = async () => {
+    try {
+      const res = await fetch("/api/location");
+      const data = await res.json();
+      let aa = [];
+      {data.map((item, i) => (
+        aa.push(item.location)
+      ))}
+      setMastlocation(Array.from(new Set(aa)));
 
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  };
+  console.log(mastlocation)  
+  
   const fetchRecords = async () => {
     try {
       const res = await fetch("/api/stockin");
@@ -59,11 +96,12 @@ export default function StockInPage() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log(e.target.name)
+    // console.log(e.target.name)
     e.target.name == "designName" ? handleSelectedDesign(e) : null;
   };
 
-  console.log(mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname)
+  // console.log(mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname)
+  // console.log(mastlocation)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -261,21 +299,30 @@ export default function StockInPage() {
                 <input
                   type="text"
                   name="type"
-                  value={formData.type}
+                  value={mastdata.filter((item) => item.designname == selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.type}
                   onChange={handleChange}
                   placeholder="Type"
                   className="border p-2 rounded w-full"
                 />
-                <input
-                  type="text"
+                <select
                   name="size"
                   value={formData.size}
                   onChange={handleChange}
                   placeholder="Size"
                   className="border p-2 rounded w-full"
-                />
+                  required
+                >
+                  <option value="">Select Size</option>
+                  {mastsize.map((item, i) => (
+                    <option key={i} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+
+
                 <input
-                  type="text"
+                  type="float"
                   name="weight"
                   value={formData.weight}
                   onChange={handleChange}
@@ -283,21 +330,40 @@ export default function StockInPage() {
                   className="border p-2 rounded w-full"
                 />
                 <input
-                  type="text"
+                  type="number"
                   name="pcPerBox"
                   value={formData.pcPerBox}
                   onChange={handleChange}
                   placeholder="Pieces Per Box"
                   className="border p-2 rounded w-full"
                 />
-                <input
+                {/* <input
                   type="text"
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Location"
                   className="border p-2 rounded w-full"
-                />
+                /> */}
+                <select
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="Location"
+                  className="border p-2 rounded w-full"
+                  required
+                >
+                  <option value="">Select Location</option>
+                  {mastlocation.map((item, i) => (
+                    <option key={i} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+
+
+
+
                 <input
                   type="text"
                   name="purPrice"

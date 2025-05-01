@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link } from "lucide-react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link,Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 
 
 
@@ -16,6 +15,7 @@ export default function TypeMastPage() {
     id: null,
   });
   const [status, setStatus] = useState(null);
+  const router = useRouter();
 
   const fetchTypes = async () => {
     const res = await fetch("/api/typemast");
@@ -79,18 +79,12 @@ export default function TypeMastPage() {
     setModalOpen(true);
   };
 
-  const openDashboard = () => {
-    alert("Redirecting to Dashboard... Not implemented yet.");
-    // const router = useRouter();
-    // router.push("/dashboard");
-  };
-
   
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <button
-          onClick={ openDashboard }
+          onClick= {()=> router.push("/dashboard")}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
           <House className="w-5 h-5" />
