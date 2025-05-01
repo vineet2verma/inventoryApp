@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Pencil, Trash2, PlusCircle, ArrowLeft } from "lucide-react";
+import { Pencil, Trash2, PlusCircle, ArrowLeft, House } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 
@@ -44,10 +44,6 @@ export default function TileMasterPage() {
     }
   };
 
-
-
-
-
   const handleDelete = async (id) => {
     await fetch("/api/tilemast", {
       method: "DELETE",
@@ -68,9 +64,10 @@ export default function TileMasterPage() {
       <div className="mb-4 flex justify-between items-center">
         <button
           onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
-          <ArrowLeft size={18} /> Back to Dashboard
+          <House className="w-5 h-5" />
+          Home
         </button>
         <button
           onClick={() => {

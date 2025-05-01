@@ -29,11 +29,11 @@ export default function StockInPage() {
   const [mastpcperbox, setMastpcperbox] = useState([]);
   const [mastlocation, setMastlocation] = useState([]);
   const [mastcurrstock, setMastcurrstock] = useState([]);
-  
+
   // Fetch records from the API
   const fetchMastRecords = async () => {
     try {
-      const res = await fetch("/api/createmast");
+      const res = await fetch("/api/createinvmast");
       const data = await res.json();
       setMastdata(data);
       const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
@@ -63,23 +63,25 @@ export default function StockInPage() {
     fetchLocations(); // Fetch locations on component mount
 
   }, []);
-// lcoation mast
+  // lcoation mast
   const fetchLocations = async () => {
     try {
       const res = await fetch("/api/location");
       const data = await res.json();
       let aa = [];
-      {data.map((item, i) => (
-        aa.push(item.location)
-      ))}
+      {
+        data.map((item, i) => (
+          aa.push(item.location)
+        ))
+      }
       setMastlocation(Array.from(new Set(aa)));
 
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
   };
-  console.log(mastlocation)  
-  
+  console.log(mastlocation)
+
   const fetchRecords = async () => {
     try {
       const res = await fetch("/api/stockin");
@@ -181,14 +183,25 @@ export default function StockInPage() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center mb-6">Stock-In Records</h1>
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        >
+          <House className="w-5 h-5" />
+          Home
+        </button>
 
-      <button
-        onClick={handleAddNew}
-        className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Add New Record
-      </button>
+        <h1 className="text-3xl font-bold text-center mb-6">Stock-In Records</h1>
+
+        <button
+          onClick={handleAddNew}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+
+          Add Record
+        </button>
+      </div>
+
 
       {/* Table */}
       <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">

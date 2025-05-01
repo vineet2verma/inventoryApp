@@ -23,34 +23,33 @@ export async function GET() {
 export async function POST(req) {
     try {
         const formData = await req.formData();
-
         const tile = formData.get("tile");
         const createdBy = formData.get("createdBy");
         const status = formData.get("status") || "Active";
-        const file = formData.get("image");
+        // const file = formData.get("image");
 
-        if (!file || typeof file === "string") {
-            return NextResponse.json({ message: "No image file uploaded" }, { status: 400 });
-        }
+        // if (!file || typeof file === "string") {
+        //     return NextResponse.json({ message: "No image file uploaded" }, { status: 400 });
+        // }
 
         // Save file temporarily
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const tempDir = os.tmpdir();
-        const filePath = path.join(tempDir, `${Date.now()}-${file.name}`);
-        await fs.writeFile(filePath, buffer);
+        // const buffer = Buffer.from(await file.arrayBuffer());
+        // const tempDir = os.tmpdir();
+        // const filePath = path.join(tempDir, `${Date.now()}-${file.name}`);
+        // await fs.writeFile(filePath, buffer);
 
-        const folderId = "1thS61_ycCnjWj-pPSbqgqAstjg-5Ilou"; // 🔁 Replace this
-        const driveFile = await uploadImageToDrive(filePath, folderId);
+        // const folderId = "1thS61_ycCnjWj-pPSbqgqAstjg-5Ilou"; // 🔁 Replace this
+        // const driveFile = await uploadImageToDrive(filePath, folderId);
 
         const newTile = new TileMaster({
             tile,
-            image: driveFile.webViewLink,
+            // image: driveFile.webViewLink,
             createdBy,
             status,
         });
 
         await newTile.save();
-        await fs.remove(filePath);
+        // await fs.remove(filePath);
 
         return NextResponse.json({ message: "Tile created successfully", data: newTile }, { status: 200 });
     } catch (err) {

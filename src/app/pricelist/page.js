@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
 
 export default function PriceListPage() {
   const router = useRouter();
@@ -8,13 +9,14 @@ export default function PriceListPage() {
   const [formData, setFormData] = useState({});
   const [search, setSearch] = useState('');
   const [editId, setEditId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
-    const res = await fetch('/api/price-list');
+    const res = await fetch('/api/pricelist');
     const json = await res.json();
     setData(json);
   };
@@ -23,9 +25,15 @@ export default function PriceListPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const openModal = (item = {}) => {
+    setFormData(item);
+    setEditId(item._id || null);
+    setShowModal(true);
+  };
+
   const handleSubmit = async () => {
     const method = editId ? 'PUT' : 'POST';
-    const url = editId ? `/api/price-list?id=${editId}` : '/api/price-list';
+    const url = editId ? `/api/pricelist?id=${editId}` : '/api/pricelist';
 
     await fetch(url, {
       method,
@@ -35,109 +43,101 @@ export default function PriceListPage() {
 
     setFormData({});
     setEditId(null);
+    setShowModal(false);
     fetchData();
   };
 
   const handleDelete = async (id) => {
-    await fetch(`/api/price-list?id=${id}`, { method: 'DELETE' });
+    await fetch('/api/pricelist', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
     fetchData();
   };
 
-  const handleEdit = (item) => {
-    setFormData(item);
-    setEditId(item._id);
-  };
-
   const filteredData = data.filter((item) =>
-    item.designName?.toLowerCase().includes(search.toLowerCase())
+    ['designName', 'coName', 'size', 'type'].some((key) =>
+      item[key]?.toLowerCase().includes(search.toLowerCase())
+    )
   );
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Price List</h1>
         <button
-          onClick={() => router.push('/dashboard')}
-          className="bg-gray-700 text-white px-4 py-2 rounded"
+          onClick={() => router.push("/dashboard")}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
-          Back to Dashboard
+          <House className="w-5 h-5" />
+          Home
         </button>
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-4">
-        <input
-          type="text"
-          placeholder="Search by Design Name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border px-3 py-2 rounded w-full sm:w-64"
-        />
-
-        {[
-          'date',
-          'designName',
-          'coName',
-          'size',
-          'ratePerBox',
-          'qtyPerBox',
-          'packingPerBox',
-          'type',
-        ].map((field) => (
+        <h1 className="text-3xl font-bold">Price List</h1>
+        <div className="mb-4 flex justify-between flex-wrap gap-2">
           <input
-            key={field}
             type="text"
-            name={field}
-            placeholder={field.replace(/([A-Z])/g, ' $1')}
-            value={formData[field] || ''}
-            onChange={handleInputChange}
-            className="border px-3 py-2 rounded"
+            placeholder="Search by any field"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border border-gray-300 px-4 py-2 rounded w-full sm:w-64"
           />
-        ))}
+          <button
+            onClick={() => openModal()}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            + Add Entry
+          </button>
+        </div>
 
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {editId ? 'Update' : 'Add'}
-        </button>
       </div>
+
+
+
+
+
 
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white shadow rounded">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="py-2 px-3">Date</th>
-              <th className="py-2 px-3">Design</th>
-              <th className="py-2 px-3">Company</th>
-              <th className="py-2 px-3">Size</th>
-              <th className="py-2 px-3">Rate</th>
-              <th className="py-2 px-3">Qty</th>
-              <th className="py-2 px-3">Packing</th>
-              <th className="py-2 px-3">Type</th>
-              <th className="py-2 px-3">Actions</th>
+        <table className="min-w-full table-auto bg-white border shadow-md rounded">
+          <thead className="bg-gray-100 text-sm text-gray-700">
+            <tr>
+              {[
+                'Date',
+                'Design Name',
+                'Company Name',
+                'Size',
+                'Rate/Box',
+                'Qty/Box',
+                'Packing',
+                'Type',
+                'Actions',
+              ].map((header) => (
+                <th key={header} className="px-4 py-2 border">
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {filteredData.map((item) => (
-              <tr key={item._id} className="border-t">
-                <td className="py-2 px-3">{item.date}</td>
-                <td className="py-2 px-3">{item.designName}</td>
-                <td className="py-2 px-3">{item.coName}</td>
-                <td className="py-2 px-3">{item.size}</td>
-                <td className="py-2 px-3">{item.ratePerBox}</td>
-                <td className="py-2 px-3">{item.qtyPerBox}</td>
-                <td className="py-2 px-3">{item.packingPerBox}</td>
-                <td className="py-2 px-3">{item.type}</td>
-                <td className="py-2 px-3 space-x-2">
+              <tr key={item._id} className="text-sm text-gray-800 border-t">
+                <td className="px-4 py-2 border">{item.date}</td>
+                <td className="px-4 py-2 border">{item.designName}</td>
+                <td className="px-4 py-2 border">{item.coName}</td>
+                <td className="px-4 py-2 border">{item.size}</td>
+                <td className="px-4 py-2 border">{item.ratePerBox}</td>
+                <td className="px-4 py-2 border">{item.qtyPerBox}</td>
+                <td className="px-4 py-2 border">{item.packingPerBox}</td>
+                <td className="px-4 py-2 border">{item.type}</td>
+                <td className="px-4 py-2 border space-x-2">
                   <button
-                    onClick={() => handleEdit(item)}
-                    className="bg-yellow-400 px-2 py-1 rounded"
+                    onClick={() => openModal(item)}
+                    className="bg-yellow-400 px-2 py-1 rounded text-sm"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(item._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded"
+                    className="bg-red-500 text-white px-2 py-1 rounded text-sm"
                   >
                     Delete
                   </button>
@@ -146,7 +146,7 @@ export default function PriceListPage() {
             ))}
             {filteredData.length === 0 && (
               <tr>
-                <td colSpan="9" className="text-center py-4">
+                <td colSpan="9" className="text-center py-4 text-gray-500">
                   No records found.
                 </td>
               </tr>
@@ -154,6 +154,56 @@ export default function PriceListPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
+            <h2 className="text-xl font-semibold mb-4">
+              {editId ? 'Update Entry' : 'Add Entry'}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                'date',
+                'designName',
+                'coName',
+                'size',
+                'ratePerBox',
+                'qtyPerBox',
+                'packingPerBox',
+                'type',
+              ].map((field) => (
+                <input
+                  key={field}
+                  name={field}
+                  placeholder={field.replace(/([A-Z])/g, ' $1')}
+                  value={formData[field] || ''}
+                  onChange={handleInputChange}
+                  className="border px-3 py-2 rounded"
+                />
+              ))}
+            </div>
+            <div className="flex justify-end mt-6 space-x-2">
+              <button
+                onClick={() => {
+                  setFormData({});
+                  setEditId(null);
+                  setShowModal(false);
+                }}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                {editId ? 'Update' : 'Add'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

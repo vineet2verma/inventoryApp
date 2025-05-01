@@ -103,7 +103,7 @@ export default function Dashboard() {
             onClick={() => router.push("/clients")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Clients List
+            Clients Info
           </button>
         </div>
 

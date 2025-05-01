@@ -2,8 +2,8 @@ import * as mongoose from "mongoose";
 
 const PriceListSchema = new mongoose.Schema(
     {
-        date : { type: String, required: false },
-        designName: { type: String, required: true },
+        date: { type: String, required: false },
+        designName: { type: String, required: false },
         coName: { type: String, required: false },
         size: { type: String, required: false },
         ratePerBox: { type: String, required: false },

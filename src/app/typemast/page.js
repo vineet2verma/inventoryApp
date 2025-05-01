@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link,Plus } from "lucide-react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 
@@ -79,16 +79,16 @@ export default function TypeMastPage() {
     setModalOpen(true);
   };
 
-  
+
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <button
-          onClick= {()=> router.push("/dashboard")}
+          onClick={() => router.push("/dashboard")}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
           <House className="w-5 h-5" />
-          Main
+          Home
         </button>
 
         <h1 className="text-2xl font-semibold text-gray-800">Type Master</h1>
@@ -206,11 +206,10 @@ export default function TypeMastPage() {
             </form>
             {status && (
               <div
-                className={`mt-4 p-3 rounded-xl flex items-center space-x-2 ${
-                  status.success
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
+                className={`mt-4 p-3 rounded-xl flex items-center space-x-2 ${status.success
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+                  }`}
               >
                 {status.success ? (
                   <CheckCircle className="w-5 h-5" />

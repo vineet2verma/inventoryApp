@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Pencil, Trash2, Plus, ArrowLeft } from "lucide-react";
+import { Pencil, Trash2, Plus, ArrowLeft, House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function InventoryMaster() {
@@ -12,7 +12,7 @@ export default function InventoryMaster() {
   const router = useRouter();
 
   const fetchRecords = async () => {
-    const res = await fetch("/api/createmast");
+    const res = await fetch("/api/createinvmast");
     const data = await res.json();
     setRecords(data);
   };
@@ -30,7 +30,7 @@ export default function InventoryMaster() {
   }, []);
 
   const handleDelete = async (id) => {
-    await fetch("/api/createmast", {
+    await fetch("/api/createinvmast", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
@@ -55,7 +55,7 @@ export default function InventoryMaster() {
     const method = editingId ? "PUT" : "POST";
     const body = editingId ? { id: editingId, ...formData } : formData;
 
-    await fetch("/api/createmast", {
+    await fetch("/api/createinvmast", {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -71,9 +71,10 @@ export default function InventoryMaster() {
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => router.push("/dashboard")}
-          className="flex items-center px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
+          <House className="w-5 h-5" />
+          Home
         </button>
         <button
           onClick={handleAdd}

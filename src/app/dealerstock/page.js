@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { file } from "googleapis/build/src/apis/file";
 
 export default function DealerStockPage() {
   const router = useRouter();
@@ -66,22 +68,27 @@ export default function DealerStockPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dealer Stock</h1>
+      <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => router.push("/dashboard")}
-          className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
-          Back to Dashboard
+          <House className="w-5 h-5" />
+          Home
         </button>
+
+        <h1 className="text-2xl font-bold">Dealer Stock</h1>
+
+        <button
+          onClick={openAddModal}
+          className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Add Dealer Stock
+        </button>
+
       </div>
 
-      <button
-        onClick={openAddModal}
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Add Dealer Stock
-      </button>
+
 
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="min-w-full text-sm">
@@ -93,8 +100,8 @@ export default function DealerStockPage() {
                   {field}
                 </th>
               ))}
-              <th className="p-3">Created At</th>
-              <th className="p-3">Updated At</th>
+              {/* <th className="p-3">Created At</th> */}
+              {/* <th className="p-3">Updated At</th> */}
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -103,16 +110,18 @@ export default function DealerStockPage() {
               <tr key={record._id} className="border-b hover:bg-gray-50">
                 <td className="p-3">{index + 1}</td>
                 {fields.map((field) => (
-                  <td key={field} className="p-3">
-                    {record[field]}
-                  </td>
+                  field !== "createdAt" && field !== "updatedAt" && (
+                    <td key={field} className="p-3" >
+                      {record[field]}
+                    </td>
+                  )
                 ))}
-                <td className="p-3">
+                {/* <td className="p-3">
                   {new Date(record.createdAt).toLocaleString()}
                 </td>
                 <td className="p-3">
                   {new Date(record.updatedAt).toLocaleString()}
-                </td>
+                </td> */}
                 <td className="p-3 space-x-2">
                   <button
                     onClick={() => openEditModal(record)}
@@ -141,43 +150,45 @@ export default function DealerStockPage() {
       </div>
 
       {/* Modal Form */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg">
-            <h2 className="text-lg font-bold mb-4">
-              {isEditMode ? "Update Dealer Stock" : "Add Dealer Stock"}
-            </h2>
+      {
+        isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg w-full max-w-lg">
+              <h2 className="text-lg font-bold mb-4">
+                {isEditMode ? "Update Dealer Stock" : "Add Dealer Stock"}
+              </h2>
 
-            <div className="grid grid-cols-2 gap-3">
-              {fields.map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded"
-                />
-              ))}
-            </div>
+              <div className="grid grid-cols-2 gap-3">
+                {fields.map((field) => (
+                  <input
+                    key={field}
+                    name={field}
+                    placeholder={field}
+                    value={formData[field] || ""}
+                    onChange={handleChange}
+                    className="p-2 border rounded"
+                  />
+                ))}
+              </div>
 
-            <div className="mt-4 flex justify-end space-x-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                {isEditMode ? "Update" : "Create"}
-              </button>
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 border rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                >
+                  {isEditMode ? "Update" : "Create"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }

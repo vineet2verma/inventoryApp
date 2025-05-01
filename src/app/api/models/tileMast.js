@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 
-const TileSchema = new mongoose.Schema(
+const TileMasterSchema = new mongoose.Schema(
     {
         tile: { type: String, required: true },
         image: { type: String, required: false },
@@ -10,5 +10,5 @@ const TileSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-export default mongoose.models.TileMaster || mongoose.model("TileMaster", TileSchema);
+export default mongoose.models.TileMaster || mongoose.model("TileMaster", TileMasterSchema);
 

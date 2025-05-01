@@ -1,5 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+
 
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
@@ -27,6 +31,7 @@ export default function DealerMastPage() {
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   // Fetch records from the API
   useEffect(() => {
@@ -149,27 +154,37 @@ export default function DealerMastPage() {
   };
 
   return (
-    <div className="p-4 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold text-center mb-4">Dealer Mast Records</h1>
+    <div className="p-4  bg-gray-100 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        >
+          <House className="w-5 h-5" />
+          Home
+        </button>
+        <h1 className="text-2xl font-bold text-center mb-4">Dealer Mast Records</h1>
 
-      {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={handleSearch}
-          placeholder="Search records..."
-          className="border p-2 rounded w-full text-sm"
-        />
+        <div className="flex px-2 items-center mb-6 ">
+          {/* Search Bar */}
+          <div className="mb-4 pr-2">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearch}
+              placeholder="Search records..."
+              className="border p-2 rounded w-full text-sm"
+            />
+          </div>
+          <button
+            onClick={handleAddNew}
+            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add New Record
+          </button>
+        </div>
+
       </div>
-
-      <button
-        onClick={handleAddNew}
-        className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Add New Record
-      </button>
-
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full bg-white rounded shadow-md text-sm">
