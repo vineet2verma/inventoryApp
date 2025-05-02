@@ -8,6 +8,7 @@ export default function InventoryMaster() {
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [locationList, setLocationList] = useState([]);
   const [typeList, setTypeList] = useState([]);
   const router = useRouter();
 
@@ -15,6 +16,7 @@ export default function InventoryMaster() {
     const res = await fetch("/api/createinvmast");
     const data = await res.json();
     setRecords(data);
+
   };
 
   const fetchTypeList = async () => {
@@ -27,6 +29,7 @@ export default function InventoryMaster() {
   useEffect(() => {
     fetchRecords();
     fetchTypeList();
+    fetchLocationMast();
   }, []);
 
   const handleDelete = async (id) => {
@@ -49,6 +52,9 @@ export default function InventoryMaster() {
     setEditingId(null);
     setShowForm(true);
   };
+  const handleCancel = () => {
+    setShowForm(false);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,6 +72,13 @@ export default function InventoryMaster() {
     setEditingId(null);
   };
 
+  const fetchLocationMast = async () => {
+    const res = await fetch("/api/location");
+    const data = await res.json();
+    const locationList = data.map((item) => item.location);
+    setLocationList(Array.from(new Set(locationList)));
+  }
+
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <div className="flex justify-between items-center mb-4">
@@ -76,6 +89,14 @@ export default function InventoryMaster() {
           <House className="w-5 h-5" />
           Home
         </button>
+
+        <button
+          onClick={handleCancel}
+          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+        >
+          Cancel
+        </button>
+
         <button
           onClick={handleAdd}
           className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
@@ -91,8 +112,8 @@ export default function InventoryMaster() {
         >
           {[
             "designname", "coname", "batchno", "type", "size", "weight",
-            "pcperbox", "location", "opstock", "purprice", "holdstock",
-            "closingstock", "createdby",
+            "pcperbox", "opstock", "purprice", "holdstock", "location",
+            "createdby",
           ].map((field) => (
             field === "type" ? (
               <select
@@ -108,8 +129,18 @@ export default function InventoryMaster() {
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
-            ) :
+            ) : field == "pcperbox" || field == "opstock" || field == "purprice" || field == "holdstock" ? (
               (
+                <input
+                  key={field}
+                  type="number"
+                  required
+                  placeholder={field}
+                  value={formData[field] || ""}
+                  onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                  className="p-2 border rounded-xl"
+                />
+              )) : field == "designName"(
                 <input
                   key={field}
                   required={field === "designName"}
@@ -119,9 +150,10 @@ export default function InventoryMaster() {
                   className="p-2 border rounded-xl"
                 />
               )
-
-
           ))}
+
+
+
           <button
             type="submit"
             className="col-span-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"

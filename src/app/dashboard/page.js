@@ -8,9 +8,9 @@ export default function Dashboard() {
 
   return (
     <>
-      <SideMenu />
+      {/* <SideMenu /> */}
 
-      <div className="min-h-screen bg-gray-100 pl-25 pr-4 ">
+      <div className="min-h-screen bg-gray-100 px-5 pt-4 ">
         {/* Header */}
         <header className="bg-white shadow p-4 mb-6 rounded-xl">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
@@ -41,6 +41,7 @@ export default function Dashboard() {
 
         {/* Navigation Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4">
+
           <button
             onClick={() => router.push("/locationmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"

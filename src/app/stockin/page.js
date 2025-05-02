@@ -1,8 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
 import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+
 
 export default function StockInPage() {
+
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({
     date: "",
@@ -29,9 +33,10 @@ export default function StockInPage() {
   const [breakage, setbreakage] = useState([]);
   const [mastlocation, setMastlocation] = useState([]);
   const [mastcurrstock, setMastcurrstock] = useState([]);
+  const router = useRouter();
 
   // Fetch records from the API
-  const fetchMastRecords = async () => {
+  const fetchInvMastRecords = async () => {
     try {
       const res = await fetch("/api/createinvmast");
       const data = await res.json();
@@ -39,7 +44,6 @@ export default function StockInPage() {
       const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
       const msttype = Array.from(new Set(data.map((item) => item.type)));
       const mstsize = Array.from(new Set(data.map((item) => item.size)));
-      // const mstweight = Array.from(new Set(data.map((item) => item.weight)));
       // const mstlocation = Array.from(new Set(data.map((item) => item.location)));  // come from location mast later on
       const mstcurrstock = Array.from(new Set(data.map((item) => item.currstock)));
 
@@ -55,9 +59,9 @@ export default function StockInPage() {
   // console.log(mastdata)
 
   useEffect(() => {
-    fetchRecords();
-    fetchMastRecords(); // Fetch mast records on component mount
+    fetchInvMastRecords(); // Fetch mast records on component mount
     fetchLocations(); // Fetch locations on component mount
+    fetchRecords();
 
   }, []);
   // lcoation mast
@@ -77,7 +81,6 @@ export default function StockInPage() {
       console.error("Failed to fetch records:", err);
     }
   };
-  console.log(mastlocation)
 
   const fetchRecords = async () => {
     try {
@@ -292,8 +295,8 @@ export default function StockInPage() {
                 <input
                   type="text"
                   name="coName"
-                  value={mastdata.filter((item) => item.designname == selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.coname}
-                  onChange={handleChange}
+                  value={mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname}
+                  onChange={(e) => { handleChange(e) }}
                   placeholder="Company Name"
                   className="border p-2 rounded w-full"
                 />
@@ -309,7 +312,7 @@ export default function StockInPage() {
                   type="text"
                   name="type"
                   value={mastdata.filter((item) => item.designname == selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.type}
-                  onChange={handleChange}
+                  onChange={(e) => { handleChange(e) }}
                   placeholder="Type"
                   className="border p-2 rounded w-full"
                 />

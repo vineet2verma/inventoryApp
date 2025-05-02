@@ -21,8 +21,10 @@ export async function POST(req) {
     console.log("Received data:", req); // Log the received data
     const data = await req.json();
     await connectToDatabase();
-    console.log("Parsed data:", data); // Log the parsed data
 
+    data.closingstock = data.opstock + data.holdstock; // Calculate closing stock
+
+    console.log("Parsed data:", data); // Log the parsed data
     const newRecord = new createInvMaster(data);
     await newRecord.save();
 
@@ -38,6 +40,8 @@ export async function PUT(req) {
   try {
     const { id, ...updatedData } = await req.json();
     await connectToDatabase();
+
+    updatedData.closingstock = parseInt(updatedData.opstock) + parseInt(updatedData.holdstock); // Calculate closing stock
 
     const updated = await createInvMaster.findByIdAndUpdate(id, updatedData, { new: true });
 
