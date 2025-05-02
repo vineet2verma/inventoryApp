@@ -25,6 +25,7 @@ export default function PriceListPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   const openModal = (item = {}) => {
     setFormData(item);
     setEditId(item._id || null);
@@ -32,6 +33,7 @@ export default function PriceListPage() {
   };
 
   const handleSubmit = async () => {
+    console.log('Form Data:', formData); // Debugging line
     const method = editId ? 'PUT' : 'POST';
     const url = editId ? `/api/pricelist?id=${editId}` : '/api/pricelist';
 
@@ -85,16 +87,10 @@ export default function PriceListPage() {
             onClick={() => openModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded"
           >
-            + Add Entry
+            <Plus className="w-15 h-5" /> 
           </button>
         </div>
-
       </div>
-
-
-
-
-
 
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto bg-white border shadow-md rounded">
@@ -106,8 +102,11 @@ export default function PriceListPage() {
                 'Company Name',
                 'Size',
                 'Rate/Box',
-                'Qty/Box',
-                'Packing',
+                'Rate/Pcs',
+                'Rate/Sqft',
+                'Qty/Sqft',
+                'Packing/Box',
+                'Discount',
                 'Type',
                 'Actions',
               ].map((header) => (
@@ -125,10 +124,14 @@ export default function PriceListPage() {
                 <td className="px-4 py-2 border">{item.coName}</td>
                 <td className="px-4 py-2 border">{item.size}</td>
                 <td className="px-4 py-2 border">{item.ratePerBox}</td>
-                <td className="px-4 py-2 border">{item.qtyPerBox}</td>
+                <td className="px-4 py-2 border">{item.ratePerPcs}</td>
+                <td className="px-4 py-2 border">{item.ratePerSqft}</td>
+                <td className="px-4 py-2 border">{item.qtyPerSqft}</td>
                 <td className="px-4 py-2 border">{item.packingPerBox}</td>
+                <td className="px-4 py-2 border">{item.discount}</td>
                 <td className="px-4 py-2 border">{item.type}</td>
                 <td className="px-4 py-2 border space-x-2">
+
                   <button
                     onClick={() => openModal(item)}
                     className="bg-yellow-400 px-2 py-1 rounded text-sm"
@@ -169,8 +172,11 @@ export default function PriceListPage() {
                 'coName',
                 'size',
                 'ratePerBox',
-                'qtyPerBox',
+                'ratePerPcs',
+                'ratePerSqft',
+                'qtyPerSqft',
                 'packingPerBox',
+                'discount',
                 'type',
               ].map((field) => (
                 <input

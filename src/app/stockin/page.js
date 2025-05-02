@@ -11,9 +11,9 @@ export default function StockInPage() {
     batchNo: "",
     type: "",
     size: "",
-    weight: "",
-    pcPerBox: "",
+    quantity: "",
     location: "",
+    breakage: "",
     purPrice: "",
     currStock: "",
     createdBy: "",
@@ -25,8 +25,8 @@ export default function StockInPage() {
   const [selectedDesign, setSelectedDesign] = useState("");
   const [masttype, setMasttype] = useState([]);
   const [mastsize, setMastsize] = useState([]);
-  const [mastweight, setMastweight] = useState([]);
-  const [mastpcperbox, setMastpcperbox] = useState([]);
+  const [quantity, setquantity] = useState([]);
+  const [breakage, setbreakage] = useState([]);
   const [mastlocation, setMastlocation] = useState([]);
   const [mastcurrstock, setMastcurrstock] = useState([]);
 
@@ -40,14 +40,11 @@ export default function StockInPage() {
       const msttype = Array.from(new Set(data.map((item) => item.type)));
       const mstsize = Array.from(new Set(data.map((item) => item.size)));
       // const mstweight = Array.from(new Set(data.map((item) => item.weight)));
-      // const mstpcperbox = Array.from(new Set(data.map((item) => item.pcperbox)));
       // const mstlocation = Array.from(new Set(data.map((item) => item.location)));  // come from location mast later on
       const mstcurrstock = Array.from(new Set(data.map((item) => item.currstock)));
 
       setMasttype(msttype)
       setMastsize(mstsize)
-      // setMastweight(mstweight)
-      // setMastpcperbox(mstpcperbox)
       setMastcurrstock(mstcurrstock)
       setdesignname(mstdesign)
 
@@ -126,8 +123,8 @@ export default function StockInPage() {
         batchNo: "",
         type: "",
         size: "",
-        weight: "",
-        pcPerBox: "",
+        quantity: "",
+        breakage: "",
         location: "",
         purPrice: "",
         currStock: "",
@@ -170,9 +167,9 @@ export default function StockInPage() {
       batchNo: "",
       type: "",
       size: "",
-      weight: "",
-      pcPerBox: "",
+      quantity: "",
       location: "",
+      breakage: "",
       purPrice: "",
       currStock: "",
       createdBy: "",
@@ -197,7 +194,6 @@ export default function StockInPage() {
         <button
           onClick={handleAddNew}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
-
           Add Record
         </button>
       </div>
@@ -214,8 +210,8 @@ export default function StockInPage() {
               <th className="p-2">Batch No</th>
               <th className="p-2">Type</th>
               <th className="p-2">Size</th>
-              <th className="p-2">Weight</th>
-              <th className="p-2">Pieces Per Box</th>
+              <th className="p-2">Quantity</th>
+              <th className="p-2">Breakage</th>
               <th className="p-2">Location</th>
               <th className="p-2">Purchase Price</th>
               <th className="p-2">Current Stock</th>
@@ -232,8 +228,8 @@ export default function StockInPage() {
                 <td className="p-2">{record.batchNo}</td>
                 <td className="p-2">{record.type}</td>
                 <td className="p-2">{record.size}</td>
-                <td className="p-2">{record.weight}</td>
-                <td className="p-2">{record.pcPerBox}</td>
+                <td className="p-2">{record.quantity}</td>
+                <td className="p-2">{record.breakage}</td>
                 <td className="p-2">{record.location}</td>
                 <td className="p-2">{record.purPrice}</td>
                 <td className="p-2">{record.currStock}</td>
@@ -333,31 +329,22 @@ export default function StockInPage() {
                   ))}
                 </select>
 
-
                 <input
-                  type="float"
-                  name="weight"
+                  type="number"
+                  name="quantity"
                   value={formData.weight}
                   onChange={handleChange}
-                  placeholder="Weight"
+                  placeholder="Quantity"
                   className="border p-2 rounded w-full"
                 />
                 <input
                   type="number"
-                  name="pcPerBox"
-                  value={formData.pcPerBox}
+                  name="breakage"
+                  value={formData.breakage}
                   onChange={handleChange}
-                  placeholder="Pieces Per Box"
+                  placeholder="Breakage"
                   className="border p-2 rounded w-full"
                 />
-                {/* <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="Location"
-                  className="border p-2 rounded w-full"
-                /> */}
                 <select
                   name="location"
                   value={formData.location}
@@ -373,9 +360,6 @@ export default function StockInPage() {
                     </option>
                   ))}
                 </select>
-
-
-
 
                 <input
                   type="text"
