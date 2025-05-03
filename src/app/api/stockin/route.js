@@ -21,6 +21,8 @@ export async function POST(req) {
     const data = await req.json();
     await connectToDatabase();
 
+    data.currStock = parseInt(data.quantity) - parseFloat(data.breakage);
+
     const newRecord = new StockIn(data);
     await newRecord.save();
 
@@ -36,6 +38,8 @@ export async function PUT(req) {
   try {
     const { id, ...updatedData } = await req.json();
     await connectToDatabase();
+    
+    updatedData.currStock = parseInt(updatedData.quantity) - parseFloat(updatedData.breakage);
 
     const updated = await StockIn.findByIdAndUpdate(id, updatedData, { new: true });
 

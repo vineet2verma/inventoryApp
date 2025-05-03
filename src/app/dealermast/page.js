@@ -24,6 +24,7 @@ export default function DealerMastPage() {
     refBy: "",
     remarks: "",
     delRating: "",
+    discount: "",
     delLimit: "",
     delSalesMan: "",
     delStatus: "",
@@ -94,6 +95,7 @@ export default function DealerMastPage() {
         refBy: "",
         remarks: "",
         delRating: "",
+        discount: "",
         delLimit: "",
         delSalesMan: "",
         delStatus: "",
@@ -144,6 +146,7 @@ export default function DealerMastPage() {
       refBy: "",
       remarks: "",
       delRating: "",
+      discount: "",
       delLimit: "",
       delSalesMan: "",
       delStatus: "",
@@ -235,7 +238,42 @@ export default function DealerMastPage() {
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Object.keys(formData).map((key) => (
+                {Object.keys(formData).map((key) =>
+                key=="date"?
+                (
+                  <input
+                    key={key}
+                    type="date"
+                    name={key}
+                    value={formData[key]}
+                    onChange={handleChange}
+                    placeholder={key}
+                    className="border p-2 rounded w-full text-sm"
+                  />
+                )
+                : key=="contactNo" || key=="mobWhatsApp" || key=="delLimit" || key=="delRating" || key=="discount" ?(
+                  <input
+                    key={key}
+                    type="number"
+                    name={key}
+                    value={formData[key]}
+                    onChange={handleChange}
+                    placeholder={key + "...."}
+                    className="border p-2 rounded w-full text-sm"
+                  />
+                ) : key =="delStatus"?(
+                  <select
+                    key={key}
+                    name={key}
+                    value={formData[key]}
+                    onChange={handleChange}
+                    className="border p-2 rounded w-full text-sm"
+                  >
+                    <option key="Active" value="Active">Active</option>
+                    <option key="Inactive" value="Inactive">Inactive</option>
+                  </select>
+                ) : key=="_id" || key=="delId"  || key=="createdAt" || key=="updatedAt" || key=="__v" ? '' :
+                (                 
                   <input
                     key={key}
                     type="text"

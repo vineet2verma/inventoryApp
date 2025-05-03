@@ -295,8 +295,8 @@ export default function StockInPage() {
                 <input
                   type="text"
                   name="coName"
-                  value={mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname}
-                  onChange={(e) => { handleChange(e) }}
+                  value={formData.coName}
+                  onChange={handleChange}
                   placeholder="Company Name"
                   className="border p-2 rounded w-full"
                 />
@@ -365,19 +365,11 @@ export default function StockInPage() {
                 </select>
 
                 <input
-                  type="text"
+                  type="number"
                   name="purPrice"
                   value={formData.purPrice}
                   onChange={handleChange}
                   placeholder="Purchase Price"
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="text"
-                  name="currStock"
-                  value={formData.currStock}
-                  onChange={handleChange}
-                  placeholder="Current Stock"
                   className="border p-2 rounded w-full"
                 />
                 <input

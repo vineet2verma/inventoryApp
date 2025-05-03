@@ -10,6 +10,8 @@ const CreateInvSchema = new mongoose.Schema(
     weight: { type: String, required: false },
     pcperbox: { type: String, required: false },
     location: { type: String, required: false },
+    minqty: { type: String, required: false },
+    maxqty: { type: String, required: false },
     opstock: { type: String, required: false },
     purprice: { type: String, required: false },
     holdstock: { type: String, required: false },

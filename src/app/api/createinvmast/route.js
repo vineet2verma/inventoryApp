@@ -8,6 +8,7 @@ export async function GET() {
     await connectToDatabase();
     const records = await createInvMaster.find().sort({ createdAt: -1 }); // Newest first
     return NextResponse.json(records, { status: 200 });
+    console.log("Fetched records:", records); // Log the fetched records
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "Failed to fetch records" }, { status: 500 });
@@ -22,7 +23,7 @@ export async function POST(req) {
     const data = await req.json();
     await connectToDatabase();
 
-    data.closingstock = data.opstock + data.holdstock; // Calculate closing stock
+    data.closingstock = parseFloat(data.opstock) + parseFloat(data.holdstock); // Calculate closing stock
 
     console.log("Parsed data:", data); // Log the parsed data
     const newRecord = new createInvMaster(data);
@@ -41,7 +42,7 @@ export async function PUT(req) {
     const { id, ...updatedData } = await req.json();
     await connectToDatabase();
 
-    updatedData.closingstock = parseInt(updatedData.opstock) + parseInt(updatedData.holdstock); // Calculate closing stock
+    updatedData.closingstock = parseFloat(updatedData.opstock) + parseFloat(updatedData.holdstock); // Calculate closing stock
 
     const updated = await createInvMaster.findByIdAndUpdate(id, updatedData, { new: true });
 

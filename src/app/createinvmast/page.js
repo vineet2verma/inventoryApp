@@ -12,19 +12,26 @@ export default function InventoryMaster() {
   const [typeList, setTypeList] = useState([]);
   const router = useRouter();
 
+  // fetch records from createinvmast
   const fetchRecords = async () => {
     const res = await fetch("/api/createinvmast");
     const data = await res.json();
     setRecords(data);
-
   };
-
+  // fetch type list from typemast
   const fetchTypeList = async () => {
     const res = await fetch("/api/typemast");
     const data = await res.json();
     const typelist = data.map((item) => item.type);
     setTypeList(typelist);
-  }
+  };
+  // fetch location list from locationmast
+  const fetchLocationMast = async () => {
+    const res = await fetch("/api/location");
+    const data = await res.json();
+    const locationList = data.map((item) => item.location);
+    setLocationList(Array.from(new Set(locationList)));
+  };
 
   useEffect(() => {
     fetchRecords();
@@ -54,10 +61,11 @@ export default function InventoryMaster() {
   };
   const handleCancel = () => {
     setShowForm(false);
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form data submitted:", formData); // Log the form data
     const method = editingId ? "PUT" : "POST";
     const body = editingId ? { id: editingId, ...formData } : formData;
 
@@ -72,13 +80,6 @@ export default function InventoryMaster() {
     setEditingId(null);
   };
 
-  const fetchLocationMast = async () => {
-    const res = await fetch("/api/location");
-    const data = await res.json();
-    const locationList = data.map((item) => item.location);
-    setLocationList(Array.from(new Set(locationList)));
-  }
-
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <div className="flex justify-between items-center mb-4">
@@ -90,9 +91,12 @@ export default function InventoryMaster() {
           Home
         </button>
 
+        <h1 className="text-2xl font-bold">Inventory Master</h1>
+
+        <div className="flex items-center font-bold px-4">
         <button
           onClick={handleCancel}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+          className="flex items-center bg-blue-600 text-white mx-2 px-4 py-2 rounded-xl hover:bg-blue-700"
         >
           Cancel
         </button>
@@ -103,6 +107,9 @@ export default function InventoryMaster() {
         >
           <Plus className="w-4 h-4 mr-2" /> Add Inventory
         </button>
+
+        </div>
+
       </div>
 
       {showForm && (
@@ -111,48 +118,94 @@ export default function InventoryMaster() {
           className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-2 gap-4"
         >
           {[
-            "designname", "coname", "batchno", "type", "size", "weight",
-            "pcperbox", "opstock", "purprice", "holdstock", "location",
-            "createdby",
-          ].map((field) => (
+            "designname",
+            "coname",
+            "batchno",
+            "type",
+            "size",
+            "weight",
+            "pcperbox",
+            "minqty",
+            "maxqty",
+            "opstock",
+            "purprice",
+            "holdstock",
+            "location",
+            // "closingstock",
+          ].map((field) =>
             field === "type" ? (
               <select
                 key={field}
-                required={field === "designName"}
                 placeholder={field}
                 value={formData[field] || ""}
-                onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
                 className="p-2 border rounded-xl"
               >
-                <option value="" disabled>Select {field}</option>
+                <option value="" disabled>
+                  Select {field}
+                </option>
                 {typeList.map((type) => (
-                  <option key={type} value={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
-            ) : field == "pcperbox" || field == "opstock" || field == "purprice" || field == "holdstock" ? (
-              (
-                <input
-                  key={field}
-                  type="number"
-                  required
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                  className="p-2 border rounded-xl"
-                />
-              )) : field == "designName"(
-                <input
-                  key={field}
-                  required={field === "designName"}
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={(e) => setFormData({ ...formData, [field]: e.target.value })}
-                  className="p-2 border rounded-xl"
-                />
-              )
-          ))}
 
+            ) :
+            field === "location" ? (
+              <select
+                key={field}
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl"
+              >
+                <option value="" disabled>
+                  Select {field}
+                </option>
+                {locationList.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
 
+            ) 
+:
+              field === "weight" ||
+              field === "pcperbox" ||
+              field === "minqty" ||
+              field === "maxqty" ||
+              field === "opstock" ||
+              field === "purprice" ||
+              field === "holdstock" 
+              ? (
+              <input
+                key={field}
+                type="number"
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl"
+              />
+            ) : (
+              <input
+                key={field}
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl"
+              />
+            )
+          )}
 
           <button
             type="submit"
@@ -161,8 +214,7 @@ export default function InventoryMaster() {
             {editingId ? "Update Record" : "Create Record"}
           </button>
         </form>
-      )
-      }
+      )}
 
       <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
         <table className="min-w-full text-sm text-left">
@@ -176,50 +228,56 @@ export default function InventoryMaster() {
               <th className="p-2">Weight</th>
               <th className="p-2">Pcs/Box</th>
               <th className="p-2">Location</th>
+              <th className="p-2">Min. Qty</th>
+              <th className="p-2">Max. Qty</th>
               <th className="p-2">Op. Stock</th>
               <th className="p-2">Pur. Price</th>
               <th className="p-2">Hold Stock</th>
-              <th className="p-2">Closing</th>
-              <th className="p-2">Created By</th>
-              <th className="p-2">Created At</th>
+              <th className="p-2">Closing Stock</th>
               <th className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {records.map((rec) => (
-              <tr key={rec._id} className="border-t">
-                <td className="p-2">{rec.designname}</td>
-                <td className="p-2">{rec.coname}</td>
-                <td className="p-2">{rec.batchno}</td>
-                <td className="p-2">{rec.type}</td>
-                <td className="p-2">{rec.size}</td>
-                <td className="p-2">{rec.weight}</td>
-                <td className="p-2">{rec.pcperbox}</td>
-                <td className="p-2">{rec.location}</td>
-                <td className="p-2">{rec.opstock}</td>
-                <td className="p-2">{rec.purprice}</td>
-                <td className="p-2">{rec.holdstock}</td>
-                <td className="p-2">{rec.closingstock}</td>
-                <td className="p-2">{rec.createdby}</td>
-                <td className="p-2 text-gray-500">
-                  {new Date(rec.createdAt).toLocaleString()}
-                </td>
-                <td className="p-2 space-x-2">
-                  <button
-                    onClick={() => handleEdit(rec)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(rec._id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {records.map(
+              (rec) => (
+                console.log("1st  =>>>  ", rec),
+                (
+                  <tr key={rec._id} className="border-t">
+                    <td className="p-2">{rec.designname}</td>
+                    <td className="p-2">{rec.coname}</td>
+                    <td className="p-2">{rec.batchno}</td>
+                    <td className="p-2">{rec.type}</td>
+                    <td className="p-2">{rec.size}</td>
+                    <td className="p-2">{rec.weight}</td>
+                    <td className="p-2">{rec.pcperbox}</td>
+                    <td className="p-2">{rec.location}</td>
+                    <td className="p-2">{rec.minqty}</td>
+                    <td className="p-2">{rec.maxqty}</td>
+                    <td className="p-2">{rec.opstock}</td>
+                    <td className="p-2">{rec.purprice}</td>
+                    <td className="p-2">{rec.holdstock}</td>
+                    <td className="p-2">{rec.closingstock}</td>
+                    <td className="p-2 text-gray-500">
+                      {new Date(rec.createdAt).toLocaleString()}
+                    </td>
+                    <td className="p-2 space-x-2">
+                      <button
+                        onClick={() => handleEdit(rec)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(rec._id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              )
+            )}
             {records.length === 0 && (
               <tr>
                 <td colSpan={15} className="text-center p-4 text-gray-500">
@@ -230,6 +288,6 @@ export default function InventoryMaster() {
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }

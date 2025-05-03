@@ -16,6 +16,7 @@ const DealerMastSchema = new mongoose.Schema(
         refBy: { type: String, required: false },
         remarks: { type: String, required: false },
         delRating: { type: String, required: false },
+        discount: { type: String, required: false },
         delLimit: { type: String, required: false },
         delSalesMan: { type: String, required: false },
         delStatus: { type: String, required: false },
