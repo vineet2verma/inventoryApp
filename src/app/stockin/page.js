@@ -9,7 +9,7 @@ export default function StockInPage() {
 
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({
-    date: "",
+    date: "", // `${new Date().getMonth()}/${new Date().getDate()}/${new Date().getFullYear}`,
     designName: "",
     coName: "",
     batchNo: "",
@@ -269,7 +269,8 @@ export default function StockInPage() {
                 <input
                   type="date"
                   name="date"
-                  value={formData.date}
+                  disabled="true"
+                  value={`${new Date().getFullYear()}-${new Date().getMonth().toString().length < 2 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)}-${new Date().getDate().toString().length < 2 ? "0" + new Date().getDate().toString() : new Date().getDate().toString()}`}  // value={FormDataEvent.data}
                   onChange={handleChange}
                   placeholder="Date"
                   className="border p-2 rounded w-full"

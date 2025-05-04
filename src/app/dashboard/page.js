@@ -1,9 +1,16 @@
 "use client";
-import React from "react";
+import { React, useContext } from "react";
 import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
+import { useDealer } from "../context/delaercontext";
+
 
 export default function Dashboard() {
+  const { dealer, setDealer } = useDealer()
+
+  // setDealer(false)
+  console.log(dealer)
+
   const router = useRouter();
 
   return (
@@ -59,6 +66,12 @@ export default function Dashboard() {
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
             Tile Mast
+          </button>
+          <button
+            onClick={() => router.push("/paymentmast")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Payment Mast
           </button>
           <button
             onClick={() => router.push("/createinvmast")}

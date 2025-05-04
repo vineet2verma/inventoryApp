@@ -94,19 +94,19 @@ export default function InventoryMaster() {
         <h1 className="text-2xl font-bold">Inventory Master</h1>
 
         <div className="flex items-center font-bold px-4">
-        <button
-          onClick={handleCancel}
-          className="flex items-center bg-blue-600 text-white mx-2 px-4 py-2 rounded-xl hover:bg-blue-700"
-        >
-          Cancel
-        </button>
+          <button
+            onClick={handleCancel}
+            className="flex items-center bg-blue-600 text-white mx-2 px-4 py-2 rounded-xl hover:bg-blue-700"
+          >
+            Cancel
+          </button>
 
-        <button
-          onClick={handleAdd}
-          className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" /> Add Inventory
-        </button>
+          <button
+            onClick={handleAdd}
+            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4 mr-2" /> Add Inventory
+          </button>
 
         </div>
 
@@ -154,57 +154,58 @@ export default function InventoryMaster() {
               </select>
 
             ) :
-            field === "location" ? (
-              <select
-                key={field}
-                placeholder={field}
-                value={formData[field] || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, [field]: e.target.value })
-                }
-                className="p-2 border rounded-xl"
-              >
-                <option value="" disabled>
-                  Select {field}
-                </option>
-                {locationList.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
+              field === "location" ? (
+                <select
+                  key={field}
+                  placeholder={field}
+                  value={formData[field] || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, [field]: e.target.value })
+                  }
+                  className="p-2 border rounded-xl"
+                >
+                  <option value="" disabled>
+                    Select {field}
                   </option>
-                ))}
-              </select>
+                  {locationList.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
 
-            ) 
-:
-              field === "weight" ||
-              field === "pcperbox" ||
-              field === "minqty" ||
-              field === "maxqty" ||
-              field === "opstock" ||
-              field === "purprice" ||
-              field === "holdstock" 
-              ? (
-              <input
-                key={field}
-                type="number"
-                placeholder={field}
-                value={formData[field] || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, [field]: e.target.value })
-                }
-                className="p-2 border rounded-xl"
-              />
-            ) : (
-              <input
-                key={field}
-                placeholder={field}
-                value={formData[field] || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, [field]: e.target.value })
-                }
-                className="p-2 border rounded-xl"
-              />
-            )
+              )
+                :
+                field === "batchno" ||
+                  field === "weight" ||
+                  field === "pcperbox" ||
+                  field === "minqty" ||
+                  field === "maxqty" ||
+                  field === "opstock" ||
+                  field === "purprice" ||
+                  field === "holdstock"
+                  ? (
+                    <input
+                      key={field}
+                      type="number"
+                      placeholder={field}
+                      value={formData[field] || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, [field]: e.target.value })
+                      }
+                      className="p-2 border rounded-xl"
+                    />
+                  ) : (
+                    <input
+                      key={field}
+                      placeholder={field}
+                      value={formData[field] || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, [field]: e.target.value })
+                      }
+                      className="p-2 border rounded-xl"
+                    />
+                  )
           )}
 
           <button

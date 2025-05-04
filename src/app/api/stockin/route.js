@@ -1,7 +1,8 @@
 // File: /app/api/stockin/route.js or route.ts
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
-import StockIn from "@/app/api/models/stockIn"; // ensure the model file is named correctly
+import StockIn from "@/app/api/models/stockIn";
+import createInvMaster from "@/app/api/models/createInvMast";
 
 // GET all stock in records
 export async function GET() {
@@ -21,7 +22,17 @@ export async function POST(req) {
     const data = await req.json();
     await connectToDatabase();
 
-    data.currStock = parseInt(data.quantity) - parseFloat(data.breakage);
+    console.log("Data received:", data);
+    // mast curr stock
+    const currStock = await createInvMaster.findOne({ designname: data.designName, coname: data.coName, batchno: data.batchNo, size: data.size });
+    // mast inv id
+    const currStockId = currStock._id;
+    //  curr stock - breakage + mast stock 
+    data.currStock = parseInt(data.quantity) - parseFloat(data.breakage) + parseFloat(currStock.closingstock);
+    // update mast stock
+    await createInvMaster.findByIdAndUpdate(currStockId, { closingstock: data.currStock }, { new: true });
+
+    // console.log("Current Stock:", currStock.closingstock);
 
     const newRecord = new StockIn(data);
     await newRecord.save();
@@ -38,7 +49,7 @@ export async function PUT(req) {
   try {
     const { id, ...updatedData } = await req.json();
     await connectToDatabase();
-    
+
     updatedData.currStock = parseInt(updatedData.quantity) - parseFloat(updatedData.breakage);
 
     const updated = await StockIn.findByIdAndUpdate(id, updatedData, { new: true });

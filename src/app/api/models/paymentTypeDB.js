@@ -2,7 +2,7 @@ import * as mongoose from "mongoose";
 
 const PaymentSchema = new mongoose.Schema(
     {
-        type: { type: String, required: true },
+        payment: { type: String, required: false },
         createdBy: { type: String, required: false },
         status: { type: String, default: "active" },
     },
