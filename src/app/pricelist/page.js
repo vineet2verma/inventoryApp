@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, Edit } from "lucide-react";
 
 export default function PriceListPage() {
   const router = useRouter();
@@ -10,9 +10,12 @@ export default function PriceListPage() {
   const [search, setSearch] = useState('');
   const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [invMast, setInvMast] = useState([])
+  const [currId, setCurrId] = useState(null)
 
   useEffect(() => {
     fetchData();
+    fetchDataInvMast();
   }, []);
 
   const fetchData = async () => {
@@ -21,18 +24,51 @@ export default function PriceListPage() {
     setData(json);
   };
 
+  const fetchDataInvMast = async () => {
+    const res = await fetch("api/createinvmast");
+    const json = await res.json();
+
+    setInvMast(json);
+    console.log(json)
+  }
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    invMast[currId][e.target.name] = e.target.value
+    setInvMast(invMast)
   };
 
-
   const openModal = (item = {}) => {
+    // post
     setFormData(item);
+    setCurrId(invMast.indexOf(item))
+
+    // edit
     setEditId(item._id || null);
+
+    invMast[currId].date = `${new Date().getFullYear().toString()}-${new Date().getMonth().toString().length < 2 ? "0" + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()}-${new Date().getDate().toString().length < 2 ? "0" + new Date().getDate().toString() : new Date().getDate().toString()}`
+    setInvMast(invMast)
+
+
     setShowModal(true);
+
+
+
   };
 
   const handleSubmit = async () => {
+    // const instialData = {
+    //   'date',
+    //   'ratePerBox',
+    //   'ratePerPcs',
+    //   'ratePerSqft',
+    //   'qtyPerSqft',
+    //   'packingPerBox',
+    //   'discount',  
+    //   }
+
+
+
     console.log('Form Data:', formData); // Debugging line
     const method = editId ? 'PUT' : 'POST';
     const url = editId ? `/api/pricelist?id=${editId}` : '/api/pricelist';
@@ -58,8 +94,8 @@ export default function PriceListPage() {
     fetchData();
   };
 
-  const filteredData = data.filter((item) =>
-    ['designName', 'coName', 'size', 'type'].some((key) =>
+  const filteredData = invMast.filter((item) =>
+    ['designname', 'coname', 'size', 'type'].some((key) =>
       item[key]?.toLowerCase().includes(search.toLowerCase())
     )
   );
@@ -87,7 +123,7 @@ export default function PriceListPage() {
             onClick={() => openModal()}
             className="bg-blue-600 text-white px-4 py-2 rounded"
           >
-            <Plus className="w-15 h-5" /> 
+            <Plus className="w-15 h-5" />
           </button>
         </div>
       </div>
@@ -101,13 +137,13 @@ export default function PriceListPage() {
                 'Design Name',
                 'Company Name',
                 'Size',
+                'Type',
                 'Rate/Box',
                 'Rate/Pcs',
                 'Rate/Sqft',
                 'Qty/Sqft',
                 'Packing/Box',
                 'Discount',
-                'Type',
                 'Actions',
               ].map((header) => (
                 <th key={header} className="px-4 py-2 border">
@@ -120,30 +156,32 @@ export default function PriceListPage() {
             {filteredData.map((item) => (
               <tr key={item._id} className="text-sm text-gray-800 border-t">
                 <td className="px-4 py-2 border">{item.date}</td>
-                <td className="px-4 py-2 border">{item.designName}</td>
-                <td className="px-4 py-2 border">{item.coName}</td>
+                <td className="px-4 py-2 border">{item.designname}</td>
+                <td className="px-4 py-2 border">{item.coname}</td>
                 <td className="px-4 py-2 border">{item.size}</td>
+                <td className="px-4 py-2 border">{item.type}</td>
                 <td className="px-4 py-2 border">{item.ratePerBox}</td>
                 <td className="px-4 py-2 border">{item.ratePerPcs}</td>
                 <td className="px-4 py-2 border">{item.ratePerSqft}</td>
                 <td className="px-4 py-2 border">{item.qtyPerSqft}</td>
                 <td className="px-4 py-2 border">{item.packingPerBox}</td>
                 <td className="px-4 py-2 border">{item.discount}</td>
-                <td className="px-4 py-2 border">{item.type}</td>
                 <td className="px-4 py-2 border space-x-2">
+
+                  <button
+                    onClick={() => openModal(item)}// handleSubmit(item._id)}
+                    className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                  >
+                    <Plus className="w-15 h-5" />
+                  </button>
 
                   <button
                     onClick={() => openModal(item)}
                     className="bg-yellow-400 px-2 py-1 rounded text-sm"
                   >
-                    Edit
+                    <Edit className='w-15 h-5' />
                   </button>
-                  <button
-                    onClick={() => handleDelete(item._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded text-sm"
-                  >
-                    Delete
-                  </button>
+
                 </td>
               </tr>
             ))}
@@ -168,26 +206,36 @@ export default function PriceListPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 'date',
-                'designName',
-                'coName',
+                'designname',
+                'coname',
                 'size',
+                'type',
                 'ratePerBox',
                 'ratePerPcs',
                 'ratePerSqft',
                 'qtyPerSqft',
                 'packingPerBox',
                 'discount',
-                'type',
-              ].map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  placeholder={field.replace(/([A-Z])/g, ' $1')}
-                  value={formData[field] || ''}
-                  onChange={handleInputChange}
-                  className="border px-3 py-2 rounded"
-                />
-              ))}
+              ].map((field) =>
+                field == 'date' ?
+                  (<input
+                    key={field}
+                    name={field}
+                    placeholder={field.replace(/([A-Z])/g, ' $1')}
+                    value={formData[field] || ''}
+                    onChange={handleInputChange}
+                    className="border px-3 py-2 rounded"
+                  />) :
+                  (
+                    <input
+                      key={field}
+                      name={field}
+                      placeholder={field.replace(/([A-Z])/g, ' $1')}
+                      value={formData[field] || ''}
+                      onChange={handleInputChange}
+                      className="border px-3 py-2 rounded"
+                    />
+                  ))}
             </div>
             <div className="flex justify-end mt-6 space-x-2">
               <button
@@ -204,7 +252,7 @@ export default function PriceListPage() {
                 onClick={handleSubmit}
                 className="px-4 py-2 bg-blue-600 text-white rounded"
               >
-                {editId ? 'Update' : 'Add'}
+                {editId ? 'Add' : 'Update'}
               </button>
             </div>
           </div>

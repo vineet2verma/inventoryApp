@@ -2,10 +2,10 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import TileMaster from "@/app/api/models/tileMast";
-import { uploadImageToDrive } from "../../lib/googledrive"; // Adjust the import path as necessary
-import { parseFormData } from "@/utils/parseFormData";
-import formidable from "formidable";
-import fs from "fs-extra";
+// import { uploadImageToDrive } from "../../lib/googledrive"; // Adjust the import path as necessary
+// import { parseFormData } from "@/utils/parseFormData";
+// import formidable from "formidable";
+// import fs from "fs-extra";
 
 // GET all type records
 export async function GET() {

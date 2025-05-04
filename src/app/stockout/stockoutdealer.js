@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useDealer } from "../context/delaercontext";
 import { useDealerItems } from "../context/dealeritem";
+import { CheckCircle, XCircle, Pencil, Trash2, House, Plus } from "lucide-react";
 
 export default function StockOutDealerOrderForm() {
     const { dealer, setDealer } = useDealer();
@@ -15,14 +16,17 @@ export default function StockOutDealerOrderForm() {
         size: "",
         qty: "",
         salePerson: "",
+        PricePerBox: "",
         outtag: "",
-        PricePerBox: ""
     });
 
     const handleDealerChange = (e) => {
         const { name, value } = e.target;
         setDealer((prev) => ({ ...prev, [name]: value }));
     };
+    const handleDelete = (index) => {
+        setDealerItems((prev) => prev.filter((_, i) => i !== index))
+    }
 
     const handleItemChange = (e) => {
         const { name, value } = e.target;
@@ -50,8 +54,8 @@ export default function StockOutDealerOrderForm() {
             size: "",
             qty: "",
             salePerson: "",
+            PricePerBox: "",
             outtag: "",
-            PricePerBox: ""
         });
     };
 
@@ -124,7 +128,7 @@ export default function StockOutDealerOrderForm() {
                             <table className="w-full text-sm text-left border">
                                 <thead className="bg-gray-100">
                                     <tr>
-                                        {["Design", "Company", "Batch", "Size", "Qty", "Sales", "Tag", "Price"].map((h, i) => (
+                                        {["Design", "Company", "Batch", "Size", "Qty", "Sales", "Price", "Tag", "Action"].map((h, i) => (
                                             <th key={i} className="px-3 py-2 border">{h}</th>
                                         ))}
                                     </tr>
@@ -138,8 +142,16 @@ export default function StockOutDealerOrderForm() {
                                             <td className="px-3 py-1 border">{item.size}</td>
                                             <td className="px-3 py-1 border">{item.qty}</td>
                                             <td className="px-3 py-1 border">{item.salePerson}</td>
-                                            <td className="px-3 py-1 border">{item.outtag}</td>
                                             <td className="px-3 py-1 border">{item.PricePerBox}</td>
+                                            <td className="px-3 py-1 border">{item.outtag}</td>
+                                            <td className="px-3 py-1 border">
+                                                <button
+                                                    onClick={() => handleDelete(idx)}
+                                                    className="text-red-600 hover:text-red-800"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

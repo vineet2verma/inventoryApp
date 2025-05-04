@@ -23,7 +23,8 @@ export function DealerItemProvider({ children }) {
             dealerItems,
             addDealerItem,
             removeDealerItem,
-            clearDealerItems
+            clearDealerItems,
+            setDealerItems
         }}>
             {children}
         </DealerItemContext.Provider>
