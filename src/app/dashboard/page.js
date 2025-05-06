@@ -73,12 +73,21 @@ export default function Dashboard() {
           >
             Payment Mast
           </button>
+
           <button
             onClick={() => router.push("/createinvmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
             Inventory Mast
           </button>
+          <button
+            onClick={() => { alert("Working on it") }}
+            // onClick={() => router.push("/dealermast")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Dealer Disc
+          </button>
+
           <button
             onClick={() => router.push("/dealermast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"

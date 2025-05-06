@@ -29,6 +29,7 @@ export default function StockInPage() {
   const [selectedDesign, setSelectedDesign] = useState("");
   const [masttype, setMasttype] = useState([]);
   const [mastsize, setMastsize] = useState([]);
+  const [size, setsize] = useState([]);
   const [quantity, setquantity] = useState([]);
   const [breakage, setbreakage] = useState([]);
   const [mastlocation, setMastlocation] = useState([]);
@@ -43,12 +44,12 @@ export default function StockInPage() {
       setMastdata(data);
       const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
       const msttype = Array.from(new Set(data.map((item) => item.type)));
-      const mstsize = Array.from(new Set(data.map((item) => item.size)));
+      // const mstsize = Array.from(new Set(data.map((item) => item.size)));
       // const mstlocation = Array.from(new Set(data.map((item) => item.location)));  // come from location mast later on
       const mstcurrstock = Array.from(new Set(data.map((item) => item.currstock)));
 
       setMasttype(msttype)
-      setMastsize(mstsize)
+      // setMastsize(mstsize)
       setMastcurrstock(mstcurrstock)
       setdesignname(mstdesign)
 
@@ -56,7 +57,6 @@ export default function StockInPage() {
       console.error("Failed to fetch records:", err);
     }
   }
-  // console.log(mastdata)
 
   useEffect(() => {
     fetchInvMastRecords(); // Fetch mast records on component mount
@@ -92,18 +92,14 @@ export default function StockInPage() {
     }
   };
 
-  const handleSelectedDesign = (e) => {
-    setSelectedDesign(e.target.value);
-  }
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // console.log(e.target.name)
-    e.target.name == "designName" ? handleSelectedDesign(e) : null;
-  };
+    e.target.name == "designName" ? setSelectedDesign(e.target.value) : null;
+    const sizes = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.size);
 
-  // console.log(mastdata.filter((item) => item.designname == selectedDesign)[0]?.coname)
-  // console.log(mastlocation)
+    setMastsize(Array.from(new Set(sizes)));
+
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -269,7 +265,6 @@ export default function StockInPage() {
                 <input
                   type="date"
                   name="date"
-                  disabled="true"
                   value={`${new Date().getFullYear()}-${new Date().getMonth().toString().length < 2 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)}-${new Date().getDate().toString().length < 2 ? "0" + new Date().getDate().toString() : new Date().getDate().toString()}`}  // value={FormDataEvent.data}
                   onChange={handleChange}
                   placeholder="Date"
@@ -312,11 +307,13 @@ export default function StockInPage() {
                 <input
                   type="text"
                   name="type"
-                  value={mastdata.filter((item) => item.designname == selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.type}
+                  // value={formData.value}
+                  value={mastdata.filter((item) => item.designname === selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.type}
                   onChange={(e) => { handleChange(e) }}
                   placeholder="Type"
                   className="border p-2 rounded w-full"
                 />
+
                 <select
                   name="size"
                   value={formData.size}
