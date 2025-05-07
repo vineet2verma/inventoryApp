@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
-  const [paymenttype,setPaymentType] = useState([]);
+  const [paymenttype, setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ export default function DealerMastPage() {
     gstno: "",
     mobile: "",
     billaddress: "",
-    shipaddress:"",
+    shipaddress: "",
     paymenttype: "",
     salesman: "",
     discount: "",
@@ -23,6 +23,8 @@ export default function DealerMastPage() {
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);   // item page
+  const [itemData, setItemData] = useState([]);
   const router = useRouter();
 
   // Fetch records from the API
@@ -47,10 +49,8 @@ export default function DealerMastPage() {
     try {
       const res = await fetch("api/paymenttype");
       const data = await res.json();
-      const paymentmast = Array.from(new Set(data.filter((item)=>item.status=="Active").map((item)=>item.payment)));
-
+      const paymentmast = Array.from(new Set(data.filter((item) => item.status == "Active").map((item) => item.payment)));
       setPaymentType(paymentmast);
-      {console.log(paymentmast);}
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
@@ -95,7 +95,7 @@ export default function DealerMastPage() {
         gstno: "",
         mobile: "",
         billaddress: "",
-        shipaddress:"",
+        shipaddress: "",
         paymenttype: "",
         salesman: "",
         discount: "",
@@ -138,7 +138,7 @@ export default function DealerMastPage() {
       gstno: "",
       mobile: "",
       billaddress: "",
-      shipaddress:"",
+      shipaddress: "",
       paymenttype: "",
       salesman: "",
       discount: "",
@@ -146,6 +146,28 @@ export default function DealerMastPage() {
     });
     setEditId(null);
     setIsModalOpen(true);
+  };
+
+  const handleItemChange = (e) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setItemData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddItem = () => {
+    // setShowModal(false);
+    setItemData([...itemData, {
+      mid: "1",
+      designname: "2",
+      coname: "3",
+      batchno: "",
+      size: "",
+      qty: "",
+      saleperson: "",
+      priceperbox: "",
+      outtag: "",
+    }]
+    )
   };
 
   return (
@@ -202,8 +224,8 @@ export default function DealerMastPage() {
                   </td>
                 ))}
                 <td className="p-2">
-                <button
-                    onClick={() => alert("working on it")  }
+                  <button
+                    onClick={() => setShowModal(true)}
                     className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
                     <PackagePlus />
@@ -212,14 +234,14 @@ export default function DealerMastPage() {
                     onClick={() => handleEdit(record)}
                     className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
-                    <Pencil/>
+                    <Pencil />
                     {/* Edit */}
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
                     className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
                   >
-                    <Trash2/>
+                    <Trash2 />
                   </button>
                 </td>
               </tr>
@@ -238,47 +260,47 @@ export default function DealerMastPage() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Object.keys(formData).map((key) =>
-                key=="paymenttype"?
-                (
-                  <select
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  >
-                  {paymenttype.map((item,i)=>
-                    <option key={i} value={item} >
-                      {item}
-                    </option>
+                  key == "paymenttype" ?
+                    (
+                      <select
+                        key={key}
+                        type="text"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={key}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {paymenttype.map((item, i) =>
+                          <option key={i} value={item} >
+                            {item}
+                          </option>
 
-                  )}
-                  </select>
-                )
-                : key=="mobile" || key=="discount" ?(
-                  <input
-                    key={key}
-                    type="number"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ) : key=="_id" || key=="delId"  || key=="createdAt" || key=="updatedAt" || key=="__v" ? '' :
-                (
-                  <input
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ))}
+                        )}
+                      </select>
+                    )
+                    : key == "mobile" || key == "discount" ? (
+                      <input
+                        key={key}
+                        type="number"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={key}
+                        className="border p-2 rounded w-full text-sm"
+                      />
+                    ) : key == "_id" || key == "delId" || key == "createdAt" || key == "updatedAt" || key == "__v" ? '' :
+                      (
+                        <input
+                          key={key}
+                          type="text"
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          placeholder={key}
+                          className="border p-2 rounded w-full text-sm"
+                        />
+                      ))}
               </div>
               <div className="mt-4 flex justify-end">
                 <button
@@ -299,6 +321,92 @@ export default function DealerMastPage() {
           </div>
         </div>
       )}
-    </div>
+
+      {/* Modal */}
+      {
+        showModal && (
+          /* <form> */
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" >
+            <div className="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh] p-6 text-sm">
+              <h3 className="text-lg font-semibold mb-4">Add Item</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {["designname", "coname", "batchno", "size", "qty", "outtag", "priceperbox"].map((field, idx) => (
+                  <div key={idx}>
+                    <label className="block mb-1 capitalize text-gray-600">{field}</label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={itemData[field]}
+                      onChange={handleItemChange}
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddItem}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                >
+                  Add
+                </button>
+
+
+              </div>
+
+              {/* Item Details */}
+              <div className="mt-6">
+                <h3 className="text-md font-semibold text-gray-700 mb-2">Added Items</h3>
+                <div className="overflow-auto">
+                  <table className="w-full text-sm text-left border">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        {["Design", "Company", "Batch", "Size", "Qty", "Price", "Tag", "Action"].map((h, i) => (
+                          <th key={i} className="px-3 py-2 border">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {itemData.map((item, idx) => (
+                        <tr key={idx} className="border-b">
+                          <td className="px-3 py-1 border">{item.designname}</td>
+                          <td className="px-3 py-1 border">{item.coname}</td>
+                          <td className="px-3 py-1 border">{item.batchno}</td>
+                          <td className="px-3 py-1 border">{item.size}</td>
+                          <td className="px-3 py-1 border">{item.qty}</td>
+                          <td className="px-3 py-1 border">{item.saleperson}</td>
+                          <td className="px-3 py-1 border">{item.priceperbox}</td>
+                          <td className="px-3 py-1 border">{item.outtag}</td>
+                          <td className="px-3 py-1 border">
+                            <button
+                              // onClick={() => handleDelete(idx)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Item Details */}
+
+
+
+            </div>
+          </div>
+        )
+
+      }
+    </div >
   );
 }

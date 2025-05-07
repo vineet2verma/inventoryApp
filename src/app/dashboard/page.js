@@ -22,11 +22,27 @@ export default function Dashboard() {
         {/* Main Content */}
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-xl font-semibold mb-2">Overview</h2>
-            <p className="text-gray-600">
-              This is a summary of recent activity.
-            </p>
+          <div className="bg-white p-4 rounded-xl shadow">
+            <h6 className="text-xl font-semibold mb-2">Overview</h6>
+            <div className=" flex justify-between w-45 px-4">
+              <pre>Regular</pre>
+              {/* <pre>:</pre> */}
+              <pre>0</pre>
+            </div>
+            <div className=" flex justify-between w-45 px-4 ">
+              <pre>Discontinue</pre>
+              {/* <pre>:</pre> */}
+              <pre>0</pre>
+            </div>
+            <div className=" flex justify-between w-45 px-4 ">
+              <pre>On Order</pre>
+              {/* <pre>:</pre> */}
+              <pre>0</pre>
+            </div>
+
+
+            {/* <p className="text-gray-600"> */}
+            {/* </p> */}
           </div>
 
           {/* Card 2 */}
@@ -127,7 +143,7 @@ export default function Dashboard() {
             Clients
           </button>
           <button
-            onClick={() => { alert("Working on it") }  }
+            onClick={() => router.push("/breakage")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
             Breakage / Missing

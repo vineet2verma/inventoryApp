@@ -12,6 +12,7 @@ import {
   PackagePlus,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { copySync } from "fs-extra";
 
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
@@ -19,9 +20,12 @@ export default function DealerMastPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mastdata, setMastdata] = useState([]);
   const [designname, setdesignname] = useState([]);
+  const [selecteddesignname, setSelectedDesign] = useState("");
   const [companys, setCompanys] = useState([]);
-  const [batchnos, setBatchnos] = useState([]);
   const [sizes, setSizes] = useState([]);
+  const [selectedsize, setselectedsize] = useState("")
+  const [batchnos, setBatchnos] = useState([]);
+  const [selectedbatch, setselectedbatch] = useState("")
   const [mastlocations, setMastlocations] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -32,7 +36,6 @@ export default function DealerMastPage() {
     breakageqty: "",
     remarks: "",
     closingstock: "",
-    createdby: "",
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,7 +65,7 @@ export default function DealerMastPage() {
       const res = await fetch("/api/createinvmast");
       const data = await res.json();
       setMastdata(data);
-     
+
       const mstdesign = Array.from(
         new Set(data.map((item) => item.designname))
       );
@@ -77,7 +80,7 @@ export default function DealerMastPage() {
     try {
       const res = await fetch("/api/location");
       const data = await res.json();
-      const locationnames = data.filter((item)=>item.status=="Active").map((item)=>item.location)
+      const locationnames = data.filter((item) => item.status == "Active").map((item) => item.location)
       setMastlocations(Array.from(new Set(locationnames)));
     } catch (err) {
       console.error("Failed to fetch records:", err);
@@ -96,22 +99,33 @@ export default function DealerMastPage() {
     setFilteredRecords(filtered);
   };
 
+  // design     // design - size     // design and size     // batch     // design and size and batch // company name
+
   const handleChange = (e) => {
+    e.target.name == "designname" ? setSelectedDesign(e.target.value) : null;
+
+    if (e.target.name == "designname") {
+      const sizes = mastdata.filter((item) => item.designname === e.target.value).map((item) => item.size);
+      setSizes(Array.from(new Set(sizes)));
+      setSelectedDesign(e.target.value)
+    }
+
+    if (e.target.name == "size") {
+      let bno = mastdata.filter((item) => item.designname == selecteddesignname && item.size == e.target.value).map((item) => item.batchno);
+      setselectedsize(e.target.value);
+      setBatchnos(Array.from(new Set(bno)))
+    }
+    if (e.target.name == "batchno") {
+      let cno = mastdata.filter((item) => item.designname == selecteddesignname && item.size == selectedsize && item.batchno == e.target.value).map((item) => item.coname);
+      setCompanys(cno)
+    }
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    // e.target.name == "designName" ? setSelectedDesign(e.target.value) : null;
-    
-    const companydata = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.coname);
-    setCompanys(Array.from(new Set(companydata)));
 
-    const sizes = mastdata.filter((item) => item.designname == e.target.value ).map((item) => item.size);
-    setSizes(Array.from(new Set(sizes)));
-
-    const batchnos = mastdata.filter((item)=>item.designname==e.target.value && item.size == e.target.value ).map((item)=>item.batchno);
-    setBatchnos(Array.from(new Set(batchnos)))
 
   };
 
-  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +149,6 @@ export default function DealerMastPage() {
         breakageqty: "",
         remarks: "",
         closingstock: "",
-        createdby: "",
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -175,7 +188,6 @@ export default function DealerMastPage() {
       breakageqty: "",
       remarks: "",
       closingstock: "",
-      createdby: "",
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -271,13 +283,13 @@ export default function DealerMastPage() {
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Object.keys(formData).map((key) =>
+                {Object.keys(formData).map((key, i) =>
                   key == "designname" ? (
                     <select
                       key={key}
-                      type="text"
-                      name={key}
-                      value={formData[key]}
+                      // type="text"
+                      name="designname" // {key}
+                      // value={formData[key]}
                       onChange={handleChange}
                       placeholder={key}
                       className="border p-2 rounded w-full text-sm"
@@ -288,66 +300,79 @@ export default function DealerMastPage() {
                         </option>
                       ))}
                     </select>
-                  ) : 
-                  key == "size" ? (
-                    <select
-                      key={key}
-                      type="text"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {sizes.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
                   ) :
-                  key == "batchno" ? (
-                    <select
-                      key={key}
-                      type="text"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {batchnos.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  ) :
-                  key == "breakageqty" ||
-                    key == "closingstock" ||
-                    key == "batchno" ? (
-                    <input
-                      key={key}
-                      type="number"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    />
-                  ) : key == "_id" ? (
-                    ""
-                  ) : (
-                    <input
-                      key={key}
-                      type="text"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    />
-                  )
+                    key == "size" ? (
+                      <select
+                        key={key}
+                        type="text"
+                        name="size" // {key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={key}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {sizes.map((item, i) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    ) :
+                      key == "batchno" ? (
+                        <select
+                          key={key}
+                          type="text"
+                          name={key}
+                          // value={formData[key]}
+                          onChange={handleChange}
+                          placeholder={key}
+                          className="border p-2 rounded w-full text-sm"
+                        >
+                          {batchnos.map((item, i) => (
+                            <option key={i} value={item}>
+                              {item}
+                            </option>
+                          ))}
+                        </select>
+                      ) :
+                        key == "breakageqty"
+                          ? (
+                            <input
+                              key={key}
+                              type="number"
+                              name={key}
+                              value={formData[key]}
+                              onChange={handleChange}
+                              placeholder={key}
+                              className="border p-2 rounded w-full text-sm"
+                            />
+                          ) : key == "coname" ? (
+                            <select
+                              key={key}
+                              type="text"
+                              name={key}
+                              // value={formData[key]}
+                              onChange={handleChange}
+                              placeholder={key}
+                              className="border p-2 rounded w-full text-sm"
+                            >
+                              {companys.map((item, i) => (
+                                <option key={i} value={item}>
+                                  {item}
+                                </option>
+                              ))}
+                            </select>
+                          ) : key == "breakageqty" || key == "remarks" ? (
+                            <input
+                              key={key}
+                              type="text"
+                              name={key}
+                              value={formData[key]}
+                              onChange={handleChange}
+                              placeholder={key}
+                              className="border p-2 rounded w-full text-sm"
+                            />
+                          ) : ''
                 )}
               </div>
               <div className="mt-4 flex justify-end">
