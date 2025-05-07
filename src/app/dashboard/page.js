@@ -7,10 +7,6 @@ import { useDealer } from "../context/delaercontext";
 
 export default function Dashboard() {
   const { dealer, setDealer } = useDealer()
-
-  // setDealer(false)
-  console.log(dealer)
-
   const router = useRouter();
 
   return (
@@ -73,48 +69,6 @@ export default function Dashboard() {
           >
             Payment Mast
           </button>
-
-          <button
-            onClick={() => router.push("/createinvmast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Inventory Mast
-          </button>
-          <button
-            onClick={() => { alert("Working on it") }}
-            // onClick={() => router.push("/dealermast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Dealer Disc
-          </button>
-
-          <button
-            onClick={() => router.push("/dealermast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Dealer Mast
-          </button>
-
-          <button
-            onClick={() => router.push("/dealerstock")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Dealer Stock
-          </button>
-
-          <button
-            onClick={() => router.push("/stockin")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Stock In
-          </button>
-          <button
-            onClick={() => router.push("/stockout")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Stock Out
-          </button>
-
           <button
             onClick={() => router.push("/pricelist")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -123,10 +77,60 @@ export default function Dashboard() {
           </button>
 
           <button
+            onClick={() => router.push("/createinvmast")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Inventory Mast
+          </button>
+          <button
+            onClick={() => router.push("/stockin")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Stock In
+          </button>
+
+          {/* <button
+            onClick={() => { alert("Working on it") }}
+            // onClick={() => router.push("/dealermast")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Dealer Disc
+          </button> */}
+
+          <button
+            onClick={() => router.push("/dealermast")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Dealers
+          </button>
+
+          {/* <button
+            onClick={() => router.push("/dealerstock")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Dealer Stock
+          </button> */}
+
+          {/* <button
+            onClick={() => router.push("/stockout")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Stock Out
+          </button> */}
+
+
+
+          <button
             onClick={() => router.push("/clientmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Clients Info
+            Clients
+          </button>
+          <button
+            onClick={() => { alert("Working on it") }  }
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Breakage / Missing
           </button>
         </div>
 

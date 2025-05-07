@@ -2,19 +2,20 @@ import * as mongoose from "mongoose";
 
 const ClientMastSchema = new mongoose.Schema(
   {
-    id: { type: String, required: true },
-    coName: { type: String, required: false },
-    ordID: { type: String, required: false },
-    ordDate: { type: String, required: false },
-    clName: { type: String, required: false },
-    clMob: { type: String, required: false },
-    billingAddress: { type: String, required: false },
-    deliveryAddress: { type: String, required: false },
-    gstNo: { type: String, required: false },
-    expectedDeliveryDate: { type: String, required: false },
-    refBy: { type: String, required: false },
-    salesPerson: { type: String, required: false }, 
-    createdby: { type: String, required: false }
+    auid: { type: String, required: false },
+    name: { type: String, required: false },
+    coname: { type: String, required: false },
+    gstno: { type: String, required: false },
+    mobile: { type: String, required: false },
+    billaddress: { type: String, required: false },
+    shipaddress: { type: String, required: false },
+    paymenttype: { type: String, required: false },
+    salesman: { type: String, required: false },
+    discount: { type: String, required: false },        
+    createdby: { type: String, required: false },
+
+
+
   },
   { timestamps: true }
 );

@@ -1,34 +1,25 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
+import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, PackagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-
 
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
+  const [paymenttype,setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
-    date: "",
-    delId: "",
-    delName: "",
-    coName: "",
-    gstNo: "",
-    contPerson: "",
-    contactNo: "",
-    mobWhatsApp: "",
-    address: "",
-    state: "",
-    paymentType: "",
-    refBy: "",
-    remarks: "",
-    delRating: "",
+    auid: "",
+    name: "",
+    coname: "",
+    gstno: "",
+    mobile: "",
+    billaddress: "",
+    shipaddress:"",
+    paymenttype: "",
+    salesman: "",
     discount: "",
-    delLimit: "",
-    delSalesMan: "",
-    delStatus: "",
-    createdBy: "",
+    createdby: "",
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +28,9 @@ export default function DealerMastPage() {
   // Fetch records from the API
   useEffect(() => {
     fetchRecords();
+    fetchPaymentTypeRecords();
   }, []);
+
 
   const fetchRecords = async () => {
     try {
@@ -49,6 +42,21 @@ export default function DealerMastPage() {
       console.error("Failed to fetch records:", err);
     }
   };
+  // payment mast 
+  const fetchPaymentTypeRecords = async () => {
+    try {
+      const res = await fetch("api/paymenttype");
+      const data = await res.json();
+      const paymentmast = Array.from(new Set(data.filter((item)=>item.status=="Active").map((item)=>item.payment)));
+
+      setPaymentType(paymentmast);
+      {console.log(paymentmast);}
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  };
+
+
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -81,25 +89,17 @@ export default function DealerMastPage() {
       const result = await res.json();
       alert(result.message);
       setFormData({
-        date: "",
-        delId: "",
-        delName: "",
-        coName: "",
-        gstNo: "",
-        contPerson: "",
-        contactNo: "",
-        mobWhatsApp: "",
-        address: "",
-        state: "",
-        paymentType: "",
-        refBy: "",
-        remarks: "",
-        delRating: "",
+        auid: "",
+        name: "",
+        coname: "",
+        gstno: "",
+        mobile: "",
+        billaddress: "",
+        shipaddress:"",
+        paymenttype: "",
+        salesman: "",
         discount: "",
-        delLimit: "",
-        delSalesMan: "",
-        delStatus: "",
-        createdBy: "",
+        createdby: "",
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -132,25 +132,17 @@ export default function DealerMastPage() {
 
   const handleAddNew = () => {
     setFormData({
-      date: "",
-      delId: "",
-      delName: "",
-      coName: "",
-      gstNo: "",
-      contPerson: "",
-      contactNo: "",
-      mobWhatsApp: "",
-      address: "",
-      state: "",
-      paymentType: "",
-      refBy: "",
-      remarks: "",
-      delRating: "",
+      auid: "",
+      name: "",
+      coname: "",
+      gstno: "",
+      mobile: "",
+      billaddress: "",
+      shipaddress:"",
+      paymenttype: "",
+      salesman: "",
       discount: "",
-      delLimit: "",
-      delSalesMan: "",
-      delStatus: "",
-      createdBy: "",
+      createdby: "",
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -166,7 +158,7 @@ export default function DealerMastPage() {
           <House className="w-5 h-5" />
           Home
         </button>
-        <h1 className="text-2xl font-bold text-center mb-4">Dealer Mast Records</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Dealers Records</h1>
 
         <div className="flex px-2 items-center mb-6 ">
           {/* Search Bar */}
@@ -210,17 +202,24 @@ export default function DealerMastPage() {
                   </td>
                 ))}
                 <td className="p-2">
+                <button
+                    onClick={() => alert("working on it")  }
+                    className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
+                  >
+                    <PackagePlus />
+                  </button>
                   <button
                     onClick={() => handleEdit(record)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 mr-2"
+                    className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
-                    Edit
+                    <Pencil/>
+                    {/* Edit */}
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
                   >
-                    Delete
+                    <Trash2/>
                   </button>
                 </td>
               </tr>
@@ -239,41 +238,37 @@ export default function DealerMastPage() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Object.keys(formData).map((key) =>
-                key=="date"?
+                key=="paymenttype"?
                 (
-                  <input
+                  <select
                     key={key}
-                    type="date"
+                    type="text"
                     name={key}
                     value={formData[key]}
                     onChange={handleChange}
                     placeholder={key}
                     className="border p-2 rounded w-full text-sm"
-                  />
+                  >
+                  {paymenttype.map((item,i)=>
+                    <option key={i} value={item} >
+                      {item}
+                    </option>
+
+                  )}
+                  </select>
                 )
-                : key=="contactNo" || key=="mobWhatsApp" || key=="delLimit" || key=="delRating" || key=="discount" ?(
+                : key=="mobile" || key=="discount" ?(
                   <input
                     key={key}
                     type="number"
                     name={key}
                     value={formData[key]}
                     onChange={handleChange}
-                    placeholder={key + "...."}
+                    placeholder={key}
                     className="border p-2 rounded w-full text-sm"
                   />
-                ) : key =="delStatus"?(
-                  <select
-                    key={key}
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    className="border p-2 rounded w-full text-sm"
-                  >
-                    <option key="Active" value="Active">Active</option>
-                    <option key="Inactive" value="Inactive">Inactive</option>
-                  </select>
                 ) : key=="_id" || key=="delId"  || key=="createdAt" || key=="updatedAt" || key=="__v" ? '' :
-                (                 
+                (
                   <input
                     key={key}
                     type="text"

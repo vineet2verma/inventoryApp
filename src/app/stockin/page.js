@@ -95,8 +95,8 @@ export default function StockInPage() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     e.target.name == "designName" ? setSelectedDesign(e.target.value) : null;
-    const sizes = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.size);
 
+    const sizes = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.size);
     setMastsize(Array.from(new Set(sizes)));
 
   };

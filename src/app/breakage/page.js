@@ -1,24 +1,37 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, PackagePlus } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Pencil,
+  Trash2,
+  PlusCircle,
+  House,
+  Link,
+  Plus,
+  PackagePlus,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function ClientMaster() {
+export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
-  const [paymenttype,setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mastdata, setMastdata] = useState([]);
+  const [designname, setdesignname] = useState([]);
+  const [companys, setCompanys] = useState([]);
+  const [batchnos, setBatchnos] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [mastlocations, setMastlocations] = useState([]);
+
   const [formData, setFormData] = useState({
-    auid: "",
-    name: "",
+    designname: "",
     coname: "",
-    gstno: "",
-    mobile: "",
-    billaddress: "",
-    shipaddress:"",
-    paymenttype: "",
-    salesman: "",
-    discount: "",
+    batchno: "",
+    size: "",
+    breakageqty: "",
+    remarks: "",
+    closingstock: "",
     createdby: "",
   });
   const [editId, setEditId] = useState(null);
@@ -27,14 +40,14 @@ export default function ClientMaster() {
 
   // Fetch records from the API
   useEffect(() => {
+    fetchInvMastRecords(); // Fetch mast records on component mount
+    fetchLocations(); // Fetch locations on component mount
     fetchRecords();
-    fetchPaymentTypeRecords();
   }, []);
-
 
   const fetchRecords = async () => {
     try {
-      const res = await fetch("/api/clientmast");
+      const res = await fetch("/api/breakagemast");
       const data = await res.json();
       setRecords(data);
       setFilteredRecords(data); // Initialize filtered records
@@ -42,20 +55,34 @@ export default function ClientMaster() {
       console.error("Failed to fetch records:", err);
     }
   };
-  // payment mast 
-  const fetchPaymentTypeRecords = async () => {
+
+  // Fetch records from the API
+  const fetchInvMastRecords = async () => {
     try {
-      const res = await fetch("api/paymenttype");
+      const res = await fetch("/api/createinvmast");
       const data = await res.json();
-      const paymentmast = Array.from(new Set(data.filter((item)=>item.status=="Active").map((item)=>item.payment)));
-      setPaymentType(paymentmast);
-      
+      setMastdata(data);
+     
+      const mstdesign = Array.from(
+        new Set(data.map((item) => item.designname))
+      );
+      setdesignname(mstdesign);
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
   };
 
-
+  // lcoation mast
+  const fetchLocations = async () => {
+    try {
+      const res = await fetch("/api/location");
+      const data = await res.json();
+      const locationnames = data.filter((item)=>item.status=="Active").map((item)=>item.location)
+      setMastlocations(Array.from(new Set(locationnames)));
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  };
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -71,12 +98,25 @@ export default function ClientMaster() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // e.target.name == "designName" ? setSelectedDesign(e.target.value) : null;
+    
+    const companydata = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.coname);
+    setCompanys(Array.from(new Set(companydata)));
+
+    const sizes = mastdata.filter((item) => item.designname == e.target.value ).map((item) => item.size);
+    setSizes(Array.from(new Set(sizes)));
+
+    const batchnos = mastdata.filter((item)=>item.designname==e.target.value && item.size == e.target.value ).map((item)=>item.batchno);
+    setBatchnos(Array.from(new Set(batchnos)))
+
   };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = editId ? "PUT" : "POST";
-    const url = "/api/clientmast";
+    const url = "/api/breakagemast";
     const body = editId ? { id: editId, ...formData } : formData;
 
     try {
@@ -88,16 +128,13 @@ export default function ClientMaster() {
       const result = await res.json();
       alert(result.message);
       setFormData({
-        auid: "",
-        name: "",
+        designname: "",
         coname: "",
-        gstno: "",
-        mobile: "",
-        billaddress: "",
-        shipaddress:"",
-        paymenttype: "",
-        salesman: "",
-        discount: "",
+        batchno: "",
+        size: "",
+        breakageqty: "",
+        remarks: "",
+        closingstock: "",
         createdby: "",
       });
       setEditId(null);
@@ -110,7 +147,7 @@ export default function ClientMaster() {
 
   const handleDelete = async (id) => {
     try {
-      const res = await fetch("/api/clientmast", {
+      const res = await fetch("/api/breakagemast", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
@@ -131,16 +168,13 @@ export default function ClientMaster() {
 
   const handleAddNew = () => {
     setFormData({
-      auid: "",
-      name: "",
+      designname: "",
       coname: "",
-      gstno: "",
-      mobile: "",
-      billaddress: "",
-      shipaddress:"",
-      paymenttype: "",
-      salesman: "",
-      discount: "",
+      batchno: "",
+      size: "",
+      breakageqty: "",
+      remarks: "",
+      closingstock: "",
       createdby: "",
     });
     setEditId(null);
@@ -157,7 +191,9 @@ export default function ClientMaster() {
           <House className="w-5 h-5" />
           Home
         </button>
-        <h1 className="text-2xl font-bold text-center mb-4">Clients Records</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">
+          Breakage Records
+        </h1>
 
         <div className="flex px-2 items-center mb-6 ">
           {/* Search Bar */}
@@ -177,7 +213,6 @@ export default function ClientMaster() {
             Add New Record
           </button>
         </div>
-
       </div>
       {/* Table */}
       <div className="overflow-x-auto">
@@ -201,8 +236,8 @@ export default function ClientMaster() {
                   </td>
                 ))}
                 <td className="p-2">
-                <button
-                    onClick={() => alert("working on it")  }
+                  <button
+                    onClick={() => alert("working on it")}
                     className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
                     <PackagePlus />
@@ -211,14 +246,14 @@ export default function ClientMaster() {
                     onClick={() => handleEdit(record)}
                     className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
-                    <Pencil/>
+                    <Pencil />
                     {/* Edit */}
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
                     className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
                   >
-                    <Trash2/>
+                    <Trash2 />
                   </button>
                 </td>
               </tr>
@@ -237,47 +272,83 @@ export default function ClientMaster() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Object.keys(formData).map((key) =>
-                key=="paymenttype"?
-                (
-                  <select
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  >
-                  {paymenttype.map((item,i)=>
-                    <option key={i} value={item} >
-                      {item}
-                    </option>
-
-                  )}
-                  </select>
-                )
-                : key=="mobile" || key=="discount" ?(
-                  <input
-                    key={key}
-                    type="number"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ) : key=="_id" || key=="delId"  || key=="createdAt" || key=="updatedAt" || key=="__v" ? '' :
-                (
-                  <input
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ))}
+                  key == "designname" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {designname.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) : 
+                  key == "size" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {sizes.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) :
+                  key == "batchno" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {batchnos.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) :
+                  key == "breakageqty" ||
+                    key == "closingstock" ||
+                    key == "batchno" ? (
+                    <input
+                      key={key}
+                      type="number"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    />
+                  ) : key == "_id" ? (
+                    ""
+                  ) : (
+                    <input
+                      key={key}
+                      type="text"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    />
+                  )
+                )}
               </div>
               <div className="mt-4 flex justify-end">
                 <button
