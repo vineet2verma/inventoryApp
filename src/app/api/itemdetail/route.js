@@ -4,16 +4,33 @@ import itemDetailStock from "@/app/api/models/itemDetail"
 
 
 // GET all inventory records
-export async function GET() {
+export async function GET(req) {
   try {
     await connectToDatabase();
-    const records = await itemDetailStock.find().sort({ createdAt: -1 }); // Newest first
-    return NextResponse.json(records, { status: 200 });
+
+    const searchParams = req.nextUrl.searchParams;
+
+    const id = searchParams.get("id")
+
+    console.log(id)
+
+    if (id) {
+      let records = await itemDetailStock.find({ mid: id })
+      return NextResponse.json(records, { status: 200 });
+    } else {
+      let records = await itemDetailStock.find().sort({ createdAt: -1 }); // Newest first
+      return NextResponse.json(records, { status: 200 });
+    }
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "Failed to fetch records" }, { status: 500 });
   }
 }
+
+
+
+
+
 
 // POST create new inventory
 export async function POST(req) {

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { House,Pencil,Trash } from "lucide-react";
+import { House, Pencil, Trash } from "lucide-react";
 
 export default function StockTableItemDetailPage() {
   const router = useRouter();
@@ -81,16 +81,12 @@ export default function StockTableItemDetailPage() {
     "ordid",
     "name",
     "designname",
-    "coname",
-    "batchno",
     "size",
+    "batchno",
+    "coname",
     "qty",
-    "salesperson",
-    "discount",
     "price",
     "outtag",
-    "currstock",
-    "createdby",
   ];
 
   return (
@@ -133,7 +129,7 @@ export default function StockTableItemDetailPage() {
             <tr>
               <th className="p-3">#</th>
               {fields.map((field) =>
-                field !== "createdby" && field !== "mid" ? (
+                field !== "mid" ? (
                   <th key={field} className="p-3 capitalize">
                     {field}
                   </th>
@@ -148,8 +144,6 @@ export default function StockTableItemDetailPage() {
                 <td className="p-3">{index + 1}</td>
                 {fields.map(
                   (field) =>
-                    field !== "createdAt" &&
-                    field !== "updatedAt" &&
                     field !== "createdby" && (
                       <td key={field} className="p-3">
                         {record[field]}
@@ -196,14 +190,26 @@ export default function StockTableItemDetailPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {fields.map((field) => (
-                <input
-                  key={field}
-                  name={field}
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded"
-                />
+                field == 'date' ? (
+                  <input
+                    type="date"
+                    key={field}
+                    name={field}
+                    placeholder={field}
+                    value={formData[field] || ""}
+                    onChange={handleChange}
+                    className="p-2 border rounded"
+                  />
+
+                ) :
+                  <input
+                    key={field}
+                    name={field}
+                    placeholder={field}
+                    value={formData[field] || ""}
+                    onChange={handleChange}
+                    className="p-2 border rounded"
+                  />
               ))}
             </div>
 

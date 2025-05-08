@@ -4,6 +4,7 @@ import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, Pa
 import { useRouter } from "next/navigation";
 
 export default function DealerMastPage() {
+  const router = useRouter();
   const [records, setRecords] = useState([]);
   const [paymenttype, setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
@@ -24,8 +25,23 @@ export default function DealerMastPage() {
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);   // item page
+  const [mid, setmid] = useState(null);
+
   const [itemData, setItemData] = useState([]);
-  const router = useRouter();
+
+  const itemObject = {
+    date: "",
+    mid: "",
+    midname: "",
+    designname: "",
+    size: "",
+    batchno: "",
+    coname: "",
+    qty: "",
+    priceperbox: "",
+    outtag: "",
+  }
+  const [initialitem, setintialitem] = useState(itemObject)
 
   // Fetch records from the API
   useEffect(() => {
@@ -55,8 +71,6 @@ export default function DealerMastPage() {
       console.error("Failed to fetch records:", err);
     }
   };
-
-
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
@@ -109,6 +123,18 @@ export default function DealerMastPage() {
     }
   };
 
+  const handleitemdelete = async (idx) => {
+
+    const res = await fetch("/api/itemdetail", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: idx }),
+    })
+
+    let itemdata = itemData.filter((item, i) => item._id != idx)
+    setItemData(itemdata);
+  }
+
   const handleDelete = async (id) => {
     try {
       const res = await fetch("/api/dealermast", {
@@ -148,26 +174,73 @@ export default function DealerMastPage() {
     setIsModalOpen(true);
   };
 
+  const handlemid = (id) => {
+    fetchItemDetailById(id)
+    setmid(id)
+    setShowModal(true)
+    setintialitem({ ...initialitem, mid: id })
+  }
+
+  const fetchItemDetailById = async (id) => {
+    const res = await fetch('/api/itemdetail?id=' + id);
+    const data = await res.json();
+    setItemData(data);
+
+    console.log(data)
+
+  }
+
+
   const handleItemChange = (e) => {
     e.preventDefault();
     const { name, value } = e.target;
-    setItemData((prev) => ({ ...prev, [name]: value }));
+    // setItemData((prev) => ({ ...prev, [name]: value }));
+    setintialitem((prev) => ({ ...prev, [name]: value }))
   };
+
+
+
+  const handleItemSubmit = async (e) => {
+    // e.preventDefault();
+    const method = "POST";
+    const url = "/api/itemdetail";
+    const body = initialitem;
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+      alert(result.message);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Failed to save record:", err);
+    }
+  };
+
 
   const handleAddItem = () => {
     // setShowModal(false);
-    setItemData([...itemData, {
-      mid: "1",
-      designname: "2",
-      coname: "3",
-      batchno: "",
+    setItemData([...itemData, initialitem])
+
+    setintialitem({
+      date: "",
+      mid: "",
+      midname: "",
+      designname: "",
       size: "",
+      batchno: "",
+      coname: "",
       qty: "",
-      saleperson: "",
       priceperbox: "",
       outtag: "",
-    }]
-    )
+    })
+
+    handleItemSubmit()
+
+
   };
 
   return (
@@ -197,7 +270,7 @@ export default function DealerMastPage() {
             onClick={handleAddNew}
             className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Add New Record
+            Add New Dealer
           </button>
         </div>
 
@@ -225,7 +298,7 @@ export default function DealerMastPage() {
                 ))}
                 <td className="p-2">
                   <button
-                    onClick={() => setShowModal(true)}
+                    onClick={() => { handlemid(record.auid) }}
                     className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
                     <PackagePlus />
@@ -330,13 +403,13 @@ export default function DealerMastPage() {
             <div className="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh] p-6 text-sm">
               <h3 className="text-lg font-semibold mb-4">Add Item</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {["designname", "coname", "batchno", "size", "qty", "outtag", "priceperbox"].map((field, idx) => (
+                {["date", "mid", "midname", "designname", "coname", "batchno", "size", "qty", "outtag", "priceperbox"].map((field, idx) => (
                   <div key={idx}>
                     <label className="block mb-1 capitalize text-gray-600">{field}</label>
                     <input
                       type="text"
                       name={field}
-                      value={itemData[field]}
+                      value={initialitem[field]}
                       onChange={handleItemChange}
                       className="w-full p-2 border rounded"
                     />
@@ -354,7 +427,7 @@ export default function DealerMastPage() {
                   onClick={handleAddItem}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
                 >
-                  Add
+                  Add Items
                 </button>
 
 
@@ -367,7 +440,7 @@ export default function DealerMastPage() {
                   <table className="w-full text-sm text-left border">
                     <thead className="bg-gray-100">
                       <tr>
-                        {["Design", "Company", "Batch", "Size", "Qty", "Price", "Tag", "Action"].map((h, i) => (
+                        {["Date", "Mid Name", "Design", "Company", "Batch", "Size", "Qty", "Price", "Tag", "Action"].map((h, i) => (
                           <th key={i} className="px-3 py-2 border">{h}</th>
                         ))}
                       </tr>
@@ -375,19 +448,19 @@ export default function DealerMastPage() {
                     <tbody>
                       {itemData.map((item, idx) => (
                         <tr key={idx} className="border-b">
+                          <td className="px-3 py-1 border">{item.date}</td>
+                          <td className="px-3 py-1 border">{item.midname}</td>
                           <td className="px-3 py-1 border">{item.designname}</td>
                           <td className="px-3 py-1 border">{item.coname}</td>
                           <td className="px-3 py-1 border">{item.batchno}</td>
                           <td className="px-3 py-1 border">{item.size}</td>
                           <td className="px-3 py-1 border">{item.qty}</td>
-                          <td className="px-3 py-1 border">{item.saleperson}</td>
                           <td className="px-3 py-1 border">{item.priceperbox}</td>
                           <td className="px-3 py-1 border">{item.outtag}</td>
                           <td className="px-3 py-1 border">
                             <button
-                              // onClick={() => handleDelete(idx)}
-                              className="text-red-600 hover:text-red-800"
-                            >
+                              onClick={() => handleitemdelete(item._id)}
+                              className="text-red-600 hover:text-red-800" >
                               <Trash2 size={18} />
                             </button>
                           </td>

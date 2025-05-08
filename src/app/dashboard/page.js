@@ -1,5 +1,5 @@
 "use client";
-import { React, useContext } from "react";
+import { React, useContext, useEffect, useState } from "react";
 import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
 import { useDealer } from "../context/delaercontext";
@@ -13,16 +13,40 @@ import {
   CartesianGrid,
 } from "recharts";
 import { motion } from "framer-motion";
+import { setRequestMeta } from "next/dist/server/request-meta";
 
 export default function Dashboard() {
-  const { dealer, setDealer } = useDealer();
+  const [mastdata, setmastdate] = useState([])
+  const [typelen, settypelen] = useState([])
+
   const router = useRouter();
 
-  const data = [
+  const invdemodata = [
     { name: "Running", value: 10 },
     { name: "Item Out", value: 20 },
     { name: "Item Hold", value: 10 },
   ];
+
+  const fetchMastData = async () => {
+    try {
+      const res = await fetch("/api/createinvmast");
+      const data = await res.json();
+      setRequestMeta(data)
+      const lengthtype = [
+        { name: "Regular", length: data.filter((item) => item.type == "Regular").length },
+        { name: "Discontinue", length: data.filter((item) => item.type == "Discontinue").length },
+        { name: "On Order", length: data.filter((item) => item.type == "On Order").length },
+      ]
+      settypelen(lengthtype)
+
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchMastData()
+  })
 
   return (
     <>
@@ -41,33 +65,22 @@ export default function Dashboard() {
             <h6 className="text-xl font-semibold mb-2">Overview</h6>
             <div className="flex justify-between ">
               <table className=" rounded min-w-35 text-sm text-left">
-                <tr className="py-1">
-                  <td className="px-1.5 ">Running</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">Item Out</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">Item Hold</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
+                {invdemodata.map((item, i) => (
+                  <tr className="py-1">
+                    <td className="px-1.5 ">{item.name}</td>
+                    <td className="px-1.5 ">{item.value}</td>
+                  </tr>
+                ))}
               </table>
 
               <table className="rounded min-w-35 text-sm text-left">
-                <tr className="py-1">
-                  <td className="px-1.5 ">Regular</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">Discontinue</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">On Order</td>
-                  <td className="px-1.5 ">0</td>
-                </tr>
+
+                {typelen.map((item, i) => (
+                  <tr className="py-1">
+                    <td className="px-1.5 ">{item.name}</td>
+                    <td className="px-1.5 ">{item.length}</td>
+                  </tr>
+                ))}
               </table>
             </div>
           </div>
