@@ -4,7 +4,7 @@ import { useState } from "react";
 import StockOutClientOrderForm from "./stockoutclient";
 import StockOutDealerOrderForm from "./stockoutdealer";
 import StockOutBreakageOrderForm from "./stockoutitem";
-import StockOutTablePage from "./stockoutmain";
+import StockTableItemDetailPage from "./itemdetail";
 
 export default function StockOutPage() {
     const [activeForm, setActiveForm] = useState("table");
@@ -18,7 +18,7 @@ export default function StockOutPage() {
             case "breakages":
                 return <StockOutBreakageOrderForm />;
             default:
-                return <StockOutTablePage />;
+                return <StockTableItemDetailPage />;
         }
     };
 

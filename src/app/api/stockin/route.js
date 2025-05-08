@@ -24,7 +24,7 @@ export async function POST(req) {
 
     console.log("Data received:", data);
     // mast curr stock
-    const currStock = await createInvMaster.findOne({ designname: data.designName, coname: data.coName, batchno: data.batchNo, size: data.size });
+    const currStock = await createInvMaster.findOne({ designname: data.designname, coname: data.coname, batchno: data.batchno, size: data.size });
     // mast inv id
     const currStockId = currStock._id;
     //  curr stock - breakage + mast stock 

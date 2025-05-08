@@ -3,11 +3,26 @@ import { React, useContext } from "react";
 import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
 import { useDealer } from "../context/delaercontext";
-
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
-  const { dealer, setDealer } = useDealer()
+  const { dealer, setDealer } = useDealer();
   const router = useRouter();
+
+  const data = [
+    { name: "Running", value: 10 },
+    { name: "Item Out", value: 20 },
+    { name: "Item Hold", value: 10 },
+  ];
 
   return (
     <>
@@ -22,27 +37,39 @@ export default function Dashboard() {
         {/* Main Content */}
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className="bg-white p-4 rounded-xl shadow">
+          <div className=" bg-white p-4 rounded-xl shadow">
             <h6 className="text-xl font-semibold mb-2">Overview</h6>
-            <div className=" flex justify-between w-45 px-4">
-              <pre>Regular</pre>
-              {/* <pre>:</pre> */}
-              <pre>0</pre>
-            </div>
-            <div className=" flex justify-between w-45 px-4 ">
-              <pre>Discontinue</pre>
-              {/* <pre>:</pre> */}
-              <pre>0</pre>
-            </div>
-            <div className=" flex justify-between w-45 px-4 ">
-              <pre>On Order</pre>
-              {/* <pre>:</pre> */}
-              <pre>0</pre>
-            </div>
+            <div className="flex justify-between ">
+              <table className=" rounded min-w-35 text-sm text-left">
+                <tr className="py-1">
+                  <td className="px-1.5 ">Running</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">Item Out</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">Item Hold</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+              </table>
 
-
-            {/* <p className="text-gray-600"> */}
-            {/* </p> */}
+              <table className="rounded min-w-35 text-sm text-left">
+                <tr className="py-1">
+                  <td className="px-1.5 ">Regular</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">Discontinue</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">On Order</td>
+                  <td className="px-1.5 ">0</td>
+                </tr>
+              </table>
+            </div>
           </div>
 
           {/* Card 2 */}
@@ -60,7 +87,6 @@ export default function Dashboard() {
 
         {/* Navigation Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4">
-
           <button
             onClick={() => router.push("/locationmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -134,8 +160,6 @@ export default function Dashboard() {
             Stock Out
           </button> */}
 
-
-
           <button
             onClick={() => router.push("/clientmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -146,7 +170,19 @@ export default function Dashboard() {
             onClick={() => router.push("/breakage")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Breakage / Missing
+            Breakage Items
+          </button>
+          <button
+            onClick={() => router.push("/stockout")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Items Status
+          </button>
+          <button
+            onClick={() => alert("Working on it")} // router.push("/breakage")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Hold items
           </button>
         </div>
 

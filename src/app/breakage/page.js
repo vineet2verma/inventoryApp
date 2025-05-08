@@ -23,9 +23,9 @@ export default function DealerMastPage() {
   const [selecteddesignname, setSelectedDesign] = useState("");
   const [companys, setCompanys] = useState([]);
   const [sizes, setSizes] = useState([]);
-  const [selectedsize, setselectedsize] = useState("")
+  const [selectedsize, setselectedsize] = useState("");
   const [batchnos, setBatchnos] = useState([]);
-  const [selectedbatch, setselectedbatch] = useState("")
+  const [selectedbatch, setselectedbatch] = useState("");
   const [mastlocations, setMastlocations] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -80,7 +80,9 @@ export default function DealerMastPage() {
     try {
       const res = await fetch("/api/location");
       const data = await res.json();
-      const locationnames = data.filter((item) => item.status == "Active").map((item) => item.location)
+      const locationnames = data
+        .filter((item) => item.status == "Active")
+        .map((item) => item.location);
       setMastlocations(Array.from(new Set(locationnames)));
     } catch (err) {
       console.error("Failed to fetch records:", err);
@@ -99,33 +101,41 @@ export default function DealerMastPage() {
     setFilteredRecords(filtered);
   };
 
-  // design     // design - size     // design and size     // batch     // design and size and batch // company name
-
   const handleChange = (e) => {
     e.target.name == "designname" ? setSelectedDesign(e.target.value) : null;
 
     if (e.target.name == "designname") {
-      const sizes = mastdata.filter((item) => item.designname === e.target.value).map((item) => item.size);
+      const sizes = mastdata
+        .filter((item) => item.designname === e.target.value)
+        .map((item) => item.size);
       setSizes(Array.from(new Set(sizes)));
-      setSelectedDesign(e.target.value)
+      setSelectedDesign(e.target.value);
     }
 
     if (e.target.name == "size") {
-      let bno = mastdata.filter((item) => item.designname == selecteddesignname && item.size == e.target.value).map((item) => item.batchno);
+      let bno = mastdata
+        .filter(
+          (item) =>
+            item.designname == selecteddesignname && item.size == e.target.value
+        )
+        .map((item) => item.batchno);
       setselectedsize(e.target.value);
-      setBatchnos(Array.from(new Set(bno)))
+      setBatchnos(Array.from(new Set(bno)));
     }
     if (e.target.name == "batchno") {
-      let cno = mastdata.filter((item) => item.designname == selecteddesignname && item.size == selectedsize && item.batchno == e.target.value).map((item) => item.coname);
-      setCompanys(cno)
+      let cno = mastdata
+        .filter(
+          (item) =>
+            item.designname == selecteddesignname &&
+            item.size == selectedsize &&
+            item.batchno == e.target.value
+        )
+        .map((item) => item.coname);
+      setCompanys(cno);
     }
 
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
-
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -204,7 +214,7 @@ export default function DealerMastPage() {
           Home
         </button>
         <h1 className="text-2xl font-bold text-center mb-4">
-          Breakage Records
+          Breakage / Missing Records
         </h1>
 
         <div className="flex px-2 items-center mb-6 ">
@@ -222,7 +232,7 @@ export default function DealerMastPage() {
             onClick={handleAddNew}
             className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
-            Add New Record
+            Add Record
           </button>
         </div>
       </div>
@@ -248,12 +258,12 @@ export default function DealerMastPage() {
                   </td>
                 ))}
                 <td className="p-2">
-                  <button
+                  {/* <button
                     onClick={() => alert("working on it")}
                     className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
                     <PackagePlus />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleEdit(record)}
                     className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
@@ -300,79 +310,77 @@ export default function DealerMastPage() {
                         </option>
                       ))}
                     </select>
-                  ) :
-                    key == "size" ? (
-                      <select
-                        key={key}
-                        type="text"
-                        name="size" // {key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        placeholder={key}
-                        className="border p-2 rounded w-full text-sm"
-                      >
-                        {sizes.map((item, i) => (
-                          <option key={i} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                    ) :
-                      key == "batchno" ? (
-                        <select
-                          key={key}
-                          type="text"
-                          name={key}
-                          // value={formData[key]}
-                          onChange={handleChange}
-                          placeholder={key}
-                          className="border p-2 rounded w-full text-sm"
-                        >
-                          {batchnos.map((item, i) => (
-                            <option key={i} value={item}>
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      ) :
-                        key == "breakageqty"
-                          ? (
-                            <input
-                              key={key}
-                              type="number"
-                              name={key}
-                              value={formData[key]}
-                              onChange={handleChange}
-                              placeholder={key}
-                              className="border p-2 rounded w-full text-sm"
-                            />
-                          ) : key == "coname" ? (
-                            <select
-                              key={key}
-                              type="text"
-                              name={key}
-                              // value={formData[key]}
-                              onChange={handleChange}
-                              placeholder={key}
-                              className="border p-2 rounded w-full text-sm"
-                            >
-                              {companys.map((item, i) => (
-                                <option key={i} value={item}>
-                                  {item}
-                                </option>
-                              ))}
-                            </select>
-                          ) : key == "breakageqty" || key == "remarks" ? (
-                            <input
-                              key={key}
-                              type="text"
-                              name={key}
-                              value={formData[key]}
-                              onChange={handleChange}
-                              placeholder={key}
-                              className="border p-2 rounded w-full text-sm"
-                            />
-                          ) : ''
+                  ) : key == "size" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name="size" // {key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {sizes.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) : key == "batchno" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name={key}
+                      // value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {batchnos.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) : key == "breakageqty" ? (
+                    <input
+                      key={key}
+                      type="number"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    />
+                  ) : key == "coname" ? (
+                    <select
+                      key={key}
+                      type="text"
+                      name={key}
+                      // value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    >
+                      {companys.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  ) : key == "breakageqty" || key == "remarks" ? (
+                    <input
+                      key={key}
+                      type="text"
+                      name={key}
+                      value={formData[key]}
+                      onChange={handleChange}
+                      placeholder={key}
+                      className="border p-2 rounded w-full text-sm"
+                    />
+                  ) : (
+                    ""
+                  )
                 )}
               </div>
               <div className="mt-4 flex justify-end">

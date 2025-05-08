@@ -1,26 +1,31 @@
 "use client";
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  Pencil,
+  Trash2,
+  PlusCircle,
+  House,
+  Link,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
-
-
 export default function StockInPage() {
-
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({
     date: "", // `${new Date().getMonth()}/${new Date().getDate()}/${new Date().getFullYear}`,
-    designName: "",
-    coName: "",
-    batchNo: "",
+    designname: "",
+    coname: "",
+    batchno: "",
     type: "",
     size: "",
     quantity: "",
     location: "",
     breakage: "",
-    purPrice: "",
-    currStock: "",
-    createdBy: "",
+    purprice: "",
+    currstock: "",
+    createdby: "",
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,41 +47,39 @@ export default function StockInPage() {
       const res = await fetch("/api/createinvmast");
       const data = await res.json();
       setMastdata(data);
-      const mstdesign = Array.from(new Set(data.map((item) => item.designname)));
+      const mstdesign = Array.from(
+        new Set(data.map((item) => item.designname))
+      );
       const msttype = Array.from(new Set(data.map((item) => item.type)));
-      // const mstsize = Array.from(new Set(data.map((item) => item.size)));
-      // const mstlocation = Array.from(new Set(data.map((item) => item.location)));  // come from location mast later on
-      const mstcurrstock = Array.from(new Set(data.map((item) => item.currstock)));
 
-      setMasttype(msttype)
+      const mstcurrstock = Array.from(
+        new Set(data.map((item) => item.currstock))
+      );
+
+      setMasttype(msttype);
       // setMastsize(mstsize)
-      setMastcurrstock(mstcurrstock)
-      setdesignname(mstdesign)
-
+      setMastcurrstock(mstcurrstock);
+      setdesignname(mstdesign);
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
-  }
+  };
 
   useEffect(() => {
     fetchInvMastRecords(); // Fetch mast records on component mount
     fetchLocations(); // Fetch locations on component mount
     fetchRecords();
-
   }, []);
   // lcoation mast
   const fetchLocations = async () => {
     try {
       const res = await fetch("/api/location");
       const data = await res.json();
-      let aa = [];
-      {
-        data.map((item, i) => (
-          aa.push(item.location)
-        ))
-      }
-      setMastlocation(Array.from(new Set(aa)));
 
+      const loc = data
+        .filter((items) => items.status == "Active")
+        .map((item) => item.location);
+      setMastlocation(Array.from(new Set(loc)));
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
@@ -93,12 +96,16 @@ export default function StockInPage() {
   };
 
   const handleChange = (e) => {
+    if (e.target.name == "designname") {
+      const sizes = mastdata
+        .filter((items) => items.designname == e.target.value)
+        .map((item) => item.size);
+
+      setMastsize(Array.from(new Set(sizes)));
+      setSelectedDesign(e.target.value);
+    }
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    e.target.name == "designName" ? setSelectedDesign(e.target.value) : null;
-
-    const sizes = mastdata.filter((item) => item.designname == e.target.value).map((item) => item.size);
-    setMastsize(Array.from(new Set(sizes)));
-
   };
 
   const handleSubmit = async (e) => {
@@ -117,17 +124,17 @@ export default function StockInPage() {
       alert(result.message);
       setFormData({
         date: "",
-        designName: "",
-        coName: "",
-        batchNo: "",
+        designname: "",
+        coname: "",
+        batchno: "",
         type: "",
         size: "",
         quantity: "",
         breakage: "",
         location: "",
-        purPrice: "",
-        currStock: "",
-        createdBy: "",
+        purprice: "",
+        currstock: "",
+        createdby: "",
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -161,17 +168,17 @@ export default function StockInPage() {
   const handleAddNew = () => {
     setFormData({
       date: "",
-      designName: "",
-      coName: "",
-      batchNo: "",
+      designname: "",
+      coname: "",
+      batchno: "",
       type: "",
       size: "",
       quantity: "",
       location: "",
       breakage: "",
-      purPrice: "",
-      currStock: "",
-      createdBy: "",
+      purprice: "",
+      currstock: "",
+      createdby: "",
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -188,15 +195,17 @@ export default function StockInPage() {
           Home
         </button>
 
-        <h1 className="text-3xl font-bold text-center mb-6">Stock-In Records</h1>
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Stock-In Records
+        </h1>
 
         <button
           onClick={handleAddNew}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+        >
           Add Record
         </button>
       </div>
-
 
       {/* Table */}
       <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
@@ -222,17 +231,17 @@ export default function StockInPage() {
             {records.map((record) => (
               <tr key={record._id} className="border-t">
                 <td className="p-2">{record.date}</td>
-                <td className="p-2">{record.designName}</td>
-                <td className="p-2">{record.coName}</td>
-                <td className="p-2">{record.batchNo}</td>
+                <td className="p-2">{record.designname}</td>
+                <td className="p-2">{record.coname}</td>
+                <td className="p-2">{record.batchno}</td>
                 <td className="p-2">{record.type}</td>
                 <td className="p-2">{record.size}</td>
                 <td className="p-2">{record.quantity}</td>
                 <td className="p-2">{record.breakage}</td>
                 <td className="p-2">{record.location}</td>
-                <td className="p-2">{record.purPrice}</td>
-                <td className="p-2">{record.currStock}</td>
-                <td className="p-2">{record.createdBy}</td>
+                <td className="p-2">{record.purprice}</td>
+                <td className="p-2">{record.currstock}</td>
+                <td className="p-2">{record.createdby}</td>
                 <td className="p-2 flex gap-2">
                   <button
                     onClick={() => handleEdit(record)}
@@ -265,15 +274,23 @@ export default function StockInPage() {
                 <input
                   type="date"
                   name="date"
-                  value={`${new Date().getFullYear()}-${new Date().getMonth().toString().length < 2 ? "0" + (new Date().getMonth() + 1) : (new Date().getMonth() + 1)}-${new Date().getDate().toString().length < 2 ? "0" + new Date().getDate().toString() : new Date().getDate().toString()}`}  // value={FormDataEvent.data}
+                  value={`${new Date().getFullYear()}-${
+                    new Date().getMonth().toString().length < 2
+                      ? "0" + (new Date().getMonth() + 1)
+                      : new Date().getMonth() + 1
+                  }-${
+                    new Date().getDate().toString().length < 2
+                      ? "0" + new Date().getDate().toString()
+                      : new Date().getDate().toString()
+                  }`} // value={FormDataEvent.data}
                   onChange={handleChange}
                   placeholder="Date"
                   className="border p-2 rounded w-full"
                 />
                 <select
-                  // type="text"
-                  name="designName"
-                  value={formData.designName}
+                  type="text"
+                  name="designname"
+                  value={formData.designname}
                   onChange={handleChange}
                   placeholder="Design Name"
                   className="border p-2 rounded w-full"
@@ -286,33 +303,6 @@ export default function StockInPage() {
                     </option>
                   ))}
                 </select>
-
-
-                <input
-                  type="text"
-                  name="coName"
-                  value={formData.coName}
-                  onChange={handleChange}
-                  placeholder="Company Name"
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="text"
-                  name="batchNo"
-                  value={formData.batchNo}
-                  onChange={handleChange}
-                  placeholder="Batch No"
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="text"
-                  name="type"
-                  // value={formData.value}
-                  value={mastdata.filter((item) => item.designname === selectedDesign)[mastdata.filter((item) => item.designname == selectedDesign).length - 1]?.type}
-                  onChange={(e) => { handleChange(e) }}
-                  placeholder="Type"
-                  className="border p-2 rounded w-full"
-                />
 
                 <select
                   name="size"
@@ -329,6 +319,23 @@ export default function StockInPage() {
                     </option>
                   ))}
                 </select>
+
+                <input
+                  type="text"
+                  name="coname"
+                  value={formData.coname}
+                  onChange={handleChange}
+                  placeholder="Company Name"
+                  className="border p-2 rounded w-full"
+                />
+                <input
+                  type="number"
+                  name="batchno"
+                  value={formData.batchno}
+                  onChange={handleChange}
+                  placeholder="Batch No"
+                  className="border p-2 rounded w-full"
+                />
 
                 <input
                   type="number"
@@ -364,16 +371,16 @@ export default function StockInPage() {
 
                 <input
                   type="number"
-                  name="purPrice"
-                  value={formData.purPrice}
+                  name="purprice"
+                  value={formData.purprice}
                   onChange={handleChange}
                   placeholder="Purchase Price"
                   className="border p-2 rounded w-full"
                 />
                 <input
                   type="text"
-                  name="createdBy"
-                  value={formData.createdBy}
+                  name="createdby"
+                  value={formData.createdby}
                   onChange={handleChange}
                   placeholder="Created By"
                   className="border p-2 rounded w-full"
