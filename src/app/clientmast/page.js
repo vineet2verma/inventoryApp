@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function ClientMaster() {
   const [records, setRecords] = useState([]);
-  const [paymenttype,setPaymentType] = useState([]);
+  const [paymenttype, setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ export default function ClientMaster() {
     gstno: "",
     mobile: "",
     billaddress: "",
-    shipaddress:"",
+    shipaddress: "",
     paymenttype: "",
     salesman: "",
     discount: "",
@@ -47,9 +47,9 @@ export default function ClientMaster() {
     try {
       const res = await fetch("api/paymenttype");
       const data = await res.json();
-      const paymentmast = Array.from(new Set(data.filter((item)=>item.status=="Active").map((item)=>item.payment)));
+      const paymentmast = Array.from(new Set(data.filter((item) => item.status == "Active").map((item) => item.payment)));
       setPaymentType(paymentmast);
-      
+
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
@@ -94,7 +94,7 @@ export default function ClientMaster() {
         gstno: "",
         mobile: "",
         billaddress: "",
-        shipaddress:"",
+        shipaddress: "",
         paymenttype: "",
         salesman: "",
         discount: "",
@@ -137,7 +137,7 @@ export default function ClientMaster() {
       gstno: "",
       mobile: "",
       billaddress: "",
-      shipaddress:"",
+      shipaddress: "",
       paymenttype: "",
       salesman: "",
       discount: "",
@@ -201,8 +201,8 @@ export default function ClientMaster() {
                   </td>
                 ))}
                 <td className="p-2">
-                <button
-                    onClick={() => alert("working on it")  }
+                  <button
+                    onClick={() => alert("working on it")}
                     className="text-yellow-800 px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
                     <PackagePlus />
@@ -211,14 +211,14 @@ export default function ClientMaster() {
                     onClick={() => handleEdit(record)}
                     className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
                   >
-                    <Pencil/>
+                    <Pencil />
                     {/* Edit */}
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
                     className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
                   >
-                    <Trash2/>
+                    <Trash2 />
                   </button>
                 </td>
               </tr>
@@ -237,47 +237,47 @@ export default function ClientMaster() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Object.keys(formData).map((key) =>
-                key=="paymenttype"?
-                (
-                  <select
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  >
-                  {paymenttype.map((item,i)=>
-                    <option key={i} value={item} >
-                      {item}
-                    </option>
+                  key == "paymenttype" ?
+                    (
+                      <select
+                        key={key}
+                        type="text"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={key}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {paymenttype.map((item, i) =>
+                          <option key={i} value={item} >
+                            {item}
+                          </option>
 
-                  )}
-                  </select>
-                )
-                : key=="mobile" || key=="discount" ?(
-                  <input
-                    key={key}
-                    type="number"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ) : key=="_id" || key=="delId"  || key=="createdAt" || key=="updatedAt" || key=="__v" ? '' :
-                (
-                  <input
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    placeholder={key}
-                    className="border p-2 rounded w-full text-sm"
-                  />
-                ))}
+                        )}
+                      </select>
+                    )
+                    : key == "mobile" || key == "discount" ? (
+                      <input
+                        key={key}
+                        type="number"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        placeholder={key}
+                        className="border p-2 rounded w-full text-sm"
+                      />
+                    ) : key == "_id" || key == "delId" || key == "createdAt" || key == "updatedAt" || key == "__v" ? '' :
+                      (
+                        <input
+                          key={key}
+                          type="text"
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          placeholder={key}
+                          className="border p-2 rounded w-full text-sm"
+                        />
+                      ))}
               </div>
               <div className="mt-4 flex justify-end">
                 <button
