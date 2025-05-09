@@ -2,18 +2,6 @@
 import { React, useContext, useEffect, useState } from "react";
 import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
-import { useDealer } from "../context/delaercontext";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-import { motion } from "framer-motion";
-import { setRequestMeta } from "next/dist/server/request-meta";
 
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([])
@@ -27,17 +15,19 @@ export default function Dashboard() {
     { name: "Item Hold", value: 10 },
   ];
 
+  // fetching inv mast
   const fetchMastData = async () => {
     try {
       const res = await fetch("/api/createinvmast");
       const data = await res.json();
-      setRequestMeta(data)
+      setmastdate(data)
       const lengthtype = [
         { name: "Regular", length: data.filter((item) => item.type == "Regular").length },
         { name: "Discontinue", length: data.filter((item) => item.type == "Discontinue").length },
         { name: "On Order", length: data.filter((item) => item.type == "On Order").length },
       ]
       settypelen(lengthtype)
+      console.log(typelen)
 
     } catch (err) {
       console.error("Failed to fetch records:", err);
@@ -46,7 +36,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchMastData()
-  })
+  }, [])
 
   return (
     <>
@@ -65,22 +55,26 @@ export default function Dashboard() {
             <h6 className="text-xl font-semibold mb-2">Overview</h6>
             <div className="flex justify-between ">
               <table className=" rounded min-w-35 text-sm text-left">
-                {invdemodata.map((item, i) => (
-                  <tr className="py-1">
-                    <td className="px-1.5 ">{item.name}</td>
-                    <td className="px-1.5 ">{item.value}</td>
-                  </tr>
-                ))}
+                <tbody>
+                  {invdemodata.map((item, i) =>
+                    <tr key={i} className="py-1">
+                      <td className="px-1.5 ">{item.name}</td>
+                      <td className="px-1.5 ">{item.value}</td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
 
               <table className="rounded min-w-35 text-sm text-left">
-
-                {typelen.map((item, i) => (
-                  <tr className="py-1">
-                    <td className="px-1.5 ">{item.name}</td>
-                    <td className="px-1.5 ">{item.length}</td>
-                  </tr>
-                ))}
+                <tbody>
+                  {
+                    typelen.map((item, i) => (
+                      <tr key={i} className="py-1">
+                        <td className="px-1.5 ">{item.name}</td>
+                        <td className="px-1.5 ">{item.length}</td>
+                      </tr>
+                    ))}
+                </tbody>
               </table>
             </div>
           </div>
