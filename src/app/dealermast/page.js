@@ -62,9 +62,7 @@ export default function DealerMastPage() {
   const fetchMastRecords = async () => {
     const data = await fetchMastData();
     data.length > 0 ? setinvmast(data) : '';
-
     dropdownfunc(data)
-
   }
 
   // add item page drop down function
@@ -77,8 +75,6 @@ export default function DealerMastPage() {
     sizelist.length < 2 ? setsize(sizelist[0]) : setsize(sizelist)
     const batchlist = data.filter((item) => item.designname == selecteddesignname && item.size == size).map((items) => items.batchno)
     setbatchno(batchlist)
-    console.log(batchlist)
-
   }
 
   // fetching dealer mast records

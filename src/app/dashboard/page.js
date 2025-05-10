@@ -106,12 +106,12 @@ export default function Dashboard() {
           >
             Type Mast
           </button>
-          <button
+          {/* <button
             onClick={() => router.push("/tilemast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
             Tile Mast
-          </button>
+          </button> */}
           <button
             onClick={() => router.push("/paymentmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -150,7 +150,7 @@ export default function Dashboard() {
             onClick={() => router.push("/dealermast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Dealers
+            Customers
           </button>
 
           {/* <button
@@ -167,30 +167,25 @@ export default function Dashboard() {
             Stock Out
           </button> */}
 
-          <button
+          {/* <button
             onClick={() => router.push("/clientmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
             Clients
-          </button>
+          </button> */}
           <button
             onClick={() => router.push("/breakage")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Breakage Items
+            Breakage
           </button>
           <button
             onClick={() => router.push("/stockout")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           >
-            Items Status
+            Item Status
           </button>
-          <button
-            onClick={() => alert("Working on it")} // router.push("/breakage")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Hold items
-          </button>
+       
         </div>
 
         {/* Footer */}

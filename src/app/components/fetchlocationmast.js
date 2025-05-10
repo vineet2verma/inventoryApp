@@ -2,10 +2,10 @@
 // fetch payment type mast 
 export const fetchPaymentTypeRecords = async () => {
   try {
-    const res = await fetch("api/paymenttype");
+    const res = await fetch("api/location");
     const data = await res.json();
-    const paymenttypelist = Array.from(new Set(data.filter((item) => item.status == "Active").map((item) => item.payment)));
-    return paymenttypelist
+    const locationlist = Array.from(new Set(data.filter((item) => item.status == "Active").map((item) => item.location )));
+    return locationlist
   } catch (err) {
     return console.error("Failed to fetch records:", err);
   }
