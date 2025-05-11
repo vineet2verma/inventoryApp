@@ -1,7 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { DealerProvider } from "./context/delaercontext";
-import { DealerItemProvider } from "./context/dealeritem"
+import { DealerItemProvider } from "./context/dealeritem";
+import { LoginUserProvider } from "./context/loginuser";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DealerProvider>
-          <DealerItemProvider>
-            {children}
-          </DealerItemProvider>
-        </DealerProvider>
+        <LoginUserProvider>
+          <DealerProvider>
+            <DealerItemProvider>
+              {children}
+            </DealerItemProvider>
+          </DealerProvider>
+        </LoginUserProvider>
 
 
       </body>

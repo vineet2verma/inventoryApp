@@ -2,9 +2,11 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Pencil, Trash2, House, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LoginUserFunc } from "../context/loginuser";
 
 export default function LocationMasterPage() {
   const [data, setData] = useState([]);
+  const { user } = LoginUserFunc();
   const [form, setForm] = useState({
     location: "",
     createdBy: "",
@@ -57,7 +59,7 @@ export default function LocationMasterPage() {
   };
 
   const openEdit = (item) => {
-    setForm({ ...item, id: item._id });
+    setForm({ ...item, id: item._id, createdBy: user.user?.name });
     setModalOpen(true);
   };
 
@@ -78,7 +80,7 @@ export default function LocationMasterPage() {
         <h2 className="text-2xl font-bold text-gray-800">Location Master</h2>
         <button
           onClick={() => {
-            setForm({ location: "", createdBy: "", status: "Active" });
+            setForm({ location: "", createdBy: user.user?.name, status: "Active" });
             setModalOpen(true);
           }}
           className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
@@ -164,12 +166,13 @@ export default function LocationMasterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Created By</label>
+                <label className="block text-sm font-medium">{form.id ? "Updated By " : " Created By"}</label>
                 <input
                   type="text"
+                  disabled
                   value={form.createdBy}
                   onChange={(e) =>
-                    setForm({ ...form, createdBy: e.target.value })
+                    setForm({ ...form, createdBy: user.user?.name })
                   }
                   required
                   className="w-full p-2 border border-gray-300 rounded-xl"

@@ -1,10 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, PackagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import moment from 'moment';
 import { fetchPaymentTypeRecords } from "@/app/components/fetchpaymenttype"
 import { fetchMastData } from "../components/fetchinvmast";
+import DesignComboBox from "../components/combobox";
+
 
 export default function DealerMastPage() {
   const router = useRouter();
@@ -12,7 +14,7 @@ export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
   const [paymenttype, setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     auid: "",
     name: "",
@@ -34,9 +36,15 @@ export default function DealerMastPage() {
   const [selecteddesignname, setselecteddesignname] = useState("");
   const [size, setsize] = useState([]);
   const [batchno, setbatchno] = useState([])
-
+  const [query, setQuery] = useState("");
   const [itemData, setItemData] = useState([]);
-
+  const searchForm = useRef(null)
+  const [selectedSize, setSelectedSize] = useState("");
+  // const filteredDesigns = useMemo(() => {
+  //   if (!query) return designname
+  //   const lower = query.toLowerCase()
+  //   return designname.filter(item => item.toLowerCase().includes(lower))
+  // }, [query, designname])
   const itemObject = {
     date: "",
     mid: "",
@@ -62,6 +70,9 @@ export default function DealerMastPage() {
   const fetchMastRecords = async () => {
     const data = await fetchMastData();
     data.length > 0 ? setinvmast(data) : '';
+
+    console.log(data)
+
     dropdownfunc(data)
   }
 
@@ -69,12 +80,16 @@ export default function DealerMastPage() {
   function dropdownfunc(data) {
     const designnameslist = data.map((item) => item.designname)
     setdesignname(Array.from(new Set(designnameslist)));
-
+    // console.log("design name is", Array.from(new Set(designnameslist)))
     // designnameslist[0] ? setselecteddesignname(designnameslist[0]) : '';
-    const sizelist = data.filter((item) => item.designname == selecteddesignname).map((item) => item.size)
+    let sizelist = data.filter((item) => item.designname == selecteddesignname).map((item) => item.size)
+
+    sizelist = Array.from(new Set(sizelist));
+
     sizelist.length < 2 ? setsize(sizelist[0]) : setsize(sizelist)
     const batchlist = data.filter((item) => item.designname == selecteddesignname && item.size == size).map((items) => items.batchno)
     setbatchno(batchlist)
+    setintialitem({ ...initialitem, batchno: batchlist < 1 ? '' : batchlist[0] })
   }
 
   // fetching dealer mast records
@@ -94,16 +109,20 @@ export default function DealerMastPage() {
     setPaymentType(paymenttypemast);
   }
 
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
+  const handleSearch = async (e) => {
 
-    const filtered = records.filter((record) =>
-      Object.values(record).some((value) =>
-        String(value).toLowerCase().includes(query)
-      )
-    );
-    setFilteredRecords(filtered);
+    e.preventDefault()
+    const query = e.target.value.toLowerCase();
+    if (query == "") {
+      fetchMastRecords()
+    } else {
+      let req = await fetch("/api/searchinvmast?query=" + query);
+      let res = await req.json()
+      // console.log(res)
+      res.error ? setFilteredRecords(data) : setFilteredRecords(res.data);
+    }
+
+
   };
 
   const handleChange = (e) => {
@@ -203,11 +222,13 @@ export default function DealerMastPage() {
 
   // 
   const handlemid = (id, name) => {
+    const date = moment();
+    const formattedDate = date.format('YYYY-MM-DD');
+
     fetchItemDetailById(id)
     setmid(id)
     setShowModal(true)
-    const date = moment();
-    const formattedDate = date.format('YYYY-MM-DD');
+
     setintialitem({ ...initialitem, mid: id, date: formattedDate, midname: name })
   }
 
@@ -215,6 +236,7 @@ export default function DealerMastPage() {
   const fetchItemDetailById = async (id) => {
     const res = await fetch('/api/itemdetail?id=' + id);
     const data = await res.json();
+    console.log(data)
     setItemData(data);
   }
 
@@ -224,27 +246,21 @@ export default function DealerMastPage() {
     const { name, value } = e.target;
     const date = moment();
     const today = date.format('YYYY-MM-DD');
-
+    console.log(e.target.name)
     if (e.target.name == "designname") {
-      const sizes = invmast.filter((item) => item.designname == e.target.value).map((items) => items.size)
-      if (size.length < 2) {
+      let sizes = invmast.filter((item) => item.designname == e.target.value).map((items) => items.size)
+      sizes = Array.from(new Set(sizes))
+      setintialitem({ ...initialitem, designname: e.target.value })
 
+      if (size?.length < 2) {
         dropdownfunc(invmast)
-
       }
-
       setsize(sizes);
-      setselecteddesignname(e.target.value);
-
-
+      // setselecteddesignname(e.target.value);
     }
-
-
 
     if (e.target.name == "size") {
       const batchnos = invmast.filter((item) => item.designname == selecteddesignname && item.size == e.target.value).map((items) => items.batchno)
-
-
 
       setbatchno(Array.from(new Set(batchnos)));
       console.log(batchnos)
@@ -313,18 +329,19 @@ export default function DealerMastPage() {
           <House className="w-5 h-5" />
           Home
         </button>
-        <h1 className="text-2xl font-bold text-center mb-4">Dealers Records</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Customer Records</h1>
 
         <div className="flex px-2 items-center mb-6 ">
           {/* Search Bar */}
           <div className="mb-4 pr-2">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearch}
-              placeholder="Search records..."
-              className="border p-2 rounded w-full text-sm"
-            />
+            <form ref={searchForm}>
+              <input
+                type="text"
+                placeholder="Search records..."
+                className="border p-2 rounded w-full text-sm"
+                onChange={handleSearch}
+              />
+            </form>
           </div>
           <button
             onClick={handleAddNew}
@@ -465,7 +482,7 @@ export default function DealerMastPage() {
             <div className="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh] p-6 text-sm">
               <h3 className="text-lg font-semibold mb-4">Add Item</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {["date", "mid", "midname", "designname", "size", "batchno", "coname", "qty", "outtag", "priceperbox"].map((field, idx) =>
+                {["date", "mid", "midname", "designname", "size", "batchno", "coname", "qty", "outtag"].map((field, idx) =>
                   field == 'date' ?
                     (
                       <div key={idx}>
@@ -481,27 +498,15 @@ export default function DealerMastPage() {
                     ) :
                     field == "designname" ?
                       (
-                        <div>
+                        <div key={idx}>
                           <label className="block mb-1 capitalize text-gray-600">{field}</label>
-                          <select
-                            type="text"
-                            name={field}
-                            value={initialitem[field]}
-                            onChange={handleItemChange}
-                            className="w-full p-2 border rounded"
-                          >
-                            {
-                              designname.map((item, i) =>
-                                <option key={i} value={item} >{item}</option>
-                              )
-                            }
-
-                          </select>
+                          <DesignComboBox onSelect={setselecteddesignname} itemChange={handleItemChange} changedSize={setsize} changedBatch={setbatchno} inv={setinvmast} />
                         </div>
+
                       )
                       : field == "size" ?
                         (
-                          <div>
+                          <div key={idx}>
                             <label className="block mb-1 capitalize text-gray-600">{field}</label>
                             <select
                               type="text"
@@ -511,17 +516,16 @@ export default function DealerMastPage() {
                               className="w-full p-2 border rounded"
                             >
                               {
-                                size.map((item, i) =>
+                                size?.map((item, i) =>
                                   <option key={i} value={item} >{item}</option>
                                 )
                               }
-
                             </select>
                           </div>
                         ) :
                         field == "batchno" ?
                           (
-                            <div>
+                            <div key={idx}>
                               <label className="block mb-1 capitalize text-gray-600">{field}</label>
                               <select
                                 type="text"
@@ -542,7 +546,7 @@ export default function DealerMastPage() {
                           :
                           field == "outtag" ?
                             (
-                              <div>
+                              <div key={idx}>
                                 <label className="block mb-1 capitalize text-gray-600">{field}</label>
                                 <select
                                   type="text"
@@ -556,13 +560,12 @@ export default function DealerMastPage() {
 
                                 </select>
                               </div>
-                            )
-                            :
+                            ) :
                             (
                               <div key={idx}>
                                 <label className="block mb-1 capitalize text-gray-600">{field}</label>
                                 <input
-                                  type="text"
+                                  type={field == "qty" ? "number" : "text"}
                                   name={field}
                                   value={initialitem[field]}
                                   onChange={handleItemChange}

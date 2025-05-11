@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, Plus, House } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchTypeRecords } from "../components/fetchtypemast";
+import { fetchlocationRecords } from "@/app/components/fetchlocationmast";
 
 export default function InventoryMaster() {
   const [records, setRecords] = useState([]);
@@ -24,18 +26,14 @@ export default function InventoryMaster() {
 
   // Fetch type list from typemast
   const fetchTypeList = async () => {
-    const res = await fetch("/api/typemast");
-    const data = await res.json();
-    const typelist = data.map((item) => item.type);
+    const typelist = await fetchTypeRecords();
     setTypeList(typelist);
   };
 
   // Fetch location list from locationmast
   const fetchLocationMast = async () => {
-    const res = await fetch("/api/location");
-    const data = await res.json();
-    const locationList = data.map((item) => item.location);
-    setLocationList(Array.from(new Set(locationList)));
+    const locationList = await fetchlocationRecords();
+    setLocationList(locationList);
   };
 
   useEffect(() => {
@@ -98,8 +96,8 @@ export default function InventoryMaster() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <div className="flex justify-between items-center mb-4">
+    <div className="min-h-screen p-4 bg-gray-100">
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
         <button
           onClick={() => router.push("/dashboard")}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
@@ -110,23 +108,21 @@ export default function InventoryMaster() {
 
         <h1 className="text-2xl font-bold">Inventory Master</h1>
 
-        <div className="flex items-center font-bold px-4 ">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Search Bar */}
-          <div className=" mx-2 px-2 items-center rounded">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearch}
-              placeholder="Search"
-              className="w-full px-8 py-2 border rounded"
-            />
-          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Search"
+            className="w-full sm:w-auto px-4 py-2 border rounded-full"
+          />
 
           <button
             onClick={showForm ? handleCancel : handleAdd}
-            className="flex items-center bg-blue-600 text-white px-2 py-2 rounded-xl hover:bg-blue-700"
+            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
           >
-            <Plus className="w-4 h-4 mr-2" /> {showForm ? "Cancel" :"Add Inventory"  }
+            <Plus className="w-4 h-4 mr-2" /> {showForm ? "Cancel" : "Add Inventory"}
           </button>
         </div>
       </div>
@@ -134,7 +130,7 @@ export default function InventoryMaster() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-2 gap-4"
+          className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
         >
           {[
             "designname",
@@ -159,7 +155,7 @@ export default function InventoryMaster() {
                 onChange={(e) =>
                   setFormData({ ...formData, [field]: e.target.value })
                 }
-                className="p-2 border rounded-xl"
+                className="p-2 border rounded-xl w-full"
               >
                 <option value="" disabled>
                   Select {field}
@@ -178,7 +174,7 @@ export default function InventoryMaster() {
                 onChange={(e) =>
                   setFormData({ ...formData, [field]: e.target.value })
                 }
-                className="p-2 border rounded-xl"
+                className="p-2 border rounded-xl w-full"
               >
                 <option value="" disabled>
                   Select {field}
@@ -192,19 +188,21 @@ export default function InventoryMaster() {
             ) : (
               <input
                 key={field}
+                type={["batchno", "weight", "pcperbox", "minqty", "maxqty", "opstock", "purprice", "holdstock"].includes(field) ? "number" : "text"}
                 placeholder={field}
+                required
                 value={formData[field] || ""}
                 onChange={(e) =>
                   setFormData({ ...formData, [field]: e.target.value })
                 }
-                className="p-2 border rounded-xl"
+                className="p-2 border rounded-xl w-full"
               />
             )
           )}
 
           <button
             type="submit"
-            className="col-span-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
+            className="col-span-1 sm:col-span-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
           >
             {editingId ? "Update Record" : "Create Record"}
           </button>

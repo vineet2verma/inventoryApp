@@ -2,32 +2,27 @@
 import { React, useContext, useEffect, useState } from "react";
 import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
+import { LoginUserFunc } from "@/app/context/loginuser";
 
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([])
   const [typelen, settypelen] = useState([])
+  const { user } = LoginUserFunc();
 
   const router = useRouter();
 
   const invdemodata = [
-    { name: "Running", value: 10 },
-    { name: "Item Out", value: 20 },
-    { name: "Item Hold", value: 10 },
+    { name: "Total Hold", value: 10 },
+    { name: "Today Hold", value: 20 },
+    { name: "Today Out", value: 10 },
   ];
 
   // fetching inv mast
   const fetchMastData = async () => {
     try {
-      const res = await fetch("/api/createinvmast");
+      const res = await fetch("api/typecount");
       const data = await res.json();
       setmastdate(data)
-      const lengthtype = [
-        { name: "Regular", length: data.filter((item) => item.type == "Regular").length },
-        { name: "Discontinue", length: data.filter((item) => item.type == "Discontinue").length },
-        { name: "On Order", length: data.filter((item) => item.type == "On Order").length },
-      ]
-      settypelen(lengthtype)
-      console.log(typelen)
 
     } catch (err) {
       console.error("Failed to fetch records:", err);
@@ -36,6 +31,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchMastData()
+    console.log(user)
   }, [])
 
   return (
@@ -44,8 +40,9 @@ export default function Dashboard() {
 
       <div className="min-h-screen bg-gray-100 px-5 pt-4 ">
         {/* Header */}
-        <header className="bg-white shadow p-4 mb-6 rounded-xl">
+        <header className="flex justify-between bg-white shadow p-4 mb-6 rounded-xl">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{user.user?.name}</h1>
         </header>
 
         {/* Main Content */}
@@ -67,13 +64,18 @@ export default function Dashboard() {
 
               <table className="rounded min-w-35 text-sm text-left">
                 <tbody>
-                  {
-                    typelen.map((item, i) => (
-                      <tr key={i} className="py-1">
-                        <td className="px-1.5 ">{item.name}</td>
-                        <td className="px-1.5 ">{item.length}</td>
-                      </tr>
-                    ))}
+                  <tr className="py-1">
+                    <td className="px-1.5 ">Regular</td>
+                    <td className="px-1.5 ">{mastdata.regularcount}</td>
+                  </tr>
+                  <tr className="py-1">
+                    <td className="px-1.5 ">Discontinue</td>
+                    <td className="px-1.5 ">{mastdata.discontinuecount}</td>
+                  </tr>
+                  <tr className="py-1">
+                    <td className="px-1.5 ">On Order</td>
+                    <td className="px-1.5 ">{mastdata.onordercount}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -185,7 +187,7 @@ export default function Dashboard() {
           >
             Item Status
           </button>
-       
+
         </div>
 
         {/* Footer */}

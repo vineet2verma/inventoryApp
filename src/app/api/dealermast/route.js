@@ -7,7 +7,7 @@ import dealerMast from "@/app/api/models/dealerMast";
 export async function GET() {
   try {
     await connectToDatabase();
-    const records = await dealerMast.find().sort({ createdAt: -1 }); // Newest first
+    const records = await dealerMast.find().limit(50).sort({ createdAt: -1 }); // Newest first
     return NextResponse.json(records, { status: 200 });
   } catch (err) {
     console.error(err);
