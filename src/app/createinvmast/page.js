@@ -7,9 +7,7 @@ import { fetchlocationRecords } from "@/app/components/fetchlocationmast";
 
 export default function InventoryMaster() {
   const [records, setRecords] = useState([]);
-
   const [filteredRecords, setFilteredRecords] = useState([]);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
@@ -46,7 +44,7 @@ export default function InventoryMaster() {
   }, []);
 
   const handleSearch = async (e) => {
-    setSearchQuery(e.target.value)
+    setSearchQuery(e.target.value);
 
     const query = e.target.value.toLowerCase();
     if (query == "") {
@@ -60,12 +58,11 @@ export default function InventoryMaster() {
     } else {
       setTimeout(async () => {
         let req = await fetch("/api/searchinvmastpage?query=" + query);
-        let res = await req.json()
-        setmainfilterbackup(res.data)
+        let res = await req.json();
+        setmainfilterbackup(res.data);
         res.error ? setFilteredRecords(res.data) : setFilteredRecords(res.data);
       }, 500);
     }
-
   };
 
   const handleDelete = async (id) => {
@@ -109,27 +106,22 @@ export default function InventoryMaster() {
     setEditingId(null);
   };
 
-
   const handleTypeSearch = (x) => {
     if (x.target.value != "Select Type") {
-      let filterType = mainfilterbackup.filter(e => e.type == x.target.value)
+      let filterType = mainfilterbackup.filter((e) => e.type == x.target.value);
       setFilteredRecords(filterType);
-    }
-    else {
+    } else {
       setFilteredRecords(mainfilterbackup);
     }
-  }
+  };
   const handleSizeSearch = (x) => {
     if (x.target.value != "Select Size") {
-      let filterType = mainfilterbackup.filter(e => e.size == x.target.value)
-      setFilteredRecords(filterType)
-    }
-    else {
+      let filterType = mainfilterbackup.filter((e) => e.size == x.target.value);
+      setFilteredRecords(filterType);
+    } else {
       setFilteredRecords(mainfilterbackup);
     }
-  }
-
-
+  };
 
   return (
     <div className="min-h-screen p-4 bg-gray-100 ">
@@ -142,31 +134,30 @@ export default function InventoryMaster() {
           Home
         </button>
         {/* <h1 className="text-2xl font-bold">Inventory Master</h1> */}
-        <select
-          className="rounded-xl px-4 py-2"
-          onChange={handleSizeSearch}
-        >
-          <option  >Select Size</option>
-          {
-            Array.from(new Set(mainfilterbackup.map(x => x.size))).map((item, i) => (
-              <option key={i} >{item}</option>
-
-            ))
-          }
-        </select>
-
-
-        <select
-          className="rounded-xl px-4 py-2"
-          onChange={handleTypeSearch}
-        >
-          <option  >Select Type</option>
-          <option>Regular</option>
-          <option>Discontinue</option>
-          <option>On Order</option>
-        </select>
 
         <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="border rounded-full px-4 py-2 "
+            onChange={handleTypeSearch}
+          >
+            <option>Select Type</option>
+            <option>Regular</option>
+            <option>Discontinue</option>
+            <option>On Order</option>
+          </select>
+
+          <select
+            className="rounded-full border px-4 py-2"
+            onChange={handleSizeSearch}
+          >
+            <option>Select Size</option>
+            {Array.from(new Set(mainfilterbackup.map((x) => x.size))).map(
+              (item, i) => (
+                <option key={i}>{item}</option>
+              )
+            )}
+          </select>
+
           {/* Search Bar */}
           <input
             type="text"
@@ -177,96 +168,112 @@ export default function InventoryMaster() {
           />
           <button
             onClick={showForm ? handleCancel : handleAdd}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+            className={
+              showForm
+                ? "flex items-center bg-red-600 text-white px-4 py-2 rounded-xl hover:bg-red-700"
+                : "flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+            }
           >
-            <Plus className="w-4 h-4 mr-2" /> {showForm ? "Cancel" : "Add Inventory"}
+            <Plus className="w-4 h-4 mr-2" />{" "}
+            {showForm ? "Cancel" : "Add Inventory"}
           </button>
         </div>
       </div>
 
-      {
-        showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
-          >
-            {[
-              "designname",
-              "coname",
-              "batchno",
-              "type",
-              "size",
-              "weight",
-              "pcperbox",
-              "minqty",
-              "maxqty",
-              "opstock",
-              "purprice",
-              "holdstock",
-              "location",
-            ].map((field) =>
-              field === "type" ? (
-                <select
-                  key={field}
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [field]: e.target.value })
-                  }
-                  className="p-2 border rounded-xl w-full"
-                >
-                  <option value="" disabled>
-                    Select {field}
+      {showForm && (
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-4 rounded-xl shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
+        >
+          {[
+            "designname",
+            "coname",
+            "batchno",
+            "type",
+            "size",
+            "weight",
+            "pcperbox",
+            "minqty",
+            "maxqty",
+            "opstock",
+            "holdstock",
+            "location",
+            // "purprice",
+          ].map((field) =>
+            field === "type" ? (
+              <select
+                key={field}
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl w-full"
+              >
+                <option value="" disabled>
+                  Select {field}
+                </option>
+                {typeList.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
                   </option>
-                  {typeList.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              ) : field === "location" ? (
-                <select
-                  key={field}
-                  placeholder={field}
-                  value={formData[field] || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [field]: e.target.value })
-                  }
-                  className="p-2 border rounded-xl w-full"
-                >
-                  <option value="" disabled>
-                    Select {field}
+                ))}
+              </select>
+            ) : field === "location" ? (
+              <select
+                key={field}
+                placeholder={field}
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl w-full"
+              >
+                <option value="" disabled>
+                  Select {field}
+                </option>
+                {locationList.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
                   </option>
-                  {locationList.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  key={field}
-                  type={["batchno", "weight", "pcperbox", "minqty", "maxqty", "opstock", "purprice", "holdstock"].includes(field) ? "number" : "text"}
-                  placeholder={field}
-                  required
-                  value={formData[field] || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, [field]: e.target.value })
-                  }
-                  className="p-2 border rounded-xl w-full"
-                />
-              )
-            )}
+                ))}
+              </select>
+            ) : (
+              <input
+                key={field}
+                type={
+                  [
+                    "batchno",
+                    "weight",
+                    "pcperbox",
+                    "minqty",
+                    "maxqty",
+                    "opstock",
+                    "purprice",
+                    "holdstock",
+                  ].includes(field)
+                    ? "number"
+                    : "text"
+                }
+                placeholder={field}
+                required
+                value={formData[field] || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, [field]: e.target.value })
+                }
+                className="p-2 border rounded-xl w-full"
+              />
+            )
+          )}
 
-            <button
-              type="submit"
-              className="col-span-1 sm:col-span-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
-            >
-              {editingId ? "Update Record" : "Create Record"}
-            </button>
-          </form>
-        )
-      }
+          <button
+            type="submit"
+            className="col-span-1 sm:col-span-2 bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
+          >
+            {editingId ? "Update Record" : "Create Record"}
+          </button>
+        </form>
+      )}
 
       <div className="  bg-white p-0.4 rounded-xl shadow-md overflow-x-auto overflow-y-auto max-h-140 ">
         <table className="min-w-full text-sm text-left table-auto ">
@@ -332,6 +339,6 @@ export default function InventoryMaster() {
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }

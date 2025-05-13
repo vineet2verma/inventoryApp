@@ -10,11 +10,17 @@ import {
   Link,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchMastData } from "../components/fetchinvmast";
+import { fetchlocationRecords } from "../components/fetchlocationmast";
+import { LoginUserFunc } from "../context/loginuser";
+import moment from "moment";
 
 export default function StockInPage() {
+  const today = new Date();
+  const { user } = LoginUserFunc();
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({
-    date: "", // `${new Date().getMonth()}/${new Date().getDate()}/${new Date().getFullYear}`,
+    date: moment(today).format("yyyy-MM-DD"),
     designname: "",
     coname: "",
     batchno: "",
@@ -25,7 +31,8 @@ export default function StockInPage() {
     breakage: "",
     purprice: "",
     currstock: "",
-    createdby: "",
+    remarks: "",
+    createdby: user.user?.name,
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,22 +51,27 @@ export default function StockInPage() {
   // Fetch records from the API
   const fetchInvMastRecords = async () => {
     try {
-      const res = await fetch("/api/createinvmast");
-      const data = await res.json();
-      setMastdata(data);
+      // const res = await fetch("/api/createinvmast");
+      // const data = await res.json();
+      // setMastdata(data);
+      const masterdata = await fetchMastData();
+      setMastdata(masterdata);
+
       const mstdesign = Array.from(
-        new Set(data.map((item) => item.designname))
+        new Set(masterdata.map((item) => item.designname))
       );
-      const msttype = Array.from(new Set(data.map((item) => item.type)));
-
-      const mstcurrstock = Array.from(
-        new Set(data.map((item) => item.currstock))
-      );
-
-      setMasttype(msttype);
-      // setMastsize(mstsize)
-      setMastcurrstock(mstcurrstock);
       setdesignname(mstdesign);
+
+      const msttype = Array.from(new Set(masterdata.map((item) => item.type)));
+      setMasttype(msttype);
+
+      // use to update curr stock
+      const mstcurrstock = Array.from(
+        new Set(masterdata.map((item) => item.currstock))
+      );
+      setMastcurrstock(mstcurrstock);
+
+      // setMastsize(mstsize)
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
@@ -70,19 +82,11 @@ export default function StockInPage() {
     fetchLocations(); // Fetch locations on component mount
     fetchRecords();
   }, []);
+
   // lcoation mast
   const fetchLocations = async () => {
-    try {
-      const res = await fetch("/api/location");
-      const data = await res.json();
-
-      const loc = data
-        .filter((items) => items.status == "Active")
-        .map((item) => item.location);
-      setMastlocation(Array.from(new Set(loc)));
-    } catch (err) {
-      console.error("Failed to fetch records:", err);
-    }
+    const locationmastrecords = await fetchlocationRecords();
+    setMastlocation(locationmastrecords);
   };
 
   const fetchRecords = async () => {
@@ -100,12 +104,18 @@ export default function StockInPage() {
       const sizes = mastdata
         .filter((items) => items.designname == e.target.value)
         .map((item) => item.size);
-
       setMastsize(Array.from(new Set(sizes)));
       setSelectedDesign(e.target.value);
+
+      // const companyname = mastdata.filter((items)=>items.designname == selectedDesign ).map((item)=>item.coname)
+      // setFormData({...formData })
     }
 
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+      [e.target.createdby]: user.user?.name,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -134,7 +144,8 @@ export default function StockInPage() {
         location: "",
         purprice: "",
         currstock: "",
-        createdby: "",
+        remarks: "",
+        createdby: user.user?.name,
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -167,7 +178,7 @@ export default function StockInPage() {
 
   const handleAddNew = () => {
     setFormData({
-      date: "",
+      date: moment(today).format("yyyy-MM-DD"),
       designname: "",
       coname: "",
       batchno: "",
@@ -178,7 +189,8 @@ export default function StockInPage() {
       breakage: "",
       purprice: "",
       currstock: "",
-      createdby: "",
+      remarks: "",
+      createdby: user.user?.name,
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -216,13 +228,14 @@ export default function StockInPage() {
               <th className="p-2">Design Name</th>
               <th className="p-2">Company Name</th>
               <th className="p-2">Batch No</th>
-              <th className="p-2">Type</th>
+              {/* <th className="p-2">Type</th> */}
               <th className="p-2">Size</th>
               <th className="p-2">Quantity</th>
               <th className="p-2">Breakage</th>
               <th className="p-2">Location</th>
-              <th className="p-2">Purchase Price</th>
+              {/* <th className="p-2">Purchase Price</th> */}
               <th className="p-2">Current Stock</th>
+              <th className="p-2">Remarks</th>
               <th className="p-2">Created By</th>
               <th className="p-2">Actions</th>
             </tr>
@@ -234,13 +247,14 @@ export default function StockInPage() {
                 <td className="p-2">{record.designname}</td>
                 <td className="p-2">{record.coname}</td>
                 <td className="p-2">{record.batchno}</td>
-                <td className="p-2">{record.type}</td>
+                {/* <td className="p-2">{record.type}</td> */}
                 <td className="p-2">{record.size}</td>
                 <td className="p-2">{record.quantity}</td>
                 <td className="p-2">{record.breakage}</td>
                 <td className="p-2">{record.location}</td>
-                <td className="p-2">{record.purprice}</td>
+                {/* <td className="p-2">{record.purprice}</td> */}
                 <td className="p-2">{record.currstock}</td>
+                <td className="p-2">{record.remarks}</td>
                 <td className="p-2">{record.createdby}</td>
                 <td className="p-2 flex gap-2">
                   <button
@@ -274,15 +288,9 @@ export default function StockInPage() {
                 <input
                   type="date"
                   name="date"
-                  value={`${new Date().getFullYear()}-${
-                    new Date().getMonth().toString().length < 2
-                      ? "0" + (new Date().getMonth() + 1)
-                      : new Date().getMonth() + 1
-                  }-${
-                    new Date().getDate().toString().length < 2
-                      ? "0" + new Date().getDate().toString()
-                      : new Date().getDate().toString()
-                  }`} // value={FormDataEvent.data}
+                  disabled
+                  required
+                  value={moment(today).format("yyyy-MM-DD")} // value={FormDataEvent.data}
                   onChange={handleChange}
                   placeholder="Date"
                   className="border p-2 rounded w-full"
@@ -370,15 +378,16 @@ export default function StockInPage() {
                 </select>
 
                 <input
-                  type="number"
-                  name="purprice"
-                  value={formData.purprice}
+                  type="text"
+                  name="remarks"
+                  value={formData.remarks}
                   onChange={handleChange}
-                  placeholder="Purchase Price"
+                  placeholder="Remarks"
                   className="border p-2 rounded w-full"
                 />
                 <input
                   type="text"
+                  disabled
                   name="createdby"
                   value={formData.createdby}
                   onChange={handleChange}

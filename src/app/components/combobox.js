@@ -44,12 +44,12 @@ export default function DesignComboBox({ onSelect, itemChange, changedSize, chan
         itemChange(e)
     }
     return (
-        <div className="w-64">
+        <div className="w-full">
             <Combobox value={selected} onChange={forselection} name='designname'>
                 <div className="relative">
                     <Combobox.Input
                         name='designname'
-                        className="w-full border rounded p-2"
+                        className="w-full border rounded p-2 "
                         placeholder="Search design..."
                         onChange={handleChange}
                         displayValue={(item) => item}

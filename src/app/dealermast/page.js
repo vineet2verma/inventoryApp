@@ -6,9 +6,11 @@ import moment from 'moment';
 import { fetchPaymentTypeRecords } from "@/app/components/fetchpaymenttype"
 import { fetchMastData } from "../components/fetchinvmast";
 import DesignComboBox from "../components/combobox";
+import { LoginUserFunc } from "../context/loginuser";
 
 
 export default function DealerMastPage() {
+  const { user } = LoginUserFunc();
   const router = useRouter();
   const [invmast, setinvmast] = useState([]);
   const [records, setRecords] = useState([]);
@@ -26,6 +28,7 @@ export default function DealerMastPage() {
     paymenttype: "",
     salesman: "",
     discount: "",
+    reference : "",
     createdby: "",
   });
   const [editId, setEditId] = useState(null);
@@ -113,12 +116,10 @@ export default function DealerMastPage() {
       let res = await req.json()
       res.error ? setFilteredRecords(data) : setFilteredRecords(res.data);
     }
-
-
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value, [e.target.createdby] : user.user?.name });
   };
 
   // dealer master put and post
@@ -206,6 +207,7 @@ export default function DealerMastPage() {
       paymenttype: "",
       salesman: "",
       discount: "",
+      reference : "",
       createdby: "",
     });
     setEditId(null);
@@ -228,7 +230,6 @@ export default function DealerMastPage() {
   const fetchItemDetailById = async (id) => {
     const res = await fetch('/api/itemdetail?id=' + id);
     const data = await res.json();
-    console.log(data)
     setItemData(data);
   }
 
@@ -257,10 +258,6 @@ export default function DealerMastPage() {
       setbatchno(Array.from(new Set(batchnos)));
       console.log(batchnos)
     }
-
-
-
-
     setintialitem((prev) => ({ ...prev, [name]: value, [date]: today }))
   };
 
@@ -415,6 +412,7 @@ export default function DealerMastPage() {
                         placeholder={key}
                         className="border p-2 rounded w-full text-sm"
                       >
+                        <option >Select Payment Type</option>
                         {paymenttype.map((item, i) =>
                           <option key={i} value={item} >
                             {item}
@@ -466,7 +464,7 @@ export default function DealerMastPage() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Modal for add item */}
       {
         showModal && (
           /* <form> */
@@ -491,8 +489,8 @@ export default function DealerMastPage() {
                     field == "designname" ?
                       (
                         <div key={idx}>
-                          <label className="block mb-1 capitalize text-gray-600">{field}</label>
-                          <DesignComboBox onSelect={setselecteddesignname} itemChange={handleItemChange} changedSize={setsize} changedBatch={setbatchno} inv={setinvmast} />
+                          <label className=" block mb-1 capitalize text-gray-600">{field}</label>
+                          <DesignComboBox  onSelect={setselecteddesignname} itemChange={handleItemChange} changedSize={setsize} changedBatch={setbatchno} inv={setinvmast} />
                         </div>
 
                       )
@@ -558,6 +556,7 @@ export default function DealerMastPage() {
                                 <label className="block mb-1 capitalize text-gray-600">{field}</label>
                                 <input
                                   type={field == "qty" ? "number" : "text"}
+                                  disabled = {field == 'mid' || field == 'midname' ? true : false }
                                   name={field}
                                   value={initialitem[field]}
                                   onChange={handleItemChange}
@@ -623,13 +622,9 @@ export default function DealerMastPage() {
               </div>
 
               {/* Item Details */}
-
-
-
             </div>
           </div>
         )
-
       }
     </div >
   );

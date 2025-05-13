@@ -168,7 +168,7 @@ export default function TypeMastPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Created By</label>
+                <label className="block text-sm font-medium">{form.id?"Updated By":"Created By"   }</label>
                 <input
                   value={form.createdBy}
                   onChange={(e) =>

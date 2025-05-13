@@ -28,7 +28,7 @@ export async function POST(req) {
     // mast inv id
     const currStockId = currStock._id;
     //  curr stock - breakage + mast stock 
-    data.currStock = parseInt(data.quantity) - parseFloat(data.breakage) + parseFloat(currStock.closingstock);
+    data.currStock = parseFloat(data.quantity) - parseFloat(data.breakage) + parseFloat(currStock.closingstock);
     // update mast stock
     await createInvMaster.findByIdAndUpdate(currStockId, { closingstock: data.currStock }, { new: true });
 

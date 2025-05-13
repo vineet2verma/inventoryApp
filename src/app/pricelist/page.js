@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus, Edit } from "lucide-react";
+import { LoginUserFunc } from '../context/loginuser';
+import moment from 'moment';
 
 export default function PriceListPage() {
   const router = useRouter();
@@ -12,6 +14,10 @@ export default function PriceListPage() {
   const [showModal, setShowModal] = useState(false);
   const [invMast, setInvMast] = useState([])
   const [currId, setCurrId] = useState(null)
+  const { user } = LoginUserFunc()
+
+  const today = new Date();
+  const formatteddate = moment(today).format("yyyy-MM-DD")
 
   useEffect(() => {
     fetchData();
@@ -27,33 +33,31 @@ export default function PriceListPage() {
   const fetchDataInvMast = async () => {
     const res = await fetch("api/createinvmast");
     const json = await res.json();
-
     setInvMast(json);
-    console.log(json)
   }
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value,   });
     invMast[currId][e.target.name] = e.target.value
+    // const formatteddate = moment(today).format("yyyy-MM-DD")
+    // invMast[currId][e.target.data] = formatteddate
+
     setInvMast(invMast)
   };
 
   const openModal = (item = {}) => {
+    const formatteddate = moment(today).format("yyyy-MM-DD")
+
     // post
-    setFormData(item);
+    setFormData({...item, date: formatteddate });
     setCurrId(invMast.indexOf(item))
+
 
     // edit
     setEditId(item._id || null);
-
-    invMast[currId].date = `${new Date().getFullYear().toString()}-${new Date().getMonth().toString().length < 2 ? "0" + (new Date().getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()}-${new Date().getDate().toString().length < 2 ? "0" + new Date().getDate().toString() : new Date().getDate().toString()}`
+    invMast[currId].date = formatteddate
     setInvMast(invMast)
-
-
     setShowModal(true);
-
-
-
   };
 
   const handleSubmit = async () => {
@@ -67,9 +71,6 @@ export default function PriceListPage() {
     //   'discount',  
     //   }
 
-
-
-    console.log('Form Data:', formData); // Debugging line
     const method = editId ? 'PUT' : 'POST';
     const url = editId ? `/api/pricelist?id=${editId}` : '/api/pricelist';
 
@@ -143,7 +144,7 @@ export default function PriceListPage() {
                 'Rate/Sqft',
                 'Qty/Sqft',
                 'Packing/Box',
-                'Discount',
+                // 'Discount',
                 'Actions',
               ].map((header) => (
                 <th key={header} className="px-4 py-2 border">
@@ -165,13 +166,14 @@ export default function PriceListPage() {
                 <td className="px-4 py-2 border">{item.ratePerSqft}</td>
                 <td className="px-4 py-2 border">{item.qtyPerSqft}</td>
                 <td className="px-4 py-2 border">{item.packingPerBox}</td>
-                <td className="px-4 py-2 border">{item.discount}</td>
+                {/* <td className="px-4 py-2 border">{item.discount}</td> */}
                 <td className="px-4 py-2 border space-x-2">
 
                   <button
                     onClick={() => openModal(item)}// handleSubmit(item._id)}
                     className="bg-green-500 text-white px-2 py-1 rounded text-sm"
                   >
+                   {console.log(item.designname)}
                     <Plus className="w-15 h-5" />
                   </button>
 
@@ -203,7 +205,7 @@ export default function PriceListPage() {
             <h2 className="text-xl font-semibold mb-4">
               {editId ? 'Update Entry' : 'Add Entry'}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
               {[
                 'date',
                 'designname',
@@ -215,10 +217,11 @@ export default function PriceListPage() {
                 'ratePerSqft',
                 'qtyPerSqft',
                 'packingPerBox',
-                'discount',
+                // 'discount',
               ].map((field) =>
                 field == 'date' ?
                   (<input
+                    type='date'
                     key={field}
                     name={field}
                     placeholder={field.replace(/([A-Z])/g, ' $1')}

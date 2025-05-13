@@ -75,8 +75,6 @@ export default function LocationMasterPage() {
           Home
         </button>
 
-
-
         <h2 className="text-2xl font-bold text-gray-800">Location Master</h2>
         <button
           onClick={() => {
@@ -111,9 +109,9 @@ export default function LocationMasterPage() {
           <thead className="text-xs uppercase bg-gray-200 text-gray-700">
             <tr>
               <th className="px-4 py-2">Location</th>
-              <th className="px-4 py-2">Created By</th>
               <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Created At</th>
+              <th className="px-4 py-2">Created By</th>
+              {/* <th className="px-4 py-2">Created At</th> */}
               <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
@@ -123,9 +121,9 @@ export default function LocationMasterPage() {
                 <td className="px-4 py-2">{item.location}</td>
                 <td className="px-4 py-2">{item.createdBy}</td>
                 <td className="px-4 py-2">{item.status}</td>
-                <td className="px-4 py-2">
+                {/* <td className="px-4 py-2">
                   {new Date(item.createdAt).toLocaleString()}
-                </td>
+                </td> */}
                 <td className="px-4 py-2 flex justify-center space-x-2">
                   <button
                     onClick={() => openEdit(item)}

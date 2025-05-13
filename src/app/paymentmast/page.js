@@ -2,8 +2,10 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Pencil, Trash2, House, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LoginUserFunc } from "../context/loginuser";
 
 export default function PaymentMasterPage() {
+  const { user } = LoginUserFunc();
   const [data, setData] = useState([]);
   const [form, setForm] = useState({
     payment: "",
@@ -57,7 +59,7 @@ export default function PaymentMasterPage() {
   };
 
   const openEdit = (item) => {
-    setForm({ ...item, id: item._id });
+    setForm({ ...item, id: item._id , createdBy : user.user?.name  });
     setModalOpen(true);
   };
 
@@ -78,7 +80,7 @@ export default function PaymentMasterPage() {
         <h2 className="text-2xl font-bold text-gray-800">Payment Master</h2>
         <button
           onClick={() => {
-            setForm({ payment: "", createdBy: "", status: "Active" });
+            setForm({ payment: "", createdBy: user.user?.name , status: "Active" });
             setModalOpen(true);
           }}
           className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
@@ -109,9 +111,9 @@ export default function PaymentMasterPage() {
           <thead className="text-xs uppercase bg-gray-200 text-gray-700">
             <tr>
               <th className="px-4 py-2">Payment</th>
-              <th className="px-4 py-2">Created By</th>
               <th className="px-4 py-2">Status</th>
-              <th className="px-4 py-2">Created At</th>
+              <th className="px-4 py-2">Created By</th>
+              {/* <th className="px-4 py-2">Created At</th> */}
               <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
@@ -119,11 +121,11 @@ export default function PaymentMasterPage() {
             {data.map((item) => (
               <tr key={item._id} className="border-b">
                 <td className="px-4 py-2">{item.payment}</td>
-                <td className="px-4 py-2">{item.createdBy}</td>
                 <td className="px-4 py-2">{item.status}</td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-2">{item.createdBy}</td>
+                {/* <td className="px-4 py-2">
                   {new Date(item.createdAt).toLocaleString()}
-                </td>
+                </td> */}
                 <td className="px-4 py-2 flex justify-center space-x-2">
                   <button
                     onClick={() => openEdit(item)}
@@ -164,12 +166,12 @@ export default function PaymentMasterPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium">Created By</label>
+                <label className="block text-sm font-medium">{form.id?"Updated By":"Created By" }</label>
                 <input
                   type="text"
                   value={form.createdBy}
                   onChange={(e) =>
-                    setForm({ ...form, createdBy: e.target.value })
+                    setForm({ ...form, createdBy: user.user?.name })
                   }
                   required
                   className="w-full p-2 border border-gray-300 rounded-xl"

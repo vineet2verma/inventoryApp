@@ -11,7 +11,8 @@ const DealerMastSchema = new mongoose.Schema(
         shipaddress: { type: String, required: false },
         paymenttype: { type: String, required: false },
         salesman: { type: String, required: false },
-        discount: { type: String, required: false },        
+        discount: { type: String, required: false },
+        reference: { type: String, required: false },
         createdby: { type: String, required: false },
     },
     { timestamps: true }

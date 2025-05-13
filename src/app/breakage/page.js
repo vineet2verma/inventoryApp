@@ -34,8 +34,7 @@ export default function DealerMastPage() {
     batchno: "",
     size: "",
     breakageqty: "",
-    remarks: "",
-    closingstock: "",
+    remarks: ""
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -157,8 +156,7 @@ export default function DealerMastPage() {
         batchno: "",
         size: "",
         breakageqty: "",
-        remarks: "",
-        closingstock: "",
+        remarks: ""
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -196,8 +194,7 @@ export default function DealerMastPage() {
       batchno: "",
       size: "",
       breakageqty: "",
-      remarks: "",
-      closingstock: "",
+      remarks: ""
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -238,7 +235,7 @@ export default function DealerMastPage() {
       </div>
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full bg-white rounded shadow-md text-sm">
+        <table className="w-full bg-white rounded shadow-md text-xs">
           <thead className="bg-gray-200">
             <tr>
               {Object.keys(formData).map((key) => (
@@ -293,95 +290,85 @@ export default function DealerMastPage() {
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Object.keys(formData).map((key, i) =>
-                  key == "designname" ? (
-                    <select
-                      key={key}
-                      // type="text"
-                      name="designname" // {key}
-                      // value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {designname.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  ) : key == "size" ? (
-                    <select
-                      key={key}
-                      type="text"
-                      name="size" // {key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {sizes.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  ) : key == "batchno" ? (
-                    <select
-                      key={key}
-                      type="text"
-                      name={key}
-                      // value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {batchnos.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  ) : key == "breakageqty" ? (
-                    <input
-                      key={key}
-                      type="number"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    />
-                  ) : key == "coname" ? (
-                    <select
-                      key={key}
-                      type="text"
-                      name={key}
-                      // value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    >
-                      {companys.map((item, i) => (
-                        <option key={i} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  ) : key == "breakageqty" || key == "remarks" ? (
-                    <input
-                      key={key}
-                      type="text"
-                      name={key}
-                      value={formData[key]}
-                      onChange={handleChange}
-                      placeholder={key}
-                      className="border p-2 rounded w-full text-sm"
-                    />
-                  ) : (
-                    ""
-                  )
-                )}
+                {Object.keys(formData).map((key, i) => (
+                  <div key={i}>
+                    <label htmlFor={key} className="block text-sm font-medium text-gray-700">
+                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                    </label>
+                    {key === "designname" ? (
+                      <select
+                        id={key}
+                        name={key}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {designname.map((item, i) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    ) : key === "size" ? (
+                      <select
+                        id={key}
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {sizes.map((item, i) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    ) : key === "batchno" ? (
+                      <select
+                        id={key}
+                        name={key}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {batchnos.map((item, i) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    ) : key === "breakageqty" ? (
+                      <input
+                        id={key}
+                        type="number"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      />
+                    ) : key === "coname" ? (
+                      <select
+                        id={key}
+                        name={key}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      >
+                        {companys.map((item, i) => (
+                          <option key={i} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        id={key}
+                        type="text"
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        className="border p-2 rounded w-full text-sm"
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
               <div className="mt-4 flex justify-end">
                 <button
