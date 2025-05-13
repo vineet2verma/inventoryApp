@@ -290,9 +290,9 @@ export default function InventoryMaster() {
               <th className="p-2">Min. Qty</th>
               <th className="p-2">Max. Qty</th>
               <th className="p-2">Op. Stock</th>
-              <th className="p-2">Pur. Price</th>
               <th className="p-2">Hold Stock</th>
               <th className="p-2">Cl. Stock</th>
+              {/* <th className="p-2">Pur. Price</th> */}
               <th className="p-2">Actions</th>
             </tr>
           </thead>
@@ -307,12 +307,12 @@ export default function InventoryMaster() {
                 <td className="p-2">{rec.weight}</td>
                 <td className="p-2">{rec.pcperbox}</td>
                 <td className="p-2">{rec.location}</td>
-                <td className="p-2">{rec.minqty}</td>
-                <td className="p-2">{rec.maxqty}</td>
+                <td className={`p-2 ${rec.closingstock < rec.minqty ? "bg-amber-300 " : ''} `}>{rec.minqty}</td>
+                <td className={`p-2 ${parseFloat(rec.closingstock) > parseFloat(rec.maxqty) ? "bg-orange-300 " : ''} `}>{rec.maxqty}</td>
                 <td className="p-2">{rec.opstock}</td>
-                <td className="p-2">{rec.purprice}</td>
                 <td className="p-2">{rec.holdstock}</td>
                 <td className="p-2">{rec.closingstock}</td>
+                {/* <td className="p-2">{rec.purprice}</td> */}
                 <td className="p-2 space-x-2">
                   <button
                     onClick={() => handleEdit(rec)}

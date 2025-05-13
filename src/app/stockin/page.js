@@ -42,6 +42,8 @@ export default function StockInPage() {
   const [masttype, setMasttype] = useState([]);
   const [mastsize, setMastsize] = useState([]);
   const [size, setsize] = useState([]);
+  const [companyname, setcompanyname] = useState("");
+  const [batchno, setbatchno] = useState([]);
   const [quantity, setquantity] = useState([]);
   const [breakage, setbreakage] = useState([]);
   const [mastlocation, setMastlocation] = useState([]);
@@ -51,9 +53,6 @@ export default function StockInPage() {
   // Fetch records from the API
   const fetchInvMastRecords = async () => {
     try {
-      // const res = await fetch("/api/createinvmast");
-      // const data = await res.json();
-      // setMastdata(data);
       const masterdata = await fetchMastData();
       setMastdata(masterdata);
 
@@ -100,6 +99,7 @@ export default function StockInPage() {
   };
 
   const handleChange = (e) => {
+
     if (e.target.name == "designname") {
       const sizes = mastdata
         .filter((items) => items.designname == e.target.value)
@@ -107,8 +107,17 @@ export default function StockInPage() {
       setMastsize(Array.from(new Set(sizes)));
       setSelectedDesign(e.target.value);
 
-      // const companyname = mastdata.filter((items)=>items.designname == selectedDesign ).map((item)=>item.coname)
-      // setFormData({...formData })
+      let companynames = mastdata.filter((items) => items.designname == e.target.value).map((item) => item.coname)
+      setcompanyname(companynames[0])
+    }
+
+    if (e.target.name == "coname") {
+      setcompanyname(e.target.value)
+    }
+
+    if (e.target.name == "size") {
+      let batchnos = mastdata.filter((items) => items.designname == selectedDesign && items.size == e.target.value).map((item) => item.batchno)
+      setbatchno(batchnos);
     }
 
     setFormData({
@@ -116,6 +125,7 @@ export default function StockInPage() {
       [e.target.name]: e.target.value,
       [e.target.createdby]: user.user?.name,
     });
+
   };
 
   const handleSubmit = async (e) => {
@@ -331,19 +341,36 @@ export default function StockInPage() {
                 <input
                   type="text"
                   name="coname"
-                  value={formData.coname}
+                  value={companyname}
                   onChange={handleChange}
                   placeholder="Company Name"
                   className="border p-2 rounded w-full"
                 />
-                <input
+
+                <select
+                  name="batchno"
+                  onChange={handleChange}
+                  className="border p-2 rounded w-full"
+                  required
+                >
+                  <option value="">Select Batch No</option>
+                  {batchno.map((item, i) => (
+                    <option key={i} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+
+
+
+                {/* <input
                   type="number"
                   name="batchno"
                   value={formData.batchno}
                   onChange={handleChange}
                   placeholder="Batch No"
                   className="border p-2 rounded w-full"
-                />
+                /> */}
 
                 <input
                   type="number"

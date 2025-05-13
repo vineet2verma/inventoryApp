@@ -21,6 +21,8 @@ export async function POST(req) {
     const data = await req.json();
     await connectToDatabase();
 
+    console.log(data)
+
     const newRecord = new priceList(data);
     await newRecord.save();
 
@@ -33,11 +35,15 @@ export async function POST(req) {
 
 // PUT - Update a stock in record
 export async function PUT(req) {
+  // console.log("req => ", await req.json())
+
   try {
     const { _id, ...updatedData } = await req.json();
     await connectToDatabase();
 
     const updated = await priceList.findByIdAndUpdate(_id, updatedData, { new: true });
+
+    console.log(_id, "Data   =>  ", updated)
 
     if (!updated) {
       return NextResponse.json({ message: "Record not found" }, { status: 404 });

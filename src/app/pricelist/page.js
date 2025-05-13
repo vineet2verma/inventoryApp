@@ -15,29 +15,39 @@ export default function PriceListPage() {
   const [invMast, setInvMast] = useState([])
   const [currId, setCurrId] = useState(null)
   const { user } = LoginUserFunc()
+  const [action, setaction] = useState(null)
 
   const today = new Date();
-  const formatteddate = moment(today).format("yyyy-MM-DD")
+  const formatteddate = moment(today).format("yyyy-MM-DD").toString().trim()
 
   useEffect(() => {
-    fetchData();
     fetchDataInvMast();
   }, []);
 
-  const fetchData = async () => {
-    const res = await fetch('/api/pricelist');
-    const json = await res.json();
-    setData(json);
-  };
-
   const fetchDataInvMast = async () => {
-    const res = await fetch("api/createinvmast");
-    const json = await res.json();
-    setInvMast(json);
-  }
+    const resInvMast = await fetch("api/createinvmast");
+    const invMastData = await resInvMast.json();
+
+    const resPriceList = await fetch("/api/pricelist");
+    const priceListData = await resPriceList.json();
+
+    // Join the two datasets based on _id
+    const mergedData = invMastData.map((invItem) => {
+      const priceItem = priceListData.find((price) => price._id === invItem._id);
+      return { ...invItem, ...priceItem }; // Merge the two objects
+    });
+
+    setInvMast(mergedData);
+  };
+  /////////////////////////////
+  const filteredData = invMast.filter((item) =>
+    ['designname', 'coname', 'size', 'type'].some((key) =>
+      item[key]?.toLowerCase().includes(search.toLowerCase())
+    )
+  );
 
   const handleInputChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value,   });
+    setFormData({ ...formData, [e.target.name]: e.target.value, });
     invMast[currId][e.target.name] = e.target.value
     // const formatteddate = moment(today).format("yyyy-MM-DD")
     // invMast[currId][e.target.data] = formatteddate
@@ -45,17 +55,14 @@ export default function PriceListPage() {
     setInvMast(invMast)
   };
 
-  const openModal = (item = {}) => {
-    const formatteddate = moment(today).format("yyyy-MM-DD")
-
+  const openModal = (item = {}, ae) => {
     // post
-    setFormData({...item, date: formatteddate });
+    setFormData({ ...item });
     setCurrId(invMast.indexOf(item))
-
+    setaction(ae)
 
     // edit
     setEditId(item._id || null);
-    invMast[currId].date = formatteddate
     setInvMast(invMast)
     setShowModal(true);
   };
@@ -71,8 +78,8 @@ export default function PriceListPage() {
     //   'discount',  
     //   }
 
-    const method = editId ? 'PUT' : 'POST';
-    const url = editId ? `/api/pricelist?id=${editId}` : '/api/pricelist';
+    const method = action == "edit" ? 'PUT' : 'POST';
+    const url = action == "edit" ? `/api/pricelist?id=${editId}` : '/api/pricelist';
 
     await fetch(url, {
       method,
@@ -83,7 +90,7 @@ export default function PriceListPage() {
     setFormData({});
     setEditId(null);
     setShowModal(false);
-    fetchData();
+    fetchDataInvMast()
   };
 
   const handleDelete = async (id) => {
@@ -94,12 +101,6 @@ export default function PriceListPage() {
     });
     fetchData();
   };
-
-  const filteredData = invMast.filter((item) =>
-    ['designname', 'coname', 'size', 'type'].some((key) =>
-      item[key]?.toLowerCase().includes(search.toLowerCase())
-    )
-  );
 
   return (
     <div className="p-6">
@@ -139,11 +140,11 @@ export default function PriceListPage() {
                 'Company Name',
                 'Size',
                 'Type',
+                'Packing/Box',
                 'Rate/Box',
                 'Rate/Pcs',
                 'Rate/Sqft',
                 'Qty/Sqft',
-                'Packing/Box',
                 // 'Discount',
                 'Actions',
               ].map((header) => (
@@ -156,33 +157,38 @@ export default function PriceListPage() {
           <tbody>
             {filteredData.map((item) => (
               <tr key={item._id} className="text-sm text-gray-800 border-t">
-                <td className="px-4 py-2 border">{item.date}</td>
+                <td className="px-4 py-2 border">{item.ratePerBox ? moment(item.updatedAt).format("DD/MM/yyyy") : ''}</td>
                 <td className="px-4 py-2 border">{item.designname}</td>
                 <td className="px-4 py-2 border">{item.coname}</td>
                 <td className="px-4 py-2 border">{item.size}</td>
                 <td className="px-4 py-2 border">{item.type}</td>
+                <td className="px-4 py-2 border">{item.pcperbox}</td>
                 <td className="px-4 py-2 border">{item.ratePerBox}</td>
                 <td className="px-4 py-2 border">{item.ratePerPcs}</td>
                 <td className="px-4 py-2 border">{item.ratePerSqft}</td>
                 <td className="px-4 py-2 border">{item.qtyPerSqft}</td>
-                <td className="px-4 py-2 border">{item.packingPerBox}</td>
                 {/* <td className="px-4 py-2 border">{item.discount}</td> */}
                 <td className="px-4 py-2 border space-x-2">
 
-                  <button
-                    onClick={() => openModal(item)}// handleSubmit(item._id)}
-                    className="bg-green-500 text-white px-2 py-1 rounded text-sm"
-                  >
-                   {console.log(item.designname)}
-                    <Plus className="w-15 h-5" />
-                  </button>
+                  {item.ratePerBox ?
+                    <button
+                      onClick={() => openModal(item, "edit")}
+                      className="bg-yellow-400 px-2 py-1 rounded text-sm"
+                    >
+                      <Edit className='w-15 h-5' />
+                    </button>
+                    :
+                    <button
+                      onClick={() => openModal(item, "add")}// handleSubmit(item._id)}
+                      className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                    >
+                      <Plus className="w-15 h-5" />
+                    </button>
 
-                  <button
-                    onClick={() => openModal(item)}
-                    className="bg-yellow-400 px-2 py-1 rounded text-sm"
-                  >
-                    <Edit className='w-15 h-5' />
-                  </button>
+                  }
+
+
+
 
                 </td>
               </tr>
@@ -212,11 +218,11 @@ export default function PriceListPage() {
                 'coname',
                 'size',
                 'type',
+                'packingPerBox',
                 'ratePerBox',
                 'ratePerPcs',
                 'ratePerSqft',
                 'qtyPerSqft',
-                'packingPerBox',
                 // 'discount',
               ].map((field) =>
                 field == 'date' ?
@@ -225,7 +231,9 @@ export default function PriceListPage() {
                     key={field}
                     name={field}
                     placeholder={field.replace(/([A-Z])/g, ' $1')}
+
                     value={formData[field] || ''}
+
                     onChange={handleInputChange}
                     className="border px-3 py-2 rounded"
                   />) :
