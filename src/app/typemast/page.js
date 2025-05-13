@@ -2,12 +2,13 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Pencil, Trash2, PlusCircle, House, Link, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { LoginUserFunc } from "../context/loginuser"
 
 
 export default function TypeMastPage() {
   const [types, setTypes] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const { user } = LoginUserFunc();
   const [form, setForm] = useState({
     type: "",
     createdBy: "",
@@ -75,7 +76,7 @@ export default function TypeMastPage() {
   };
 
   const openAdd = () => {
-    setForm({ type: "", createdBy: "", status: "Active", id: null });
+    setForm({ type: "", createdBy: user.user?.name, status: "Active", id: null });
     setModalOpen(true);
   };
 
@@ -107,9 +108,9 @@ export default function TypeMastPage() {
           <thead>
             <tr className="bg-gray-100 text-gray-600 uppercase text-sm">
               <th className="p-2">Type</th>
-              <th className="p-2">Created By</th>
               <th className="p-2">Status</th>
-              <th className="p-2">Created At</th>
+              <th className="p-2">Created By</th>
+              {/* <th className="p-2">Created At</th> */}
               <th className="p-2">Actions</th>
             </tr>
           </thead>
@@ -117,11 +118,11 @@ export default function TypeMastPage() {
             {types.map((item) => (
               <tr key={item._id} className="border-t hover:bg-gray-50">
                 <td className="p-2">{item.type}</td>
-                <td className="p-2">{item.createdBy}</td>
                 <td className="p-2">{item.status}</td>
-                <td className="p-2">
+                <td className="p-2">{item.createdBy}</td>
+                {/* <td className="p-2">
                   {new Date(item.createdAt).toLocaleString()}
-                </td>
+                </td> */}
                 <td className="p-2 flex gap-2">
                   <button
                     onClick={() => openEdit(item)}
@@ -171,7 +172,7 @@ export default function TypeMastPage() {
                 <input
                   value={form.createdBy}
                   onChange={(e) =>
-                    setForm({ ...form, createdBy: e.target.value })
+                    setForm({ ...form, createdBy: user.user?.name })
                   }
                   required
                   className="w-full border border-gray-300 rounded-xl p-2"

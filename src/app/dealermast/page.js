@@ -70,9 +70,6 @@ export default function DealerMastPage() {
   const fetchMastRecords = async () => {
     const data = await fetchMastData();
     data.length > 0 ? setinvmast(data) : '';
-
-    console.log(data)
-
     dropdownfunc(data)
   }
 
@@ -80,12 +77,8 @@ export default function DealerMastPage() {
   function dropdownfunc(data) {
     const designnameslist = data.map((item) => item.designname)
     setdesignname(Array.from(new Set(designnameslist)));
-    // console.log("design name is", Array.from(new Set(designnameslist)))
-    // designnameslist[0] ? setselecteddesignname(designnameslist[0]) : '';
     let sizelist = data.filter((item) => item.designname == selecteddesignname).map((item) => item.size)
-
     sizelist = Array.from(new Set(sizelist));
-
     sizelist.length < 2 ? setsize(sizelist[0]) : setsize(sizelist)
     const batchlist = data.filter((item) => item.designname == selecteddesignname && item.size == size).map((items) => items.batchno)
     setbatchno(batchlist)
@@ -118,7 +111,6 @@ export default function DealerMastPage() {
     } else {
       let req = await fetch("/api/searchinvmast?query=" + query);
       let res = await req.json()
-      // console.log(res)
       res.error ? setFilteredRecords(data) : setFilteredRecords(res.data);
     }
 
