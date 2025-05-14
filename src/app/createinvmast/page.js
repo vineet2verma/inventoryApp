@@ -275,9 +275,9 @@ export default function InventoryMaster() {
         </form>
       )}
 
-      <div className="  bg-white p-0.4 rounded-xl shadow-md overflow-x-auto overflow-y-auto max-h-140 ">
+      <div className="  bg-white p-0 rounded-xl shadow-md overflow-x-auto overflow-y-auto max-h-140 ">
         <table className="min-w-full text-sm text-left table-auto ">
-          <thead className="bg-gray-200 sticky top-0  ">
+          <thead className="bg-gray-400 sticky top-0  ">
             <tr>
               <th className="p-2">Design</th>
               <th className="p-2">Company</th>

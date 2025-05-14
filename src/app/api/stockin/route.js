@@ -23,16 +23,27 @@ export async function POST(req) {
     await connectToDatabase();
 
     console.log("Data received:", data);
+
     // mast curr stock
     const currStock = await createInvMaster.findOne({ designname: data.designname, coname: data.coname, batchno: data.batchno, size: data.size });
     // mast inv id
     const currStockId = currStock._id;
+
+    console.log("id  ==>>  ", currStockId)
+
     //  curr stock - breakage + mast stock 
     data.currStock = parseFloat(data.quantity) - parseFloat(data.breakage) + parseFloat(currStock.closingstock);
-    // update mast stock
-    await createInvMaster.findByIdAndUpdate(currStockId, { closingstock: data.currStock }, { new: true });
 
-    // console.log("Current Stock:", currStock.closingstock);
+    console.log("Updating closingstock for currStockId:", currStockId, "with value:", data.currStock);
+
+    const updatedStock = await createInvMaster.findByIdAndUpdate(currStockId, { closingstock: data.currStock }, { new: true });
+
+    if (!updatedStock) {
+      console.error("Failed to update closingstock for currStockId:", currStockId);
+      throw new Error("Failed to update closingstock");
+    }
+
+    console.log("Updated closingstock successfully:", updatedStock.closingstock);
 
     const newRecord = new StockIn(data);
     await newRecord.save();
