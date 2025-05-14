@@ -6,9 +6,9 @@ const BreakageMastSchema = new mongoose.Schema(
     coname: { type: String, required: false },
     batchno: { type: String, required: false },
     size: { type: String, required: false },
-    breakageqty: { type: String, required: false },
+    breakage: { type: String, required: false },
     remarks: { type: String, required: false },
-    closingstock:{type:String,require:false},
+    currstock: { type: String, require: false },
     createdby: { type: String, required: false },
   },
   { timestamps: true }

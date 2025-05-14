@@ -49,33 +49,16 @@ export default function Dashboard() {
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Card 1 */}
           <div className=" bg-white p-4 rounded-xl shadow">
-            <h6 className="text-xl font-semibold mb-2">Overview</h6>
+            <h6 className="text-xl font-semibold mb-2">Status : Today </h6>
             <div className="flex justify-between ">
-              <table className=" rounded min-w-35 text-sm text-left">
+              <table className=" rounded min-w-115 text-sm text-left">
                 <tbody>
                   {invdemodata.map((item, i) =>
-                    <tr key={i} className="py-1">
+                    <tr key={i} className="py-1 font-bold">
                       <td className="px-1.5 ">{item.name}</td>
                       <td className="px-1.5 ">{item.value}</td>
                     </tr>
                   )}
-                </tbody>
-              </table>
-
-              <table className="rounded min-w-35 text-sm text-left">
-                <tbody>
-                  <tr className="py-1">
-                    <td className="px-1.5 ">Regular</td>
-                    <td className="px-1.5 ">{mastdata.regularcount}</td>
-                  </tr>
-                  <tr className="py-1">
-                    <td className="px-1.5 ">Discontinue</td>
-                    <td className="px-1.5 ">{mastdata.discontinuecount}</td>
-                  </tr>
-                  <tr className="py-1">
-                    <td className="px-1.5 ">On Order</td>
-                    <td className="px-1.5 ">{mastdata.onordercount}</td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -83,8 +66,25 @@ export default function Dashboard() {
 
           {/* Card 2 */}
           <div className="bg-white p-6 rounded-2xl shadow">
-            <h2 className="text-xl font-semibold mb-2">Statistics</h2>
-            <p className="text-gray-600">Chart or stats placeholder.</p>
+            <h2 className="text-xl font-semibold mb-2">Status : Type</h2>
+            <table className="rounded min-w-125 text-sm text-left font-bold">
+              <tbody>
+                <tr className="py-1">
+                  <td className="px-1.5 ">Regular</td>
+                  <td className="px-1.5 ">{mastdata.regularcount}</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">Discontinue</td>
+                  <td className="px-1.5 ">{mastdata.discontinuecount}</td>
+                </tr>
+                <tr className="py-1">
+                  <td className="px-1.5 ">On Order</td>
+                  <td className="px-1.5 ">{mastdata.onordercount}</td>
+                </tr>
+              </tbody>
+            </table>
+
+
           </div>
 
           {/* Card 3 */}

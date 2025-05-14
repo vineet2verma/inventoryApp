@@ -41,16 +41,9 @@ export default function PriceListPage() {
     setdatabackup(mergedData);
   };
 
-      useEffect(() => {
-      fetchDataInvMast();
-    }, []);
-
-
-  // const filteredData = invMast.filter((item) =>
-  //   ["designname", "coname", "size", "type"].some((key) =>
-  //     item[key]?.toLowerCase().includes(search.toLowerCase())
-  //   )
-  // );
+  useEffect(() => {
+    fetchDataInvMast();
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -99,51 +92,6 @@ export default function PriceListPage() {
     fetchData();
   };
 
-  // const menupricelist = (e) => {
-  //   const val = e.target.value;
-
-  //   let updatedData;
-  //   switch (val) {
-  //     case 'All Price List':
-  //       updatedData = databackup;
-  //       break;
-  //     case 'Price List':
-  //       updatedData = databackup.filter((item) => item.ratePerBox != null );
-  //       break;
-  //     case 'No Price List':
-  //       updatedData = databackup.filter((item) => item.ratePerBox ==  null );
-  //       break;
-  //     default:
-  //       updatedData = databackup;
-  //   }
-
-  //   setInvMast(updatedData);
-  // };
-
-  // const menutypelist = (e) => {
-  //   let val = e.target.value;
-  //   let updatedData;
-
-  //   switch (val) {
-  //     case 'All Type':
-  //       updatedData = databackup;
-  //       break;
-  //     case 'Discontinue':
-  //       updatedData = databackup.filter((item) => item.type === 'Discontinue');
-  //       break;
-  //     case 'Regular':
-  //       updatedData = databackup.filter((item) => item.type === 'Regular');
-  //       break;
-  //     case 'On Order':
-  //       updatedData = databackup.filter((item) => item.type === 'On Order');
-  //       break;
-  //     default:
-  //       updatedData = databackup;
-  //   }
-
-  //   setInvMast(updatedData);
-  // };
-
   const filteredData = databackup.filter((item) => {
     const matchSearch = ["designname", "coname", "size", "type"].some((key) =>
       item[key]?.toLowerCase().includes(search.toLowerCase())
@@ -164,17 +112,17 @@ export default function PriceListPage() {
   });
 
   return (
-    <div className="p-0">
-      <div className="sticky top-0  bg-gray-100 flex justify-between items-center mb-0">
+    <div className="">
+      <div className="sticky top-0 mb-1 bg-gray-100 flex justify-between mx-3">
         <button
           onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
         >
           <House className="w-5 h-5" />
           Home
         </button>
         <h1 className="text-3xl font-bold">Price List</h1>
-        <div className="mb-4 flex justify-between flex-wrap gap-2">
+        <div className="mb-1 flex justify-between flex-wrap gap-2">
           <select
             className="bg-blue-600 text-white px-4 py-2 rounded"
             onChange={(e) => {
@@ -321,31 +269,31 @@ export default function PriceListPage() {
               ].map((field) =>
                 field == "date" ? (
                   <div>
-                  <label className="block text-sm font-medium">{field}</label>
-                  <input
-                    type="date"
-                    key={field}
-                    name={field}
-                    placeholder={field.replace(/([A-Z])/g, " $1")}
-                    value={moment(today).format("yyyy-MM-DD")} // {formData[field] || ""}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-400 rounded-xl"
+                    <label className="block text-sm font-medium">{field}</label>
+                    <input
+                      type="date"
+                      key={field}
+                      name={field}
+                      placeholder={field.replace(/([A-Z])/g, " $1")}
+                      value={moment(today).format("yyyy-MM-DD")} // {formData[field] || ""}
+                      onChange={handleInputChange}
+                      className="w-full p-2 border border-gray-400 rounded-xl"
                     // className="border px-3 rounded"
-                  /></div>
+                    /></div>
                 ) : (
                   <div>
                     <label className="block text-sm font-medium">{field}</label>
                     <input
-                    type= {field =="ratePerBox" || field =="ratePerPcs" || field =="ratePerSqft" || field =="qtyPerSqft"? "number" : "text"  }
-                    disabled = {field =="ratePerBox" || field =="ratePerPcs" || field =="ratePerSqft" || field =="qtyPerSqft"? false : true  }
-                    key={field}
-                    name={field}
-                    placeholder={field.replace(/([A-Z])/g, " $1")}
-                    value={formData[field] || ""}
-                    onChange={handleInputChange}
-                    className="w-full border border-gray-400 p-2 rounded-xl"
-                  />
-                    </div>
+                      type={field == "ratePerBox" || field == "ratePerPcs" || field == "ratePerSqft" || field == "qtyPerSqft" ? "number" : "text"}
+                      disabled={field == "ratePerBox" || field == "ratePerPcs" || field == "ratePerSqft" || field == "qtyPerSqft" ? false : true}
+                      key={field}
+                      name={field}
+                      placeholder={field.replace(/([A-Z])/g, " $1")}
+                      value={formData[field] || ""}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-400 p-2 rounded-xl"
+                    />
+                  </div>
                 )
               )}
             </div>

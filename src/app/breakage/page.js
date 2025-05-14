@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
@@ -33,7 +32,7 @@ export default function DealerMastPage() {
     coname: "",
     batchno: "",
     size: "",
-    breakageqty: "",
+    breakage: "",
     remarks: ""
   });
   const [editId, setEditId] = useState(null);
@@ -49,10 +48,20 @@ export default function DealerMastPage() {
 
   const fetchRecords = async () => {
     try {
-      const res = await fetch("/api/breakagemast");
-      const data = await res.json();
-      setRecords(data);
-      setFilteredRecords(data); // Initialize filtered records
+      const resBreakageMast = await fetch("/api/breakagemast");
+      const breakagemastData = await resBreakageMast.json();
+      // const resStockInMast = await fetch("/api/stockin")
+      // const stockinmastData = resStockInMast.json();
+
+      const mergeData = [...breakagemastData]
+
+      // console.log(mergeData.length)
+
+
+
+
+      setRecords(mergeData);
+      setFilteredRecords(mergeData); // Initialize filtered records
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
@@ -155,7 +164,7 @@ export default function DealerMastPage() {
         coname: "",
         batchno: "",
         size: "",
-        breakageqty: "",
+        breakage: "",
         remarks: ""
       });
       setEditId(null);
@@ -193,7 +202,7 @@ export default function DealerMastPage() {
       coname: "",
       batchno: "",
       size: "",
-      breakageqty: "",
+      breakage: "",
       remarks: ""
     });
     setEditId(null);
@@ -335,7 +344,7 @@ export default function DealerMastPage() {
                           </option>
                         ))}
                       </select>
-                    ) : key === "breakageqty" ? (
+                    ) : key === "breakage" ? (
                       <input
                         id={key}
                         type="number"

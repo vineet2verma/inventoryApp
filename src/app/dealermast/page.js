@@ -28,7 +28,7 @@ export default function DealerMastPage() {
     paymenttype: "",
     salesman: "",
     discount: "",
-    reference : "",
+    reference: "",
     createdby: "",
   });
   const [editId, setEditId] = useState(null);
@@ -106,7 +106,6 @@ export default function DealerMastPage() {
   }
 
   const handleSearch = async (e) => {
-
     e.preventDefault()
     const query = e.target.value.toLowerCase();
     if (query == "") {
@@ -119,7 +118,7 @@ export default function DealerMastPage() {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value, [e.target.createdby] : user.user?.name });
+    setFormData({ ...formData, [e.target.name]: e.target.value, [e.target.createdby]: user.user?.name });
   };
 
   // dealer master put and post
@@ -207,7 +206,7 @@ export default function DealerMastPage() {
       paymenttype: "",
       salesman: "",
       discount: "",
-      reference : "",
+      reference: "",
       createdby: "",
     });
     setEditId(null);
@@ -380,7 +379,7 @@ export default function DealerMastPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
-                    className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
+                    className=" text-red-800 px-2 py-1 rounded hover:bg-red-500"
                   >
                     <Trash2 />
                   </button>
@@ -490,7 +489,7 @@ export default function DealerMastPage() {
                       (
                         <div key={idx}>
                           <label className=" block mb-1 capitalize text-gray-600">{field}</label>
-                          <DesignComboBox  onSelect={setselecteddesignname} itemChange={handleItemChange} changedSize={setsize} changedBatch={setbatchno} inv={setinvmast} />
+                          <DesignComboBox onSelect={setselecteddesignname} itemChange={handleItemChange} changedSize={setsize} changedBatch={setbatchno} inv={setinvmast} />
                         </div>
 
                       )
@@ -556,7 +555,7 @@ export default function DealerMastPage() {
                                 <label className="block mb-1 capitalize text-gray-600">{field}</label>
                                 <input
                                   type={field == "qty" ? "number" : "text"}
-                                  disabled = {field == 'mid' || field == 'midname' ? true : false }
+                                  disabled={field == 'mid' || field == 'midname' ? true : false}
                                   name={field}
                                   value={initialitem[field]}
                                   onChange={handleItemChange}
