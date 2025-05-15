@@ -1,16 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  CheckCircle,
-  XCircle,
-  Pencil,
-  Trash2,
-  PlusCircle,
-  House,
-  Link,
-  Plus,
-  PackagePlus,
-} from "lucide-react";
+import { Pencil, Trash2, House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function DealerMastPage() {
@@ -33,7 +23,7 @@ export default function DealerMastPage() {
     batchno: "",
     size: "",
     breakage: "",
-    remarks: ""
+    remarks: "",
   });
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,15 +40,14 @@ export default function DealerMastPage() {
     try {
       const resBreakageMast = await fetch("/api/breakagemast");
       const breakagemastData = await resBreakageMast.json();
-      // const resStockInMast = await fetch("/api/stockin")
-      // const stockinmastData = resStockInMast.json();
+      const resStockInMast = await fetch("/api/stockin")
+      const stockinmastData = await resStockInMast.json();
 
-      const mergeData = [...breakagemastData]
+      const filterstockinmastData = stockinmastData
+        .filter(item=> item.breakage>0)
+        .map(({_id,designname,coname,batchno,size,breakage,remarks}) =>({_id,designname,coname,batchno,size,breakage,remarks}));
 
-      // console.log(mergeData.length)
-
-
-
+      const mergeData = [...breakagemastData,...filterstockinmastData];
 
       setRecords(mergeData);
       setFilteredRecords(mergeData); // Initialize filtered records
@@ -165,7 +154,7 @@ export default function DealerMastPage() {
         batchno: "",
         size: "",
         breakage: "",
-        remarks: ""
+        remarks: "",
       });
       setEditId(null);
       setIsModalOpen(false);
@@ -203,7 +192,7 @@ export default function DealerMastPage() {
       batchno: "",
       size: "",
       breakage: "",
-      remarks: ""
+      remarks: "",
     });
     setEditId(null);
     setIsModalOpen(true);
@@ -301,8 +290,13 @@ export default function DealerMastPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {Object.keys(formData).map((key, i) => (
                   <div key={i}>
-                    <label htmlFor={key} className="block text-sm font-medium text-gray-700">
-                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                    <label
+                      htmlFor={key}
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      {key
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
                     </label>
                     {key === "designname" ? (
                       <select

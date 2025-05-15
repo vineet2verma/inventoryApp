@@ -13,9 +13,6 @@ const ClientMastSchema = new mongoose.Schema(
     salesman: { type: String, required: false },
     discount: { type: String, required: false },        
     createdby: { type: String, required: false },
-
-
-
   },
   { timestamps: true }
 );

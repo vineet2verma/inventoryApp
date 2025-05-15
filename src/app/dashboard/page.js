@@ -67,7 +67,7 @@ export default function Dashboard() {
           {/* Card 2 */}
           <div className="bg-white p-6 rounded-2xl shadow">
             <h2 className="text-xl font-semibold mb-2">Status : Type</h2>
-            <table className="rounded min-w-125 text-sm text-left font-bold">
+            <table className="rounded min-w-118 text-sm text-left font-bold">
               <tbody>
                 <tr className="py-1">
                   <td className="px-1.5 ">Regular</td>

@@ -99,55 +99,6 @@ export default function StockInPage() {
     }
   };
 
-  // const handleChange = (e) => {
-
-  //   if (e.target.name == "designname") {
-  //     const sizes = mastdata
-  //       .filter((items) => items.designname == e.target.value)
-  //       .map((item) => item.size);
-  //     setMastsize(Array.from(new Set(sizes)));
-  //     setSelectedDesign(e.target.value);
-
-  //     let companynames = mastdata
-  //       .filter((items) => items.designname == e.target.value)
-  //       .map((item) => item.coname);
-
-  //     // Use a fallback value if companynames[0] is undefined or empty
-  //     const selectedCompanyName = companynames[0] || "";
-
-  //     // Update formData with the selected company name and design name
-  //     setFormData((prevFormData) => ({
-  //       ...prevFormData,
-  //       designname: e.target.value,
-  //       coname: selectedCompanyName,
-  //     }));
-
-  //     return
-
-  //   }
-
-  //   if (e.target.name == "coname") {
-  //     setFormData({
-  //       ...formData,
-  //       coname: e.target.value,
-  //     });
-  //   }
-
-  //   if (e.target.name == "size") {
-  //     let batchnos = mastdata.filter((items) => items.designname == selectedDesign && items.size == e.target.value).map((item) => item.batchno)
-  //     setbatchno(batchnos);
-  //   }
-
-  //   setFormData({
-  //     ...formData,
-  //     [e.target.name]: e.target.value,
-  //     [e.target.createdby]: user.user?.name,
-  //   });
-
-  //   console.log(`=> ${e.target.name} =>  ${e.target.value}`)
-
-  // };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 

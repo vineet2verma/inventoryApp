@@ -56,12 +56,13 @@ export default function InventoryMaster() {
       setFilteredRecords(filtered);
       setmainfilterbackup(filtered);
     } else {
-      setTimeout(async () => {
+      
+      // setTimeout(async () => {
         let req = await fetch("/api/searchinvmastpage?query=" + query);
         let res = await req.json();
         setmainfilterbackup(res.data);
         res.error ? setFilteredRecords(res.data) : setFilteredRecords(res.data);
-      }, 500);
+      // }, 500);
     }
   };
 

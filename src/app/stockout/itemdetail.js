@@ -78,29 +78,29 @@ export default function StockTableItemDetailPage() {
     "date",
     "mid",
     "midname",
-    "ordid",
-    "name",
+    // "ordid",
+    // "name",
     "designname",
-    "size",
-    "batchno",
     "coname",
+    "batchno",
+    "size",
     "qty",
-    "price",
     "outtag",
+    // "price",
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-0">
       {/* Head */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="sticky top-0 flex justify-between items-center mb-0">
         <button
           onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+          className="flex items-center gap-2 mb-4 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
         >
           <House className="w-5 h-5" />
           Home
         </button>
-        <h1 className="text-2xl font-bold">Items Stock Detail</h1>
+        <h1 className="text-2xl mb-4  text-center font-bold">Stock Items </h1>
         <div className="flex mx-2">
           {/* Search Bar */}
           <div className="mb-4 mx-4">
@@ -113,28 +113,26 @@ export default function StockTableItemDetailPage() {
             />
           </div>
 
-          <button
+          {/* <button
             onClick={openAddModal}
             className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Add
-          </button>
+          </button> */}
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-100 text-left">
+      <div className="overflow-x-auto max-h-120  bg-white rounded shadow">
+        <table className="w-full text-sm  ">
+          <thead className="sticky top-0 bg-gray-300 text-left z-10">
             <tr>
               <th className="p-3">#</th>
-              {fields.map((field) =>
-                field !== "mid" ? (
-                  <th key={field} className="p-3 capitalize">
-                    {field}
-                  </th>
-                ) : null
-              )}
+              {fields.map((field) => (
+                <th key={field} className="p-3 capitalize">
+                  {field}
+                </th>
+              ))}
               <th className="p-3">Actions</th>
             </tr>
           </thead>
@@ -142,20 +140,35 @@ export default function StockTableItemDetailPage() {
             {filteredRecords.map((record, index) => (
               <tr key={record._id} className="border-b hover:bg-gray-50">
                 <td className="p-3">{index + 1}</td>
-                {fields.map(
-                  (field) =>
-                    field !== "createdby" && (
-                      <td key={field} className="p-3">
+                {fields.map((field) =>
+                  field != "outtag" ? (
+                    <td key={field} className="p-3">
+                      {record[field]}
+                    </td>
+                  ) : (
+                    <td key={field} className="p-3">
+                      <button
+                        onClick={() => {
+                          alert(record._id);
+                        }}
+                        className={`${
+                          record[field] == "Out"
+                            ? "bg-green-300"
+                            : "bg-yellow-300"
+                        } min-w-12  py-1 px-2 rounded-2xl `}
+                      >
                         {record[field]}
-                      </td>
-                    )
+                      </button>
+                    </td>
+                  )
                 )}
                 <td className="flex p-3 space-x-2">
+                  
                   <button
                     onClick={() => openEditModal(record)}
                     className="p-1 text-green-600 rounded hover:bg-yellow-600"
                   >
-                    <Pencil />
+                    <Pencil /> 
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
@@ -190,26 +203,47 @@ export default function StockTableItemDetailPage() {
 
             <div className="grid grid-cols-2 gap-3">
               {fields.map((field) => (
-                field == 'date' ? (
-                  <input
-                    type="date"
-                    key={field}
-                    name={field}
-                    placeholder={field}
-                    value={formData[field] || ""}
-                    onChange={handleChange}
-                    className="p-2 border rounded"
-                  />
-
-                ) :
-                  <input
-                    key={field}
-                    name={field}
-                    placeholder={field}
-                    value={formData[field] || ""}
-                    onChange={handleChange}
-                    className="p-2 border rounded"
-                  />
+                <div key={field}>
+                  <label
+                    htmlFor={field}
+                    className="block text-sm font-medium text-gray-700 capitalize"
+                  >
+                    {field
+                      .replace(/([a-z])([A-Z])/g, "$1 $2")
+                      .replace(/_/g, " ")}
+                  </label>
+                  {field === "date" ? (
+                    <input
+                      type="date"
+                      id={field}
+                      name={field}
+                      placeholder={field}
+                      value={formData[field] || ""}
+                      onChange={handleChange}
+                      className="p-2 border rounded w-full"
+                    />
+                  ) : field == "outtag" ? (
+                    <select
+                      className="p-2 border rounded w-full"
+                      onChange={handleChange}
+                      name={field}
+                      value={formData[field] || ""}
+                    >
+                      <option value="Hold">Hold</option>
+                      <option value="Out">Out</option>
+                      <option value="Cancel">Cancel</option>
+                    </select>
+                  ) : (
+                    <input
+                      id={field}
+                      name={field}
+                      placeholder={field}
+                      value={formData[field] || ""}
+                      onChange={handleChange}
+                      className="p-2 border rounded w-full"
+                    />
+                  )}
+                </div>
               ))}
             </div>
 

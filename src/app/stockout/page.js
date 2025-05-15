@@ -1,13 +1,14 @@
 "use client";
 import { useState } from "react";
 
-import StockOutClientOrderForm from "./stockoutclient";
-import StockOutDealerOrderForm from "./stockoutdealer";
-import StockOutBreakageOrderForm from "./stockoutitem";
+// import StockOutClientOrderForm from "./stockoutclient";
+// import StockOutDealerOrderForm from "./stockoutdealer";
+// import StockOutBreakageOrderForm from "./stockoutitem";
 import StockTableItemDetailPage from "./itemdetail";
 
 export default function StockOutPage() {
     const [activeForm, setActiveForm] = useState("table");
+    //  return <StockTableItemDetailPage />;
 
     const renderForm = () => {
         switch (activeForm) {
@@ -25,7 +26,7 @@ export default function StockOutPage() {
     return (
         <div>
             {/* Buttons always visible */}
-            <div className="flex m-4 flex-wrap gap-2">
+            {/* <div className="flex m-4 flex-wrap gap-2">
                 <button onClick={() => setActiveForm("client")} className="bg-blue-500 text-white p-2 rounded">
                     Client
                 </button>
@@ -38,7 +39,7 @@ export default function StockOutPage() {
                 <button onClick={() => setActiveForm("table")} className="bg-gray-500 text-white p-2 rounded">
                     Back to Table
                 </button>
-            </div>
+            </div> */}
 
             {/* Dynamic content */}
             <div className="mt-4 px-2">
