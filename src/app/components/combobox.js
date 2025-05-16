@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Combobox } from '@headlessui/react'
 
-export default function DesignComboBox({ onSelect, itemChange, changedSize, changedBatch, inv }) {
+export default function DesignComboBox({ onSelect, itemChange, changedSize, cs, changedBatch, inv, invdt, cn, ii }) {
     const [query, setQuery] = useState('')
     const [options, setOptions] = useState([])
     const [selected, setSelected] = useState('')
@@ -12,11 +12,20 @@ export default function DesignComboBox({ onSelect, itemChange, changedSize, chan
         // console.log(e)
         setSelected(e)
         onSelect(e)
-        let filterSize = data1.filter(x => x.designname == e).map(z => z.size);
-        let filterBatch = data1.filter(x => x.designname == e && x.size == filterSize[0]).map(z => z.batchno);
+        let filterSize = invdt.filter(x => x.designname == e).map(z => z.size);
+        let filterBatch = invdt.filter(x => x.designname == e && x.size == filterSize[0]).map(z => z.batchno);
+        let ftd = invdt.filter(itm => itm.designname == e);
+
+        cn(ftd[0]?.coname || "")
+        // console.log("log from combo", invdt)
+        // console.log("filtered sizes is", filterSize)
         // console.log("batchno is", filterBatch)
+
         changedSize(Array.from(new Set(filterSize)))
         changedBatch(Array.from(new Set(filterBatch)))
+        cs({ ...ii, size: Array.from(new Set(filterSize))[0], batchno: Array.from(new Set(filterBatch))[0], coname: ftd[0]?.coname })
+
+
     }
     // Debounce search
     useEffect(() => {
@@ -40,6 +49,7 @@ export default function DesignComboBox({ onSelect, itemChange, changedSize, chan
     }, [query])
 
     function handleChange(e) {
+        // console.log("val log from combo", ftd)
         setQuery(e.target.value)
         itemChange(e)
     }

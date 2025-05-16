@@ -4,13 +4,16 @@ import SideMenu from "../components/sidebar";
 import { useRouter } from "next/navigation";
 import { LoginUserFunc } from "@/app/context/loginuser";
 
+export const dynamic = "force-dynamic";
+
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([])
   const [typelen, settypelen] = useState([])
+  const [permissionloc, setpermissionloc] = useState(false)
+
+
   const { user } = LoginUserFunc();
-
   const router = useRouter();
-
   const invdemodata = [
     { name: "Total Hold", value: 10 },
     { name: "Today Hold", value: 20 },
@@ -31,8 +34,11 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchMastData()
-    console.log(user)
   }, [])
+
+  useEffect(() => {
+    setpermissionloc(user.user?.plocation.includes("read"))
+  }, [user])
 
   return (
     <>
@@ -96,12 +102,17 @@ export default function Dashboard() {
 
         {/* Navigation Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4">
-          <button
-            onClick={() => router.push("/locationmast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Location Mast
-          </button>
+
+          {/* {console.log("==>>    ", user.user.plocation.includes("read"))} */}
+
+          {permissionloc && (
+            <button
+              onClick={() => router.push("/locationmast")}
+              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+            >
+              Location Mast
+            </button>)}
+
           <button
             onClick={() => router.push("/typemast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -187,6 +198,13 @@ export default function Dashboard() {
           >
             Item Status
           </button>
+          <button
+            onClick={() => router.push("/quotation")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Quotation
+          </button>
+
 
         </div>
 
@@ -194,7 +212,7 @@ export default function Dashboard() {
         <footer className="mt-10 text-center text-sm text-gray-500">
           &copy; Antica Ceramica. All rights reserved.
         </footer>
-      </div>
+      </div >
     </>
   );
 }

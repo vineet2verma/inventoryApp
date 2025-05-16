@@ -9,6 +9,14 @@ const UserSchema = new mongoose.Schema(
     lastLogin: { type: Date },
     agree: { type: Boolean, default: false },
     phone: { type: String },
+    plocation: { type: mongoose.Schema.Types.Mixed, default: [] },
+    ppaymenttype: { type: mongoose.Schema.Types.Mixed, default: [] },
+    ptype: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pprice: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pinventory: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pbreakage: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pitemstatus: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pquotation: { type: mongoose.Schema.Types.Mixed, default: [] },
   },
   { timestamps: true }
 );

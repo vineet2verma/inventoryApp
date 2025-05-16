@@ -6,8 +6,8 @@ import { fetchTypeRecords } from "../components/fetchtypemast";
 import { fetchlocationRecords } from "@/app/components/fetchlocationmast";
 
 export default function InventoryMaster() {
-  const [records, setRecords] = useState([]);
-  const [filteredRecords, setFilteredRecords] = useState([]);
+  const [records, setRecords] = useState([]); // data
+  const [filteredRecords, setFilteredRecords] = useState([]); //filter - backup
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
@@ -23,6 +23,7 @@ export default function InventoryMaster() {
     const data = await res.json();
     setRecords(data);
     setFilteredRecords(data); // Initialize filtered records
+
   };
 
   // Fetch type list from typemast
@@ -42,29 +43,6 @@ export default function InventoryMaster() {
     fetchTypeList();
     fetchLocationMast();
   }, []);
-
-  const handleSearch = async (e) => {
-    setSearchQuery(e.target.value);
-
-    const query = e.target.value.toLowerCase();
-    if (query == "") {
-      const filtered = records.filter((record) =>
-        Object.values(record).some((value) =>
-          String(value).toLowerCase().includes(query)
-        )
-      );
-      setFilteredRecords(filtered);
-      setmainfilterbackup(filtered);
-    } else {
-      
-      // setTimeout(async () => {
-        let req = await fetch("/api/searchinvmastpage?query=" + query);
-        let res = await req.json();
-        setmainfilterbackup(res.data);
-        res.error ? setFilteredRecords(res.data) : setFilteredRecords(res.data);
-      // }, 500);
-    }
-  };
 
   const handleDelete = async (id) => {
     await fetch("/api/createinvmast", {
@@ -106,6 +84,53 @@ export default function InventoryMaster() {
     setFormData({});
     setEditingId(null);
   };
+
+  const handleSearch = async (e) => {
+    setSearchQuery(e.target.value);
+    const query = e.target.value.toLowerCase();
+    if (query == "") {
+      const filtered = records.filter((record) =>
+        Object.values(record).some((value) =>
+          String(value).toLowerCase().includes(query)
+        )
+      );
+
+
+
+
+
+      setFilteredRecords(filtered);
+      setmainfilterbackup(filtered);
+    } else {
+      let req = await fetch("/api/searchinvmastpage?query=" + query);
+      let res = await req.json();
+      setmainfilterbackup(res.data);
+      res.error ? setFilteredRecords(res.data) : setFilteredRecords(res.data);
+    }
+  };
+
+  // //////////////////////////
+  // const filteredData = databackup.filter((item) => {
+  //   const matchSearch = ["designname", "coname", "size", "type"].some((key) =>
+  //     item[key]?.toLowerCase().includes(search.toLowerCase())
+  //   );
+
+  //   const matchType = typeFilter === "All Type" || item.type === typeFilter;
+
+  //   const matchSize =
+  //     sizeFilter === "All Sizes" ||
+  //     item.size?.trim().toLowerCase() === sizeFilter.toLowerCase();
+
+  //   const matchPrice =
+  //     priceFilter === "All Price List" ||
+  //     (priceFilter === "Price List" && item.ratePerBox != null) ||
+  //     (priceFilter === "No Price List" && item.ratePerBox == null);
+
+  //   return matchSearch && matchType && matchSize && matchPrice;
+  // });
+  ///////////////////////////
+
+
 
   const handleTypeSearch = (x) => {
     if (x.target.value != "Select Type") {

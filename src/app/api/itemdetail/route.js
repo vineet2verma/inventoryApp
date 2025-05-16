@@ -2,17 +2,12 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import itemDetailStock from "@/app/api/models/itemDetail"
 
-
 // GET all inventory records
 export async function GET(req) {
   try {
     await connectToDatabase();
-
     const searchParams = req.nextUrl.searchParams;
-
     const id = searchParams.get("id")
-
-    console.log(id)
 
     if (id) {
       let records = await itemDetailStock.find({ mid: id })
@@ -27,17 +22,14 @@ export async function GET(req) {
   }
 }
 
-
-
-
-
-
 // POST create new inventory
 export async function POST(req) {
   console.log("POST request received"); // Log the POST request
   try {
-    console.log("Received data:", req); // Log the received data
-    const data = await req.json();
+    let data = await req.json();
+
+    console.log(data);
+
     await connectToDatabase();
     // console.log("Parsed data:", data); // Log the parsed data
 
@@ -56,8 +48,6 @@ export async function PUT(req) {
   try {
     const { id, ...updatedData } = await req.json();
     await connectToDatabase();
-
-    console.log("Updating record with ID:", id); // Log the ID being updated
 
     const updated = await itemDetailStock.findByIdAndUpdate(id, updatedData, { new: true });
 

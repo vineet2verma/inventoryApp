@@ -10,9 +10,8 @@ const ItemDetailSchema = new mongoose.Schema(
         batchno: { type: String, required: false },
         size: { type: String, required: false },
         qty: { type: String, required: false },
-        price: { type: String, required: false },
+        createdby: { type: String, required: false },
         outtag: { type: String, required: false },  // out // hold // trasit
-        // createdby: { type: String, required: false },
     },
     { timestamps: true }
 );

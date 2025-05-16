@@ -130,8 +130,8 @@ export default function PriceListPage() {
             }}
           >
             <option>All Type</option>
-            {[...new Set(invMast.map((item) => item.type))].map((type) => (
-              <option key={type} value={type}>
+            {[...new Set(invMast.map((item) => item.type))].map((type, i) => (
+              <option key={i} value={type}>
                 {type}
               </option>
             ))}
@@ -146,8 +146,8 @@ export default function PriceListPage() {
             <option>All Sizes</option>
             {[
               ...new Set(invMast.map((item) => item.size.trim().toLowerCase())),
-            ].map((size) => (
-              <option key={size}>{size}</option>
+            ].map((size, i) => (
+              <option key={i}>{size}</option>
             ))}
           </select>
 

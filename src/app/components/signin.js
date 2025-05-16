@@ -2,14 +2,15 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-
+import { LoginUserFunc } from "../context/loginuser";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const { user, setuser } = LoginUserFunc();
   const router = useRouter(); // Import useRouter from next/navigation
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +25,14 @@ export default function SignInPage() {
     const data = await res.json();
     console.log(data);
     if (res.ok) {
+      const tokendata = await fetch("api/tokenvarify", {
+        method: "GET", // or "POST" if applicable
+        cache: "no-store",
+      });
+      let dt = await tokendata.json()
+      console.log("data from s", dt)
+      setuser(dt)
+
       alert("Login successful!");
       router.push("/dashboard"); // Redirect to the dashboard page
     } else {
@@ -100,7 +109,7 @@ export default function SignInPage() {
 
           <p className="text-center text-sm mt-4">
             Don't have an account?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="/signup" className="text-blue-600 hover:underline">
               Create account
             </a>
           </p>

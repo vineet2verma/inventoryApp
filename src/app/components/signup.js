@@ -10,8 +10,10 @@ import {
   faEye,
   faEyeSlash,
 } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
+  const router = useRouter()
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -69,6 +71,7 @@ export default function SignupForm() {
         const data = await response.json();
         if (response.ok) {
           toast.success("Signup successful!");
+          router.push("/signin")
         } else {
           toast.error(data.message || "Signup failed!");
         }
@@ -238,7 +241,7 @@ export default function SignupForm() {
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 underline">
+          <a href="/signin" className="text-blue-600 underline">
             Login
           </a>
         </p>

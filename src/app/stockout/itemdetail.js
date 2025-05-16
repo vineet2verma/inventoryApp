@@ -11,6 +11,7 @@ export default function StockTableItemDetailPage() {
   const [formData, setFormData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isOutModal, setisOutModal] = useState(false)
 
   const fetchRecords = async () => {
     const res = await fetch("/api/itemdetail");
@@ -149,13 +150,13 @@ export default function StockTableItemDetailPage() {
                     <td key={field} className="p-3">
                       <button
                         onClick={() => {
-                          alert(record._id);
+                          setisOutModal(true)
+                          // alert(record._id);
                         }}
-                        className={`${
-                          record[field] == "Out"
-                            ? "bg-green-300"
-                            : "bg-yellow-300"
-                        } min-w-12  py-1 px-2 rounded-2xl `}
+                        className={`${record[field] == "Out"
+                          ? "bg-green-300"
+                          : "bg-yellow-300"
+                          } min-w-12  py-1 px-2 rounded-2xl `}
                       >
                         {record[field]}
                       </button>
@@ -163,12 +164,12 @@ export default function StockTableItemDetailPage() {
                   )
                 )}
                 <td className="flex p-3 space-x-2">
-                  
+
                   <button
                     onClick={() => openEditModal(record)}
                     className="p-1 text-green-600 rounded hover:bg-yellow-600"
                   >
-                    <Pencil /> 
+                    <Pencil />
                   </button>
                   <button
                     onClick={() => handleDelete(record._id)}
@@ -192,6 +193,52 @@ export default function StockTableItemDetailPage() {
           </tbody>
         </table>
       </div>
+
+      {/* //////////////////////////////// */}
+      {/* Modal Form For Item Hold / Out / Cancel */}
+      {isOutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg">
+            <h2 className="text-lg font-bold mb-4">
+              {"Stock Out : Details"}
+            </h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                className="border-1 rounded-2xl bg-red-500"
+                onClick={() => { alert("Cancel Click") }}
+              >
+                Cancel
+              </button>
+              <button
+                className="border-1 rounded-2xl bg-green-400"
+                onClick={() => { alert("Out Click") }}
+              >
+                Out
+              </button>
+            </div>
+            <div className="my-2">
+              <lable>Reason</lable>
+              <input
+                type="text"
+                name="cancel remarks"
+                placeholder="Reason"
+                className="p-2 border-1 rounded w-full"
+              />
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                onClick={() => setisOutModal(false)}
+                className="px-4 py-2 border rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* /////////////////////////////////////// */}
+
 
       {/* Modal Form */}
       {isModalOpen && (

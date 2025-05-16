@@ -15,12 +15,14 @@ import { LoginUserFunc } from "../context/loginuser";
 
 export default function DealerMastPage() {
   const { user } = LoginUserFunc();
+
+  console.log(user)
+
   const router = useRouter();
   const [invmast, setinvmast] = useState([]);
   const [records, setRecords] = useState([]);
   const [paymenttype, setPaymentType] = useState([]);
   const [filteredRecords, setFilteredRecords] = useState([]);
-  // const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     auid: "",
     name: "",
@@ -40,6 +42,7 @@ export default function DealerMastPage() {
   const [showModal, setShowModal] = useState(false); // item page
   const [mid, setmid] = useState(null);
   const [designname, setdesignname] = useState([]);
+  const [cnames, setcnames] = useState("");
   const [selecteddesignname, setselecteddesignname] = useState("");
   const [size, setsize] = useState([]);
   const [batchno, setbatchno] = useState([]);
@@ -256,22 +259,26 @@ export default function DealerMastPage() {
     const today = moment(date).format("YYYY-MM-DD");
 
     if (e.target.name == "designname") {
-      
-        let sizes = invmast
-          .filter((item) => item.designname == e.target.value)
-          .map((items) => items.size);
-        sizes = Array.from(new Set(sizes));
-        setintialitem({ ...initialitem, designname: e.target.value });
 
-        // Filter company names based on the selected design name
-        const conames = invmast
-          .filter((item) => item.designname === e.target.value)
-        console.log("Filtered Company Names:", conames);
+      let sizes = invmast
+        .filter((item) => item.designname == e.target.value)
+        .map((items) => items.size);
+      sizes = Array.from(new Set(sizes));
+      setintialitem({ ...initialitem, designname: e.target.value });
 
-        if (size?.length < 2) {
-          dropdownfunc(invmast);
-        }
-        setsize(sizes);
+      // Filter company names based on the selected design name
+
+      let conames = invmast
+        .filter((item) => item.designname === selecteddesignname).map((cname) => cname.coname)
+      conames = Array.from(new Set(conames))
+      console.log(conames)
+      setintialitem({ ...initialitem, coname: conames })
+      // setcnames(conames[0])
+
+      if (size?.length < 2) {
+        dropdownfunc(invmast);
+      }
+      setsize(sizes);
 
     }
 
@@ -372,9 +379,9 @@ export default function DealerMastPage() {
             <tr>
               {Object.keys(formData).map((key) =>
                 key != "_id" &&
-                key != "createdAt" &&
-                key != "updatedAt" &&
-                key != "__v" ? (
+                  key != "createdAt" &&
+                  key != "updatedAt" &&
+                  key != "__v" ? (
                   <th key={key} className="p-2 text-left capitalize">
                     {key}
                   </th>
@@ -388,9 +395,9 @@ export default function DealerMastPage() {
               <tr key={record._id} className="border-t">
                 {Object.keys(formData).map((key) =>
                   key != "_id" &&
-                  key != "createdAt" &&
-                  key != "updatedAt" &&
-                  key != "__v" ? (
+                    key != "createdAt" &&
+                    key != "updatedAt" &&
+                    key != "__v" ? (
                     <td key={key} className="p-2">
                       {record[key]}
                     </td>
@@ -600,23 +607,38 @@ export default function DealerMastPage() {
                       <option value="Out">Out</option>
                     </select>
                   </div>
-                ) : (
-                  <div key={idx}>
-                    <label className="block mb-1 capitalize text-gray-600">
-                      {field}
-                    </label>
-                    <input
-                      type={field == "qty" ? "number" : "text"}
-                      disabled={
-                        field == "mid" || field == "midname" ? true : false
-                      }
-                      name={field}
-                      value={initialitem[field]}
-                      onChange={handleItemChange}
-                      className="w-full p-2 border rounded"
-                    />
-                  </div>
-                )
+                ) :
+                  field == "coname" ? (
+                    <div key={idx}>
+                      <label className="block mb-1 capitalize text-gray-600">
+                        {field}
+                      </label>
+                      <input
+                        type="text"
+                        disabled
+                        name={field}
+                        value={initialitem[field]}
+                        onChange={handleItemChange}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  ) : (
+                    <div key={idx}>
+                      <label className="block mb-1 capitalize text-gray-600">
+                        {field}
+                      </label>
+                      <input
+                        type={field == "qty" ? "number" : "text"}
+                        disabled={
+                          field == "mid" || field == "midname" ? true : false
+                        }
+                        name={field}
+                        value={initialitem[field]}
+                        onChange={handleItemChange}
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  )
               )}
             </div>
             <div className="mt-4 flex justify-end space-x-2">

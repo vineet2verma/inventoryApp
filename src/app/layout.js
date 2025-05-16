@@ -26,6 +26,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
         <LoginUserProvider>
           <DealerProvider>
             <DealerItemProvider>
@@ -33,7 +34,6 @@ export default function RootLayout({ children }) {
             </DealerItemProvider>
           </DealerProvider>
         </LoginUserProvider>
-
 
       </body>
     </html>

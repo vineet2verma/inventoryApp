@@ -7,7 +7,7 @@ import createInvMaster from "../models/createInvMast";
 export async function GET() {
   try {
     await connectToDatabase();
-    const records = await createInvMaster.find().limit(100).sort({ createdAt: -1 }); // Newest first
+    const records = await createInvMaster.find().sort({ createdAt: -1 }); // Newest first
     return NextResponse.json(records, { status: 200 });
   } catch (err) {
     console.error(err);

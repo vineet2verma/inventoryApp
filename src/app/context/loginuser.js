@@ -24,8 +24,6 @@ export function LoginUserProvider({ children }) {
             {children}
         </LoginUserContext.Provider>
     );
-
-
 }
 
 export function LoginUserFunc() {

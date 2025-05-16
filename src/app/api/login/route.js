@@ -17,7 +17,7 @@ export async function POST(req) {
     console.log("User found:", user);
 
     // Create JWT
-    const jwt = await new SignJWT({ email: user.email, name: user.name })
+    const jwt = await new SignJWT({ ...user })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("1h")
