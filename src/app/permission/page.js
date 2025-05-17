@@ -5,17 +5,19 @@ import { useRouter } from "next/navigation";
 import { House } from "lucide-react";
 
 const permissionFields = [
-    "pquotation",
-    "pitemstatus",
     "plocation",
-    "ppaymenttype",
     "ptype",
+    "ppaymenttype",
     "pprice",
     "pinventory",
+    "pstockin",
+    "pcustomer",
     "pbreakage",
+    "pitemstatus",
+    "pquotation",
 ];
 
-const actions = ["create", "read", "update", "delete"];
+const actions = ["read","create", "update", "delete"];
 
 export default function PermissionsPage() {
     const router = useRouter();
@@ -132,7 +134,7 @@ export default function PermissionsPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-3 ">
                             <button
-                                onClick={handleSave}
+                                onClick={()=>{alert("Reset Password Link Working")}}
                                 className="rounded-2xl mb-2 px-6 bg-blue-600 text-white font-medium  hover:bg-blue-700"
                             >
                                 Reset Password

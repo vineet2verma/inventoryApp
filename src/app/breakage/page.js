@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Pencil, Trash2, House } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { LoginUserFunc } from "../context/loginuser";
 
 export default function DealerMastPage() {
   const [records, setRecords] = useState([]);
@@ -28,6 +29,12 @@ export default function DealerMastPage() {
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+  const [rightread, setrightread] = useState(false);
+  const [rightcreate, setrightcreate] = useState(false);
+  const [rightedit, setrightedit] = useState(false);
+  const [rightdelete, setrightdelete] = useState(false);
+
+  const { user } = LoginUserFunc();
 
   // Fetch records from the API
   useEffect(() => {
@@ -36,18 +43,35 @@ export default function DealerMastPage() {
     fetchRecords();
   }, []);
 
+  useEffect(() => {
+    setrightread(user.user?.pbreakage.includes("read"));
+    setrightcreate(user.user?.pbreakage.includes("create"));
+    setrightedit(user.user?.pbreakage.includes("update"));
+    setrightdelete(user.user?.pbreakage.includes("delete"));
+  }, [user]);
+
   const fetchRecords = async () => {
     try {
       const resBreakageMast = await fetch("/api/breakagemast");
       const breakagemastData = await resBreakageMast.json();
-      const resStockInMast = await fetch("/api/stockin")
+      const resStockInMast = await fetch("/api/stockin");
       const stockinmastData = await resStockInMast.json();
 
       const filterstockinmastData = stockinmastData
-        .filter(item=> item.breakage>0)
-        .map(({_id,designname,coname,batchno,size,breakage,remarks}) =>({_id,designname,coname,batchno,size,breakage,remarks}));
+        .filter((item) => item.breakage > 0)
+        .map(
+          ({ _id, designname, coname, batchno, size, breakage, remarks }) => ({
+            _id,
+            designname,
+            coname,
+            batchno,
+            size,
+            breakage,
+            remarks,
+          })
+        );
 
-      const mergeData = [...breakagemastData,...filterstockinmastData];
+      const mergeData = [...breakagemastData, ...filterstockinmastData];
 
       setRecords(mergeData);
       setFilteredRecords(mergeData); // Initialize filtered records
@@ -199,7 +223,8 @@ export default function DealerMastPage() {
   };
 
   return (
-    <div className="p-4  bg-gray-100 min-h-screen">
+    <>
+    {rightread && (<div className="p-4  bg-gray-100 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => router.push("/dashboard")}
@@ -223,12 +248,14 @@ export default function DealerMastPage() {
               className="border p-2 rounded w-full text-sm"
             />
           </div>
-          <button
-            onClick={handleAddNew}
-            className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Add Record
-          </button>
+          {rightcreate && (
+            <button
+              onClick={handleAddNew}
+              className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add Record
+            </button>
+          )}
         </div>
       </div>
       {/* Table */}
@@ -259,19 +286,23 @@ export default function DealerMastPage() {
                   >
                     <PackagePlus />
                   </button> */}
-                  <button
-                    onClick={() => handleEdit(record)}
-                    className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
-                  >
-                    <Pencil />
-                    {/* Edit */}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(record._id)}
-                    className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
-                  >
-                    <Trash2 />
-                  </button>
+                  {rightedit && (
+                    <button
+                      onClick={() => handleEdit(record)}
+                      className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
+                    >
+                      <Pencil />
+                      {/* Edit */}
+                    </button>
+                  )}
+                  {rightdelete && (
+                    <button
+                      onClick={() => handleDelete(record._id)}
+                      className=" text-red-800 px-2 py-1 rounded hover:bg-red-600"
+                    >
+                      <Trash2 />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -392,6 +423,9 @@ export default function DealerMastPage() {
           </div>
         </div>
       )}
-    </div>
+    </div>)}
+    </>
+
+    
   );
 }
