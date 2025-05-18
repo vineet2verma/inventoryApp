@@ -7,27 +7,27 @@ import StockTableItemDetailPage from "./itemdetail";
 // import StockOutBreakageOrderForm from "./stockoutitem";
 
 export default function StockOutPage() {
+    return <StockTableItemDetailPage />;
     // const [activeForm, setActiveForm] = useState("table");
-     return <StockTableItemDetailPage />;
 }
 
-    // const renderForm = () => {
-    //     switch (activeForm) {
-    //         case "client":
-    //             return <StockOutClientOrderForm />;
-    //         case "dealers":
-    //             return <StockOutDealerOrderForm />;
-    //         case "breakages":
-    //             return <StockOutBreakageOrderForm />;
-    //         default:
-    //             return <StockTableItemDetailPage />;
-    //     }
-    // };
+// const renderForm = () => {
+//     switch (activeForm) {
+//         case "client":
+//             return <StockOutClientOrderForm />;
+//         case "dealers":
+//             return <StockOutDealerOrderForm />;
+//         case "breakages":
+//             return <StockOutBreakageOrderForm />;
+//         default:
+//             return <StockTableItemDetailPage />;
+//     }
+// };
 
-    // return (
-        // <div>
-            {/* Buttons always visible */}
-            {/* <div className="flex m-4 flex-wrap gap-2">
+// return (
+// <div>
+{/* Buttons always visible */ }
+{/* <div className="flex m-4 flex-wrap gap-2">
                 <button onClick={() => setActiveForm("client")} className="bg-blue-500 text-white p-2 rounded">
                     Client
                 </button>
@@ -42,10 +42,10 @@ export default function StockOutPage() {
                 </button>
             </div> */}
 
-            {/* Dynamic content */}
-            // <div className="mt-4 px-2">
-                // {renderForm()}
-            // </div>
-        // </div>
-    // );
+{/* Dynamic content */ }
+// <div className="mt-4 px-2">
+// {renderForm()}
+// </div>
+// </div>
+// );
 // }

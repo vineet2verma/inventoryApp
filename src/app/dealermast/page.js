@@ -46,7 +46,6 @@ export default function DealerMastPage() {
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
-
   const itemObject = {
     date: "",
     mid: "",
@@ -78,6 +77,7 @@ export default function DealerMastPage() {
   // fetching inv mast records
   const fetchMastRecords = async () => {
     const data = await fetchMastData();
+    // console.log("master data", data)
     data.length > 0 ? setinvmast(data) : "";
     dropdownfunc(data);
   };
@@ -179,29 +179,41 @@ export default function DealerMastPage() {
 
   // item delete as per id
   const handleitemdelete = async (idx) => {
-    const res = await fetch("/api/itemdetail", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: idx }),
-    });
 
-    let itemdata = itemData.filter((item, i) => item._id != idx);
-    setItemData(itemdata);
+    let result = confirm("Are You Sure Want to Delete")
+
+    if (result) {
+      const res = await fetch("/api/itemdetail", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: idx }),
+      });
+
+      let itemdata = itemData.filter((item, i) => item._id != idx);
+      setItemData(itemdata);
+
+
+    }
   };
 
   // dealer mast delete
-  const handleDelete = async (id) => {
-    try {
-      const res = await fetch("/api/dealermast", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      const result = await res.json();
-      alert(result.message);
-      fetchRecords();
-    } catch (err) {
-      console.error("Failed to delete record:", err);
+  const handleDelete = async (id, midname) => {
+    let result = prompt("Enter Customer Name")
+    console.log(midname, result)
+
+    if (result == midname) {
+      try {
+        const res = await fetch("/api/dealermast", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+        const result = await res.json();
+        alert(result.message);
+        fetchRecords();
+      } catch (err) {
+        console.error("Failed to delete record:", err);
+      }
     }
   };
 
@@ -262,6 +274,7 @@ export default function DealerMastPage() {
     const today = moment(date).format("YYYY-MM-DD");
 
     if (e.target.name == "designname") {
+
       let sizes = invmast
         .filter((item) => item.designname == e.target.value)
         .map((items) => items.size);
@@ -299,23 +312,26 @@ export default function DealerMastPage() {
 
   // post and put in item detail page
   const handleItemSubmit = async (e) => {
-    // e.preventDefault();
-    const method = "POST";
-    const url = "/api/itemdetail";
-    const body = initialitem;
 
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const result = await res.json();
-      alert(result.message);
-      setIsModalOpen(false);
-    } catch (err) {
-      console.error("Failed to save record:", err);
-    }
+    console.log(initialitem)
+
+    // // e.preventDefault();
+    // const method = "POST";
+    // const url = "/api/itemdetail";
+    // const body = initialitem;
+
+    // try {
+    //   const res = await fetch(url, {
+    //     method,
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(body),
+    //   });
+    //   const result = await res.json();
+    //   alert(result.message);
+    //   setIsModalOpen(false);
+    // } catch (err) {
+    //   console.error("Failed to save record:", err);
+    // }
   };
 
   const handleAddItem = () => {
@@ -333,7 +349,8 @@ export default function DealerMastPage() {
       batchno: "",
       coname: "",
       qty: "",
-      priceperbox: "",
+      remarks: "",
+      // priceperbox: "",
       outtag: "Hold",
     });
 
@@ -368,12 +385,15 @@ export default function DealerMastPage() {
                   />
                 </form>
               </div>
-              <button
-                onClick={handleAddNew}
-                className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Add New Dealer
-              </button>
+              {rightcreate && (
+                <button
+                  onClick={handleAddNew}
+                  className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  Add New Dealer
+                </button>
+              )}
+
             </div>
           </div>
           {/* Table */}
@@ -383,9 +403,9 @@ export default function DealerMastPage() {
                 <tr>
                   {Object.keys(formData).map((key) =>
                     key != "_id" &&
-                    key != "createdAt" &&
-                    key != "updatedAt" &&
-                    key != "__v" ? (
+                      key != "createdAt" &&
+                      key != "updatedAt" &&
+                      key != "__v" ? (
                       <th key={key} className="p-2 text-left capitalize">
                         {key}
                       </th>
@@ -399,9 +419,9 @@ export default function DealerMastPage() {
                   <tr key={record._id} className="border-t">
                     {Object.keys(formData).map((key) =>
                       key != "_id" &&
-                      key != "createdAt" &&
-                      key != "updatedAt" &&
-                      key != "__v" ? (
+                        key != "createdAt" &&
+                        key != "updatedAt" &&
+                        key != "__v" ? (
                         <td key={key} className="p-2">
                           {record[key]}
                         </td>
@@ -416,19 +436,25 @@ export default function DealerMastPage() {
                       >
                         <PackagePlus />
                       </button>
-                      <button
-                        onClick={() => handleEdit(record)}
-                        className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
-                      >
-                        <Pencil />
-                        {/* Edit */}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(record._id)}
-                        className=" text-red-800 px-2 py-1 rounded hover:bg-red-500"
-                      >
-                        <Trash2 />
-                      </button>
+                      {rightedit && (
+                        <button
+                          onClick={() => handleEdit(record)}
+                          className="text-green-700  px-2 py-1 rounded hover:bg-yellow-600 mr-2"
+                        >
+                          <Pencil />
+                          {/* Edit */}
+                        </button>
+
+                      )}
+
+                      {rightdelete && (
+                        <button
+                          onClick={() => handleDelete(record._id, record.name)}
+                          className=" text-red-800 px-2 py-1 rounded hover:bg-red-500"
+                        >
+                          <Trash2 />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -436,7 +462,7 @@ export default function DealerMastPage() {
             </table>
           </div>
 
-          {/* Modal */}
+          {/* Modal Dealer / Customer Modal */}
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <div className="bg-white p-4 rounded shadow-md w-full max-w-3xl overflow-y-auto max-h-[90vh]">
@@ -548,12 +574,18 @@ export default function DealerMastPage() {
                         <label className=" block mb-1 capitalize text-gray-600">
                           {field}
                         </label>
+
                         <DesignComboBox
                           onSelect={setselecteddesignname}
                           itemChange={handleItemChange}
                           changedSize={setsize}
+                          cs={setintialitem}
+                          ii={initialitem}
                           changedBatch={setbatchno}
                           inv={setinvmast}
+                          invdt={invmast}
+                          cn={setcnames}
+                          sdesign={selecteddesignname}
                         />
                       </div>
                     ) : field == "size" ? (
@@ -676,7 +708,7 @@ export default function DealerMastPage() {
                             "Batch",
                             "Size",
                             "Qty",
-                            "Price",
+                            //"Price",
                             "Tag",
                             "Action",
                           ].map((h, i) => (
@@ -698,9 +730,9 @@ export default function DealerMastPage() {
                             <td className="px-3 py-1 border">{item.batchno}</td>
                             <td className="px-3 py-1 border">{item.size}</td>
                             <td className="px-3 py-1 border">{item.qty}</td>
-                            <td className="px-3 py-1 border">
+                            {/* <td className="px-3 py-1 border">
                               {item.priceperbox}
-                            </td>
+                            </td> */}
                             <td className="px-3 py-1 border">{item.outtag}</td>
                             <td className="px-3 py-1 border">
                               <button

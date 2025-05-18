@@ -9,7 +9,7 @@ export default function DesignComboBox({ onSelect, itemChange, changedSize, cs, 
     const [selected, setSelected] = useState('')
     const [data1, setData1] = useState([])
     function forselection(e) {
-        // console.log(e)
+        // console.log("from combo", inv)
         setSelected(e)
         onSelect(e)
         let filterSize = invdt.filter(x => x.designname == e).map(z => z.size);

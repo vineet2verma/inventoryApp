@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import itemDetailStock from "@/app/api/models/itemDetail"
+import createInvMast from "../models/createInvMast";
+// import Itemdetailfunc from "@/app/dealermast/itempage";
 
 // GET all inventory records
 export async function GET(req) {
@@ -27,8 +29,18 @@ export async function POST(req) {
   console.log("POST request received"); // Log the POST request
   try {
     let data = await req.json();
+    console.log("==> ", data);
 
-    console.log(data);
+    let invdata = await createInvMast.findOne({ designname: data.designname, size: data.size, batchno: data.batchno, coname: data.coname })
+
+    if (data.outtag == "Hold") {
+      let new_hold = parseFloat(invdata.holdstock) + parseFloat(data.qty)
+      let new_cl_stock = parseFloat(invdata.closingstock) - parseFloat(data.qty)
+
+      await createInvMast.findByIdAndUpdate(invdata._id, { closingstock: new_cl_stock, holdstock: new_hold })
+    }
+
+    console.log("inv data =>  ", invdata)
 
     await connectToDatabase();
     // console.log("Parsed data:", data); // Log the parsed data
@@ -46,16 +58,38 @@ export async function POST(req) {
 // PUT update an inventory record
 export async function PUT(req) {
   try {
-    const { id, ...updatedData } = await req.json();
+    const { id, action, remarks } = await req.json();
     await connectToDatabase();
 
-    const updated = await itemDetailStock.findByIdAndUpdate(id, updatedData, { new: true });
+    if (action == "Out") {
+      const updated = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks })
 
-    if (!updated) {
-      return NextResponse.json({ message: "Record not found" }, { status: 404 });
+      if (!updated) {
+        return NextResponse.json({ message: "Record not found" }, { status: 404 });
+      }
+
+      return NextResponse.json({ message: "Record updated successfully", sucess: true }, { status: 200 });
     }
 
-    return NextResponse.json({ message: "Record updated successfully" }, { status: 200 });
+    if (action == "Cancel") {
+
+      let { designname, coname, batchno, size, qty } = await itemDetailStock.findOne({ _id: id })
+
+      let invdata = await createInvMast.findOne({ designname: designname, size: size, batchno: batchno, coname: coname })
+      let new_hold = parseFloat(invdata.holdstock) - parseFloat(qty)
+      let new_cl_stock = parseFloat(invdata.closingstock) + parseFloat(qty)
+
+      let updated = await createInvMast.findByIdAndUpdate(invdata._id, { holdstock: new_hold, closingstock: new_cl_stock })
+
+      let respone = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks })
+
+      if (!updated) {
+        return NextResponse.json({ message: "Record not found" }, { status: 404 });
+      }
+
+      return NextResponse.json({ message: "Record updated successfully", sucess: true }, { status: 200 });
+    }
+
   } catch (err) {
     console.error(err);
     return NextResponse.json({ message: "Failed to update record" }, { status: 500 });
@@ -67,6 +101,18 @@ export async function DELETE(req) {
   try {
     const { id } = await req.json();
     await connectToDatabase();
+
+
+    let data_cust = await itemDetailStock.findOne({ _id: id });
+
+    let { designname, size, batchno, coname } = data_cust;
+
+    if (data_cust.outtag == "Hold") {
+      let invdata = await createInvMast.findOne({ designname: designname, size: size, batchno: batchno, coname: coname })
+      let new_hold = parseFloat(invdata.holdstock) - parseFloat(data_cust.qty)
+      let new_cl_stock = parseFloat(invdata.closingstock) + parseFloat(data_cust.qty)
+      await createInvMast.findByIdAndUpdate(invdata._id, { holdstock: new_hold, closingstock: new_cl_stock })
+    }
 
     const deleted = await itemDetailStock.findByIdAndDelete(id);
 

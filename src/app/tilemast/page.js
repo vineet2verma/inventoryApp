@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Pencil, Trash2, PlusCircle, ArrowLeft, House } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { LoginUserFunc } from "../context/loginuser";
 
 export default function TileMasterPage() {
+  const { user } = LoginUserFunc();
   const [tiles, setTiles] = useState([]);
   const [formData, setFormData] = useState({ tile: "", createdBy: "", status: "Active", imageUrl: "" });
   const [editingId, setEditingId] = useState(null);
@@ -15,6 +17,13 @@ export default function TileMasterPage() {
   useEffect(() => {
     fetchTiles();
   }, []);
+
+  // useEffect(() => {
+  //   setrightread(user.user?.ptilemast.includes("read"));
+  //   setrightcreate(user.user?.ptilemast.includes("create"));
+  //   setrightedit(user.user?.ptilemast.includes("update"));
+  //   setrightdelete(user.user?.ptilemast.includes("delete"));
+  // }, [user]);
 
   const fetchTiles = async () => {
     const res = await fetch("/api/tilemast");

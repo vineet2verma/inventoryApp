@@ -29,7 +29,7 @@
 //         pricePerBox: { type: String, required: false },
 //         amount: { type: String, required: false },
 //         invtag: { type: String, required: false },  // client // dealer // breakage
-//         outtag: { type: String, required: false },  // out / hold 
+//         outtag: { type: String, required: false },  // out / hold
 //         location: { type: String, required: false },
 //         currStock: { type: String, required: false },
 //         createdBy: { type: String, required: false },

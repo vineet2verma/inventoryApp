@@ -20,7 +20,7 @@ export async function POST(req) {
     const jwt = await new SignJWT({ ...user })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("1h")
+      .setExpirationTime("9h")
       .sign(secret);
 
     // Create response and set cookie
@@ -31,7 +31,7 @@ export async function POST(req) {
       // secure: process.env.NODE_ENV === "production",
       // sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 6, // 1 hour
+      maxAge: 60 * 60 * 9, // 1 hour
     });
 
     return response;

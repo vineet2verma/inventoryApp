@@ -16,8 +16,8 @@ import { LoginUserFunc } from "../context/loginuser";
 import moment from "moment";
 
 export default function StockInPage() {
-  const today = new Date();
   const { user } = LoginUserFunc();
+  const today = new Date();
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({
     date: moment(today).format("yyyy-MM-DD"),
@@ -50,6 +50,10 @@ export default function StockInPage() {
   const [mastcurrstock, setMastcurrstock] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const [rightread, setrightread] = useState(false);
+  const [rightcreate, setrightcreate] = useState(false);
+  const [rightedit, setrightedit] = useState(false);
+  const [rightdelete, setrightdelete] = useState(false);
 
   // Fetch records from the API
   const fetchInvMastRecords = async () => {
@@ -82,6 +86,13 @@ export default function StockInPage() {
     fetchLocations(); // Fetch locations on component mount
     fetchRecords();
   }, []);
+
+  useEffect(() => {
+    setrightread(user.user?.pstockin.includes("read"));
+    setrightcreate(user.user?.pstockin.includes("create"));
+    setrightedit(user.user?.pstockin.includes("update"));
+    setrightdelete(user.user?.pstockin.includes("delete"));
+  }, [user]);
 
   // lcoation mast
   const fetchLocations = async () => {
@@ -219,245 +230,253 @@ export default function StockInPage() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-        >
-          <House className="w-5 h-5" />
-          Home
-        </button>
+    <>
+      {rightread && (
+        <div className="p-6 bg-gray-100 min-h-screen">
+          <div className="flex justify-between items-center mb-6">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+            >
+              <House className="w-5 h-5" />
+              Home
+            </button>
 
-        <h1 className="text-3xl font-bold text-center mb-2">
-          Stock-In Records
-        </h1>
+            <h1 className="text-3xl font-bold text-center mb-2">
+              Stock-In Records
+            </h1>
 
-        <div className="flex">
+            <div className="flex">
 
-          {/* Search Input */}
-          <div className="mb-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border mx-2 rounded w-full"
-            />
+              {/* Search Input */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="border mx-2 rounded w-full"
+                />
+              </div>
+              <button
+                onClick={handleAddNew}
+                className="px-4  bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              >
+                Add Record
+              </button>
+            </div>
           </div>
-          <button
-            onClick={handleAddNew}
-            className="px-4  bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-          >
-            Add Record
-          </button>
-        </div>
-      </div>
 
-      {/* Filtered Table */}
-      <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
-        <table className="min-w-full text-sm text-left">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="p-2">Date</th>
-              <th className="p-2">Design Name</th>
-              <th className="p-2">Company Name</th>
-              <th className="p-2">Batch No</th>
-              <th className="p-2">Size</th>
-              <th className="p-2">Quantity</th>
-              <th className="p-2">Breakage</th>
-              <th className="p-2">Location</th>
-              <th className="p-2">Current Stock</th>
-              <th className="p-2">Remarks</th>
-              <th className="p-2">Created By</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {records
-              .filter((record) =>
-                Object.values(record).some((value) =>
-                  value
-                    .toString()
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase())
-                )
-              )
-              .map((record) => (
-                <tr key={record._id} className="border-t">
-                  <td className="p-2">{record.date}</td>
-                  <td className="p-2">{record.designname}</td>
-                  <td className="p-2">{record.coname}</td>
-                  <td className="p-2">{record.batchno}</td>
-                  <td className="p-2">{record.size}</td>
-                  <td className="p-2">{record.quantity}</td>
-                  <td className="p-2">{record.breakage}</td>
-                  <td className="p-2">{record.location}</td>
-                  <td className="p-2">{record.currstock}</td>
-                  <td className="p-2">{record.remarks}</td>
-                  <td className="p-2">{record.createdby}</td>
-                  <td className="p-2 flex gap-2">
-                    <button
-                      onClick={() => handleEdit(record)}
-                      className="text-blue-600 hover:underline"
-                    >
-                      <Pencil className="w-4 h-4 inline" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(record._id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      <Trash2 className="w-4 h-4 inline" />
-                    </button>
-                  </td>
+          {/* Filtered Table */}
+          <div className="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="p-2">Date</th>
+                  <th className="p-2">Design Name</th>
+                  <th className="p-2">Company Name</th>
+                  <th className="p-2">Batch No</th>
+                  <th className="p-2">Size</th>
+                  <th className="p-2">Quantity</th>
+                  <th className="p-2">Breakage</th>
+                  <th className="p-2">Location</th>
+                  <th className="p-2">Current Stock</th>
+                  <th className="p-2">Remarks</th>
+                  <th className="p-2">Created By</th>
+                  <th className="p-2">Actions</th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-md w-full max-w-2xl">
-            <h2 className="text-xl font-semibold mb-4">
-              {editId ? "Edit Record" : "Add New Record"}
-            </h2>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="date"
-                  name="date"
-                  disabled
-                  required
-                  value={moment(today).format("yyyy-MM-DD")} // value={FormDataEvent.data}
-                  onChange={handleChange}
-                  placeholder="Date"
-                  className="border p-2 rounded w-full"
-                />
-                <select
-                  type="text"
-                  name="designname"
-                  value={formData.designname}
-                  onChange={handleChange}
-                  placeholder="Design Name"
-                  className="border p-2 rounded w-full"
-                  required
-                >
-                  <option value="">Select Design Name</option>
-                  {mastdesigname.map((item, i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
+              </thead>
+              <tbody>
+                {records
+                  .filter((record) =>
+                    Object.values(record).some((value) =>
+                      value
+                        .toString()
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
+                    )
+                  )
+                  .map((record) => (
+                    <tr key={record._id} className="border-t">
+                      <td className="p-2">{record.date}</td>
+                      <td className="p-2">{record.designname}</td>
+                      <td className="p-2">{record.coname}</td>
+                      <td className="p-2">{record.batchno}</td>
+                      <td className="p-2">{record.size}</td>
+                      <td className="p-2">{record.quantity}</td>
+                      <td className="p-2">{record.breakage}</td>
+                      <td className="p-2">{record.location}</td>
+                      <td className="p-2">{record.currstock}</td>
+                      <td className="p-2">{record.remarks}</td>
+                      <td className="p-2">{record.createdby}</td>
+                      <td className="p-2 flex gap-2">
+                        <button
+                          onClick={() => handleEdit(record)}
+                          className="text-blue-600 hover:underline"
+                        >
+                          <Pencil className="w-4 h-4 inline" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(record._id)}
+                          className="text-red-600 hover:underline"
+                        >
+                          <Trash2 className="w-4 h-4 inline" />
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-                </select>
-
-                <select
-                  name="size"
-                  value={formData.size}
-                  onChange={handleChange}
-                  placeholder="Size"
-                  className="border p-2 rounded w-full"
-                  required
-                >
-                  <option value="">Select Size</option>
-                  {mastsize.map((item, i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  name="coname"
-                  value={formData.coname}
-                  onChange={handleChange}
-                  placeholder="Company Name"
-                  className="border p-2 rounded w-full"
-                />
-
-                <select
-                  name="batchno"
-                  onChange={handleChange}
-                  className="border p-2 rounded w-full"
-                  required
-                >
-                  <option value="">Select Batch No</option>
-                  {batchno.map((item, i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.weight}
-                  onChange={handleChange}
-                  placeholder="Quantity"
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="number"
-                  name="breakage"
-                  value={formData.breakage}
-                  onChange={handleChange}
-                  placeholder="Breakage"
-                  className="border p-2 rounded w-full"
-                />
-                <select
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  placeholder="Location"
-                  className="border p-2 rounded w-full"
-                  required
-                >
-                  <option value="">Select Location</option>
-                  {mastlocation.map((item, i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="text"
-                  name="remarks"
-                  value={formData.remarks}
-                  onChange={handleChange}
-                  placeholder="Remarks"
-                  className="border p-2 rounded w-full"
-                />
-                <input
-                  type="text"
-                  disabled
-                  name="createdby"
-                  value={user.user?.name}
-                  onChange={handleChange}
-                  placeholder="Created By"
-                  className="border p-2 rounded w-full"
-                />
-              </div>
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mr-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  {editId ? "Update Record" : "Add Record"}
-                </button>
-              </div>
-            </form>
+              </tbody>
+            </table>
           </div>
+
+          {/* Modal */}
+          {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white p-6 rounded shadow-md w-full max-w-2xl">
+                <h2 className="text-xl font-semibold mb-4">
+                  {editId ? "Edit Record" : "Add New Record"}
+                </h2>
+                <form onSubmit={handleSubmit}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="date"
+                      name="date"
+                      disabled
+                      required
+                      value={moment(today).format("yyyy-MM-DD")} // value={FormDataEvent.data}
+                      onChange={handleChange}
+                      placeholder="Date"
+                      className="border p-2 rounded w-full"
+                    />
+                    <select
+                      type="text"
+                      name="designname"
+                      value={formData.designname}
+                      onChange={handleChange}
+                      placeholder="Design Name"
+                      className="border p-2 rounded w-full"
+                      required
+                    >
+                      <option value="">Select Design Name</option>
+                      {mastdesigname.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+
+                    <select
+                      name="size"
+                      value={formData.size}
+                      onChange={handleChange}
+                      placeholder="Size"
+                      className="border p-2 rounded w-full"
+                      required
+                    >
+                      <option value="">Select Size</option>
+                      {mastsize.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      name="coname"
+                      value={formData.coname}
+                      onChange={handleChange}
+                      placeholder="Company Name"
+                      className="border p-2 rounded w-full"
+                    />
+
+                    <select
+                      name="batchno"
+                      onChange={handleChange}
+                      className="border p-2 rounded w-full"
+                      required
+                    >
+                      <option value="">Select Batch No</option>
+                      {batchno.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      name="quantity"
+                      value={formData.weight}
+                      onChange={handleChange}
+                      placeholder="Quantity"
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="number"
+                      name="breakage"
+                      value={formData.breakage}
+                      onChange={handleChange}
+                      placeholder="Breakage"
+                      className="border p-2 rounded w-full"
+                    />
+                    <select
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      placeholder="Location"
+                      className="border p-2 rounded w-full"
+                      required
+                    >
+                      <option value="">Select Location</option>
+                      {mastlocation.map((item, i) => (
+                        <option key={i} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+
+                    <input
+                      type="text"
+                      name="remarks"
+                      value={formData.remarks}
+                      onChange={handleChange}
+                      placeholder="Remarks"
+                      className="border p-2 rounded w-full"
+                    />
+                    <input
+                      type="text"
+                      disabled
+                      name="createdby"
+                      value={user.user?.name}
+                      onChange={handleChange}
+                      placeholder="Created By"
+                      className="border p-2 rounded w-full"
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIsModalOpen(false)}
+                      className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 mr-2"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                      {editId ? "Update Record" : "Add Record"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
+
       )}
-    </div>
+
+    </>
+
+
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { House, Pencil, Trash } from "lucide-react";
 
@@ -12,6 +12,8 @@ export default function StockTableItemDetailPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isOutModal, setisOutModal] = useState(false)
+  const [itemid, setitemid] = useState("");
+  const [inputval, setinputval] = useState("")
 
   const fetchRecords = async () => {
     const res = await fetch("/api/itemdetail");
@@ -19,6 +21,30 @@ export default function StockTableItemDetailPage() {
     setRecords(data);
     setFilteredRecords(data); // Initialize filtered records
   };
+
+  const item_tag_update = async (id, action, remarks) => {
+
+    // console.log(id, action)
+
+    if (action == "default") {
+      setitemid(id);
+      setisOutModal(true)
+    }
+    if (action == "Out" || action == "Cancel") {
+
+      const res = await fetch("/api/itemdetail", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: itemid, action, remarks }),
+      });
+
+      let data = await res.json();
+      if (data.sucess) {
+        fetchRecords();
+        setisOutModal(false)
+      }
+    }
+  }
 
   useEffect(() => {
     fetchRecords();
@@ -87,7 +113,7 @@ export default function StockTableItemDetailPage() {
     "size",
     "qty",
     "outtag",
-    // "price",
+    "remarks"
   ];
 
   return (
@@ -148,11 +174,13 @@ export default function StockTableItemDetailPage() {
                     </td>
                   ) : (
                     <td key={field} className="p-3">
+
                       <button
                         onClick={() => {
-                          setisOutModal(true)
+                          item_tag_update(record._id, "default", "")
                           // alert(record._id);
                         }}
+
                         className={`${record[field] == "Out"
                           ? "bg-green-300"
                           : "bg-yellow-300"
@@ -165,12 +193,12 @@ export default function StockTableItemDetailPage() {
                 )}
                 <td className="flex p-3 space-x-2">
 
-                  <button
+                  {/* <button
                     onClick={() => openEditModal(record)}
                     className="p-1 text-green-600 rounded hover:bg-yellow-600"
                   >
                     <Pencil />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => handleDelete(record._id)}
                     className="p-1 text-red-500 rounded hover:bg-red-700"
@@ -203,16 +231,18 @@ export default function StockTableItemDetailPage() {
               {"Stock Out : Details"}
             </h2>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-x-5 py-2">
+
               <button
-                className="border-1 rounded-2xl bg-red-500"
-                onClick={() => { alert("Cancel Click") }}
+                className="border-1 py-5 rounded-2xl bg-red-500"
+                onClick={() => { item_tag_update(records._id, "Cancel") }}
               >
                 Cancel
               </button>
+
               <button
                 className="border-1 rounded-2xl bg-green-400"
-                onClick={() => { alert("Out Click") }}
+                onClick={() => { item_tag_update(records._id, "Out",) }}
               >
                 Out
               </button>
@@ -221,17 +251,19 @@ export default function StockTableItemDetailPage() {
               <lable>Reason</lable>
               <input
                 type="text"
-                name="cancel remarks"
+                name="itemremarks"
+                value={inputval}
+                onChange={(e) => { setinputval(e.target.value) }}
                 placeholder="Reason"
-                className="p-2 border-1 rounded w-full"
+                className="p-2 py-4 border-1 rounded w-full"
               />
             </div>
             <div className="mt-4 flex justify-end space-x-2">
               <button
                 onClick={() => setisOutModal(false)}
-                className="px-4 py-2 border rounded"
+                className="py-2 px-10 border-1 rounded-2xl bg-red-500"
               >
-                Cancel
+                Close
               </button>
             </div>
           </div>
