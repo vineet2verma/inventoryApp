@@ -14,7 +14,7 @@ export async function GET(req) {
     try {
         const { payload } = await jwtVerify(token, secret);
 
-        console.log(payload)
+        // console.log(payload)
 
         const response = NextResponse.json(
             {

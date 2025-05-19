@@ -298,8 +298,8 @@ export default function InventoryMaster() {
                   <th className="p-2">Design</th>
                   <th className="p-2">Company</th>
                   <th className="p-2">Batch</th>
-                  <th className="p-2">Type</th>
                   <th className="p-2">Size</th>
+                  <th className="p-2">Type</th>
                   <th className="p-2">Weight</th>
                   <th className="p-2">Pcs/Box</th>
                   <th className="p-2">Location</th>
@@ -318,8 +318,8 @@ export default function InventoryMaster() {
                     <td className="p-2">{rec.designname}</td>
                     <td className="p-2">{rec.coname}</td>
                     <td className="p-2">{rec.batchno}</td>
-                    <td className="p-2">{rec.type}</td>
                     <td className="p-2">{rec.size}</td>
+                    <td className="p-2">{rec.type}</td>
                     <td className="p-2">{rec.weight}</td>
                     <td className="p-2">{rec.pcperbox}</td>
                     <td className="p-2">{rec.location}</td>

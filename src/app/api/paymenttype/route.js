@@ -21,7 +21,7 @@ export async function POST(req) {
     console.log("Request body:", req.body);
     try {
         const data = await req.json();
-        console.log("Data received:", data);
+        // console.log("Data received:", data);
         await connectToDatabase();
 
         const newPayment = new PaymentMast({
@@ -29,7 +29,7 @@ export async function POST(req) {
             createdBy: data.createdBy,
             status: data.status || "Active",
         });
-        console.log("New payment object:", newPayment);
+        // console.log("New payment object:", newPayment);
 
         await newPayment.save();
         return NextResponse.json({ message: "Payment created successfully" }, { status: 200 });

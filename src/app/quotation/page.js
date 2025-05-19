@@ -6,8 +6,21 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function QuotationPage() {
+  const [rightread, setrightread] = useState(false);
+  const [rightcreate, setrightcreate] = useState(false);
+  const [rightedit, setrightedit] = useState(false);
+  const [rightdelete, setrightdelete] = useState(false);
+  const router = useRouter();
   const { user } = LoginUserFunc();
   const [showCharges, setShowCharges] = useState(false);
+
+  useEffect(() => {
+    setrightread(user.user?.pquotation.includes("read"));
+    setrightcreate(user.user?.pquotation.includes("create"));
+    setrightedit(user.user?.pquotation.includes("update"));
+    setrightdelete(user.user?.pquotation.includes("delete"));
+  }, [user]);
+
   const [quotation, setQuotation] = useState({
     orderId: "Q-20250515",
     date: "2025-05-15",
@@ -46,27 +59,14 @@ export default function QuotationPage() {
     cartageCharges: 0,
     packingCharges: 0,
   });
-  const [rightread, setrightread] = useState(false);
-  const [rightcreate, setrightcreate] = useState(false);
-  const [rightedit, setrightedit] = useState(false);
-  const [rightdelete, setrightdelete] = useState(false);
 
-  useEffect(() => {
-    setrightread(user.user?.pquotation.includes("read"));
-    setrightcreate(user.user?.pquotation.includes("create"));
-    setrightedit(user.user?.pquotation.includes("update"));
-    setrightdelete(user.user?.pquotation.includes("delete"));
-  }, [user]);
-
-  const handleItemChange = (index, field, value) => {
-    const newItems = [...quotation.items];
-    newItems[index][field] =
-      field === "qtypersqft" || field === "qtyperbox" || field === "price"
-        ? Number(value)
-        : value;
-    setQuotation({ ...quotation, items: newItems });
-  };
-
+  const bankDetail = [
+    { bank: "DEUTSCHE BANK" },
+    { 'a/c name': "ANTICA CERAMICA LLP" },
+    { Account: "100040626900019" },
+    { ifsc: "DEUT0784PBC" },
+    { branch: "KASTURBA GANDHI MARG" },
+  ];
   const termcondition = [
     "Payment 100% Advance",
     "Delivery After 10-15 Days After PO & payment",
@@ -76,13 +76,14 @@ export default function QuotationPage() {
     "Transportation damge 3% will be accepted.",
   ];
 
-  const bankDetail = [
-    { name: "ANTICA CERAMICA LLP" },
-    { bank: "DEUTSCHE BANK" },
-    { Account: "100040626900019" },
-    { ifsc: "DEUT0784PBC" },
-    { branch: "KASTURBA GANDHI MARG" },
-  ];
+  const handleItemChange = (index, field, value) => {
+    const newItems = [...quotation.items];
+    newItems[index][field] =
+      field === "qtypersqft" || field === "qtyperbox" || field === "price"
+        ? Number(value)
+        : value;
+    setQuotation({ ...quotation, items: newItems });
+  };
 
   const addItem = () => {
     setQuotation({
@@ -107,6 +108,7 @@ export default function QuotationPage() {
     (sum, item) => sum + item.qtyperbox * item.price,
     0
   );
+
   const discountAmt = (subtotal * quotation.discount) / 100;
   const afterDiscount = subtotal - discountAmt;
   const gstAmt = (afterDiscount * quotation.gstRate) / 100;
@@ -116,6 +118,24 @@ export default function QuotationPage() {
     Number(quotation.cuttingCharges || 0) +
     Number(quotation.cartageCharges || 0) +
     Number(quotation.packingCharges || 0);
+
+  const handleSubmit = async () => {
+    const method = "POST";
+    const url = "/api/quotation";
+
+    let res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(quotation),
+    });
+
+    let result = await res.json();
+    if (result.success) {
+      alert("Quotation Save Scussfully ")
+    } else {
+      console.log("failed to post record in quotation ", err)
+    }
+  }
 
   return (
     <>
@@ -354,30 +374,36 @@ export default function QuotationPage() {
           <div className="mt-4 flex justify-between">
             {/* Bank Detail Left Side */}
 
-            <div className="text-sm text-left">
+            <div className="text-left p-2  rounded-2xl ">
               <img
                 src="bank bar code.jpg"
-                alt="Example"
+                alt="Bank QR Code"
                 width="100"
                 height="100"
-                className="float-right border-black ml-5 mt-3"
+                className="float-right border-black ml-5 mt-4.5"
               />
-              <table>
-                <th>Bank Detail</th>
+
+              <table className="mt-2">
+                <thead>
+                  <tr>
+                    <th colSpan={2} className="text-left text-sm underline pb-1">Bank Detail</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  {bankDetail.map((record, index) => (
-                    <tr key={index}>
-                      <td className="pr-3 text-xs">
-                        {Object.keys(record)[0].toUpperCase()} :
-                      </td>
-                      <td className="pr-3 text-xs">
-                        {Object.values(record)[0]}
-                      </td>
-                    </tr>
-                  ))}
+                  {bankDetail.map((record, index) => {
+                    const key = Object.keys(record)[0];
+                    const value = record[key];
+                    return (
+                      <tr key={index}>
+                        <td className="pr-3 text-xs font-medium">{key.toUpperCase()} :</td>
+                        <td className="pr-3 text-xs">{value}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+
 
             {/* Subtotal Right Side */}
             <div className=" text-sm text-right">
@@ -409,7 +435,7 @@ export default function QuotationPage() {
 
           <div className="my-2">
             <table>
-              <th className="text-left">Term Condition</th>
+              <th className="text-left underline">Term Condition</th>
               {termcondition.map((field, i) => (
                 <tr>
                   <td className="text-xs py-0.2 pl-3" key={i}>
@@ -419,6 +445,15 @@ export default function QuotationPage() {
                 </tr>
               ))}
             </table>
+          </div>
+          <div className="print:hidden mb-5 text-right">
+            <button
+              className="bg-green-500 rounded-2xl py-2 px-10 mr-5 w-60  "
+              onClick={handleSubmit}
+            >Save
+
+            </button>
+
           </div>
 
           {showCharges && (

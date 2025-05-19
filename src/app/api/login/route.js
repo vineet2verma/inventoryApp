@@ -14,7 +14,7 @@ export async function POST(req) {
   let user = await User.findOne({ email: data.email, password: data.password });
 
   if (user) {
-    console.log("User found:", user);
+    // console.log("User found:", user);
 
     // Create JWT
     const jwt = await new SignJWT({ ...user })
