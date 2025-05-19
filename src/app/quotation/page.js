@@ -1,7 +1,9 @@
 // Editable Quotation Page Matching PDF Design
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { LoginUserFunc } from "../context/loginuser";
+import { House } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function QuotationPage() {
   const { user } = LoginUserFunc();
@@ -120,6 +122,14 @@ export default function QuotationPage() {
       {rightread && (
         <div className="p-2 max-w-5xl mx-auto bg-white shadow-xl rounded-xl mb-5 ">
           <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center print:hidden gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+            >
+              <House className="w-5 h-5" />
+              Home
+            </button>
+
             <div className="text-center w-full">
               <h1 className="text-3xl font-bold">Antica Ceramica</h1>
               <p>Contact: 9999999999 | GSTIN: 09AAECA1234K1Z2</p>
@@ -244,7 +254,10 @@ export default function QuotationPage() {
                 rows={3}
                 value={quotation.shippingAddress}
                 onChange={(e) =>
-                  setQuotation({ ...quotation, shippingAddress: e.target.value })
+                  setQuotation({
+                    ...quotation,
+                    shippingAddress: e.target.value,
+                  })
                 }
               />
             </div>
@@ -342,6 +355,13 @@ export default function QuotationPage() {
             {/* Bank Detail Left Side */}
 
             <div className="text-sm text-left">
+              <img
+                src="bank bar code.jpg"
+                alt="Example"
+                width="100"
+                height="100"
+                className="float-right border-black ml-5 mt-3"
+              />
               <table>
                 <th>Bank Detail</th>
                 <tbody>
@@ -350,7 +370,9 @@ export default function QuotationPage() {
                       <td className="pr-3 text-xs">
                         {Object.keys(record)[0].toUpperCase()} :
                       </td>
-                      <td className="pr-3 text-xs">{Object.values(record)[0]}</td>
+                      <td className="pr-3 text-xs">
+                        {Object.values(record)[0]}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -481,8 +503,8 @@ export default function QuotationPage() {
               </div>
             </div>
           )}
-        </div>)}
+        </div>
+      )}
     </>
-
   );
 }

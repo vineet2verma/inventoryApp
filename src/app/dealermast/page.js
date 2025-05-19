@@ -315,23 +315,23 @@ export default function DealerMastPage() {
 
     console.log(initialitem)
 
-    // // e.preventDefault();
-    // const method = "POST";
-    // const url = "/api/itemdetail";
-    // const body = initialitem;
+    // e.preventDefault();
+    const method = "POST";
+    const url = "/api/itemdetail";
+    const body = initialitem;
 
-    // try {
-    //   const res = await fetch(url, {
-    //     method,
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(body),
-    //   });
-    //   const result = await res.json();
-    //   alert(result.message);
-    //   setIsModalOpen(false);
-    // } catch (err) {
-    //   console.error("Failed to save record:", err);
-    // }
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const result = await res.json();
+      alert(result.message);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Failed to save record:", err);
+    }
   };
 
   const handleAddItem = () => {

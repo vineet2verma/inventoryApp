@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { LoginUserFunc } from "../context/loginuser";
 
 export default function TileMasterPage() {
-  const { user } = LoginUserFunc();
+  // const { user } = LoginUserFunc();
   const [tiles, setTiles] = useState([]);
   const [formData, setFormData] = useState({ tile: "", createdBy: "", status: "Active", imageUrl: "" });
   const [editingId, setEditingId] = useState(null);

@@ -59,10 +59,15 @@ export async function POST(req) {
 export async function PUT(req) {
   try {
     const { id, action, remarks } = await req.json();
+    const today = new Date();
+
+    console.log("==>> :   ", id,action,remarks)
+
     await connectToDatabase();
 
     if (action == "Out") {
-      const updated = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks })
+      console.log("Chk Out =>  " , id,action,remarks)
+      const updated = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate : today })
 
       if (!updated) {
         return NextResponse.json({ message: "Record not found" }, { status: 404 });
@@ -72,6 +77,7 @@ export async function PUT(req) {
     }
 
     if (action == "Cancel") {
+      console.log("Chk Cancel =>  ",id,action,remarks)
 
       let { designname, coname, batchno, size, qty } = await itemDetailStock.findOne({ _id: id })
 
@@ -81,7 +87,7 @@ export async function PUT(req) {
 
       let updated = await createInvMast.findByIdAndUpdate(invdata._id, { holdstock: new_hold, closingstock: new_cl_stock })
 
-      let respone = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks })
+      let response = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate : today })
 
       if (!updated) {
         return NextResponse.json({ message: "Record not found" }, { status: 404 });

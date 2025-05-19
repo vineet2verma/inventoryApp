@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([]);
-  const [typelen, settypelen] = useState([]);
+  // const [typelen, settypelen] = useState([]);
+  const [itemdetailcount, setitemdetailcount] = useState([]);
   const [permissionloc, setpermissionloc] = useState(false);
   const [permissiontype, setpermissiontype] = useState(false);
   const [permissionpayment, setpermissionpayment] = useState(false);
@@ -27,13 +28,13 @@ export default function Dashboard() {
   const { user } = LoginUserFunc();
   const router = useRouter();
   const invdemodata = [
-    { name: "Total Hold", value: 10 },
-    { name: "Today Hold", value: 20 },
-    { name: "Today Out", value: 10 },
+    { name: "Total Hold", value: 20 },
+    { name: "Today Hold", value: 10 },
+    { name: "Today Cancel", value: 5 },
   ];
 
   // fetching inv mast
-  const fetchMastData = async () => {
+  const fetchMastDataCount = async () => {
     try {
       const res = await fetch("api/typecount");
       const data = await res.json();
@@ -42,9 +43,20 @@ export default function Dashboard() {
       console.error("Failed to fetch records:", err);
     }
   };
+  const fetchItemDetailCount = async () => {
+    try {
+      const res = await fetch("api/itemdetailcount");
+      const data = await res.json();
+      setitemdetailcount(data);
+      console.log(data);
+    } catch (err) {
+      console.log("Failed to fetch Item Count Records", err);
+    }
+  };
 
   useEffect(() => {
-    fetchMastData();
+    fetchMastDataCount();
+    fetchItemDetailCount();
   }, []);
 
   useEffect(() => {
@@ -76,44 +88,69 @@ export default function Dashboard() {
         {/* Main Content */}
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Card 1 */}
-          <div className=" bg-white p-4 rounded-xl shadow">
-            <div className="flex justify-between">
-              <h6 className="text-xl font-semibold mb-2">Status :</h6>
-              <h6 className="text-xl font-semibold mb-2">{today}</h6>
+          <div className=" bg-white text-xs p-4 rounded-xl shadow">
+            <div className="grid grid-cols-2 mb-2 ">
+              <h6 className="text-left px-2 font-semibold ">Status :</h6>
+              <h6 className="text-right px-2 font-semibold ">{today}</h6>
             </div>
-            <div className="flex justify-between ">
-              <table className=" rounded min-w-115 text-sm text-left">
+            <div className="py-2 ">
+              <table className="w-full font-bold ">
                 <tbody>
-                  {invdemodata.map((item, i) => (
-                    <tr key={i} className="py-1 font-bold">
-                      <td className="px-1.5 ">{item.name}</td>
-                      <td className="px-1.5 ">{item.value}</td>
-                    </tr>
-                  ))}
+                  <tr className="grid grid-cols-2 w-full border rounded-2xl bg-yellow-100">
+                    <td className="px-2 text-black-500 font-bold ">Total Hold</td>
+                    <td className="text-right px-2 ">
+                      {itemdetailcount.totalholdcount}
+                    </td>
+                  </tr>
+                  <tr className="grid grid-cols-2 w-full">
+                    <td className=" px-2 ">Today Hold</td>
+                    <td className="text-right px-2 ">
+                      {itemdetailcount.todayoutcount}
+                    </td>
+                  </tr>
+                  <tr className="grid grid-cols-2 w-full">
+                    <td className=" px-2 ">Today Out</td>
+                    <td className="text-right px-2 ">
+                      {itemdetailcount.todayoutcount}
+                    </td>
+                  </tr>
+
+                  <tr className="grid grid-cols-2 w-full">
+                    <td className=" px-2 ">Today Cancel</td>
+                    <td className="text-right px-2 ">
+                      {itemdetailcount.todaycancelcount}
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           {/* Card 2 */}
-          <div className="bg-white p-5 rounded-2xl shadow">
-            <div className="flex justify-between mb-2">
-              <h2 className="text-xl font-semibold ">Status :</h2>
-              <h2 className="text-xl font-semibold ">Type</h2>
+          <div className="bg-white text-xs p-4 rounded-xl shadow">
+            <div className="grid grid-cols-2 max-w-full ">
+              <h2 className=" font-semibold ">Status :</h2>
+              <h2 className="text-right font-semibold ">Type</h2>
             </div>
-            <table className="rounded min-w-118 text-sm text-left font-bold">
-              <tbody>
-                <tr className="py-1">
-                  <td className="px-1.5 ">Regular</td>
-                  <td className="px-1.5">{mastdata.regularcount}</td>
+            <table className="w-full my-4 font-bold">
+              <tbody className="">
+                <tr className="grid grid-cols-2 w-full">
+                  <td>Regular</td>
+                  <td className="text-right  font-semibold">
+                    {mastdata.regularcount}
+                  </td>
                 </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">Discontinue</td>
-                  <td className="px-1.5 ">{mastdata.discontinuecount}</td>
+                <tr className="grid grid-cols-2 w-full">
+                  <td>Discontinue</td>
+                  <td className="text-right  font-semibold">
+                    {mastdata.discontinuecount}
+                  </td>
                 </tr>
-                <tr className="py-1">
-                  <td className="px-1.5 ">On Order</td>
-                  <td className="px-1.5 ">{mastdata.onordercount}</td>
+                <tr className="grid grid-cols-2 w-full">
+                  <td>On Order</td>
+                  <td className="text-right  font-semibold">
+                    {mastdata.onordercount}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -195,6 +232,16 @@ export default function Dashboard() {
             </button>
           )}
 
+                    {permissionitemstatus && (
+            <button
+              onClick={() => router.push("/stockout")}
+              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+            >
+              Item Status
+            </button>
+          )}
+
+
           {/* <button
             onClick={() => router.push("/clientmast")}
             className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
@@ -207,15 +254,6 @@ export default function Dashboard() {
               className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
             >
               Breakage
-            </button>
-          )}
-
-          {permissionitemstatus && (
-            <button
-              onClick={() => router.push("/stockout")}
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-            >
-              Item Status
             </button>
           )}
 

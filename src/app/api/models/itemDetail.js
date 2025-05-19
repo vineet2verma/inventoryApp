@@ -12,6 +12,7 @@ const ItemDetailSchema = new mongoose.Schema(
         qty: { type: String, required: false },
         createdby: { type: String, required: false },
         outtag: { type: String, required: false },  // out // hold // trasit
+        tagdate : { type: String, required: false },
         remarks: { type: String, require: false }
     },
     { timestamps: true }
