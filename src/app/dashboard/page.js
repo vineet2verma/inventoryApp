@@ -48,7 +48,7 @@ export default function Dashboard() {
       const res = await fetch("api/itemdetailcount");
       const data = await res.json();
       setitemdetailcount(data);
-      console.log(data);
+      
     } catch (err) {
       console.log("Failed to fetch Item Count Records", err);
     }
@@ -96,12 +96,13 @@ export default function Dashboard() {
             <div className="py-2 ">
               <table className="w-full font-bold ">
                 <tbody>
-                  <tr className="grid grid-cols-2 w-full border rounded-2xl bg-yellow-100">
-                    <td className="px-2 text-black-500 font-bold ">Total Hold</td>
+                  <tr className="grid grid-cols-2 w-full bg-blue-300 rounded-3xl py-0.5 mb-1">
+                    <td className="px-2   font-bold ">Total Hold</td>
                     <td className="text-right px-2 ">
                       {itemdetailcount.totalholdcount}
                     </td>
                   </tr>
+                  
                   <tr className="grid grid-cols-2 w-full">
                     <td className=" px-2 ">Today Hold</td>
                     <td className="text-right px-2 ">
@@ -114,13 +115,13 @@ export default function Dashboard() {
                       {itemdetailcount.todayoutcount}
                     </td>
                   </tr>
-
                   <tr className="grid grid-cols-2 w-full">
                     <td className=" px-2 ">Today Cancel</td>
                     <td className="text-right px-2 ">
                       {itemdetailcount.todaycancelcount}
                     </td>
                   </tr>
+                  
                 </tbody>
               </table>
             </div>

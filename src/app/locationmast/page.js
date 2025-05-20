@@ -35,7 +35,7 @@ export default function LocationMasterPage() {
     setrightcreate(user.user?.plocation.includes("create"));
     setrightedit(user.user?.plocation.includes("update"));
     setrightdelete(user.user?.plocation.includes("delete"));
-  }, [user])
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,41 +74,50 @@ export default function LocationMasterPage() {
     setModalOpen(true);
   };
 
-
   return (
     <>
       {rightread && (
-        <div className="p-6 bg-gray-100 min-h-screen">
-          <div className="flex justify-between items-center mb-6">
+        <div className="p-4 sm:p-6 pb-12 bg-gray-100 min-h-screen">
+          {/* Mobile Header */}
+          <div className="text-center text-white font-bold underline mb-1 rounded-2xl bg-blue-600 visible sm:hidden w-full">
+            Location Master
+          </div>
+
+          {/* Header Buttons */}
+          <div className="grid grid-cols-2 gap-4 sm:flex sm:justify-between sm:items-center mb-6">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
             >
-              <House className="w-5 h-5" />
+              <House className="w-5 h-5" aria-label="Home" />
               Home
             </button>
 
-            <h2 className="text-2xl font-bold text-gray-800">Location Master</h2>
+            {/* Desktop Header Title */}
+            <div className="text-center text-white font-bold underline rounded-2xl px-6 py-2 bg-blue-600 hidden sm:block">
+              Location Master
+            </div>
+
             {rightcreate && (
               <button
                 onClick={() => {
                   setForm({ location: "", createdBy: user.user?.name, status: "Active" });
                   setModalOpen(true);
                 }}
-                className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
+                className="w-full sm:w-auto flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition"
               >
-                <Plus className="mr-2 w-5 h-5" />
+                <Plus className="mr-2 w-5 h-5" aria-label="Add Location" />
                 Add Location
               </button>
             )}
           </div>
 
+          {/* Status Message */}
           {statusMsg && (
             <div
-              className={`mb-4 p-3 rounded-xl flex items-center space-x-2 ${statusMsg.success
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-                }`}
+              className={`mb-4 p-3 rounded-xl flex items-center space-x-2 ${
+                statusMsg.success ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+              }`}
             >
               {statusMsg.success ? (
                 <CheckCircle className="w-5 h-5" />
@@ -119,27 +128,24 @@ export default function LocationMasterPage() {
             </div>
           )}
 
-          <div className="overflow-x-auto bg-white rounded-2xl shadow-xl p-4">
-            <table className="w-full table-auto text-sm text-left text-gray-700">
-              <thead className="text-xs uppercase bg-gray-200 text-gray-700">
+          {/* Table */}
+          <div className="overflow-x-auto bg-white rounded-2xl shadow-xl">
+            <table className="min-w-full text-sm text-left text-gray-700">
+              <thead className="bg-gray-200 text-xs uppercase sticky top-0">
                 <tr>
-                  <th className="px-4 py-2">Location</th>
-                  <th className="px-4 py-2">Status</th>
-                  <th className="px-4 py-2">Created By</th>
-                  {/* <th className="px-4 py-2">Created At</th> */}
-                  <th className="px-4 py-2 text-center">Actions</th>
+                  <th className="px-4 py-3">Location</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Created By</th>
+                  <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item) => (
-                  <tr key={item._id} className="border-b">
-                    <td className="px-4 py-2">{item.location}</td>
-                    <td className="px-4 py-2">{item.createdBy}</td>
-                    <td className="px-4 py-2">{item.status}</td>
-                    {/* <td className="px-4 py-2">
-                  {new Date(item.createdAt).toLocaleString()}
-                </td> */}
-                    <td className="px-4 py-2 flex justify-center space-x-2">
+                  <tr key={item._id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3">{item.location}</td>
+                    <td className="px-4 py-3">{item.status}</td>
+                    <td className="px-4 py-3">{item.createdBy}</td>
+                    <td className="px-4 py-3 flex justify-center space-x-2">
                       {rightedit && (
                         <button
                           onClick={() => openEdit(item)}
@@ -148,16 +154,14 @@ export default function LocationMasterPage() {
                           <Pencil size={18} />
                         </button>
                       )}
-                      {
-                        rightdelete && (
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        )
-                      }
+                      {rightdelete && (
+                        <button
+                          onClick={() => handleDelete(item._id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -165,8 +169,9 @@ export default function LocationMasterPage() {
             </table>
           </div>
 
+          {/* Modal */}
           {modalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 px-4">
               <div className="bg-white rounded-2xl p-6 shadow-xl w-full max-w-md">
                 <h3 className="text-xl font-semibold mb-4">
                   {form.id ? "Edit Location" : "Add Location"}
@@ -177,24 +182,20 @@ export default function LocationMasterPage() {
                     <input
                       type="text"
                       value={form.location}
-                      onChange={(e) =>
-                        setForm({ ...form, location: e.target.value })
-                      }
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
                       required
                       className="w-full p-2 border border-gray-300 rounded-xl"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium">{form.id ? "Updated By " : " Created By"}</label>
+                    <label className="block text-sm font-medium">
+                      {form.id ? "Updated By" : "Created By"}
+                    </label>
                     <input
                       type="text"
                       disabled
                       value={form.createdBy}
-                      onChange={(e) =>
-                        setForm({ ...form, createdBy: user.user?.name })
-                      }
-                      required
-                      className="w-full p-2 border border-gray-300 rounded-xl"
+                      className="w-full p-2 border hidden border-gray-300 rounded-xl"
                     />
                   </div>
                   <div>
@@ -208,7 +209,7 @@ export default function LocationMasterPage() {
                       <option value="Inactive">Inactive</option>
                     </select>
                   </div>
-                  <div className="flex justify-end space-x-2 pt-4">
+                  <div className="flex justify-end gap-2 pt-4">
                     <button
                       type="button"
                       onClick={() => setModalOpen(false)}
@@ -218,7 +219,10 @@ export default function LocationMasterPage() {
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
+                      disabled={!form.location}
+                      className={`px-4 py-2 rounded-xl text-white ${
+                        form.location ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+                      }`}
                     >
                       {form.id ? "Update" : "Create"}
                     </button>

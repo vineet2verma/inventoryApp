@@ -8,8 +8,8 @@ import { fetchlocationRecords } from "@/app/components/fetchlocationmast";
 
 export default function InventoryMaster() {
   const { user } = LoginUserFunc();
-  const [records, setRecords] = useState([]); // data
-  const [filteredRecords, setFilteredRecords] = useState([]); //filter - backup
+  const [records, setRecords] = useState([]);
+  const [filteredRecords, setFilteredRecords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({});
   const [editingId, setEditingId] = useState(null);
@@ -17,27 +17,26 @@ export default function InventoryMaster() {
   const [locationList, setLocationList] = useState([]);
   const [typeList, setTypeList] = useState([]);
   const [mainfilterbackup, setmainfilterbackup] = useState([]);
+  const [showLocations, setShowLocations] = useState(false);
   const router = useRouter();
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
 
-  // Fetch records from createinvmast
   const fetchRecords = async () => {
     const res = await fetch("/api/createinvmast");
     const data = await res.json();
     setRecords(data);
-    setFilteredRecords(data); // Initialize filtered records
+    setFilteredRecords(data);
+    setmainfilterbackup(data);
   };
 
-  // Fetch type list from typemast
   const fetchTypeList = async () => {
     const typelist = await fetchTypeRecords();
     setTypeList(typelist);
   };
 
-  // Fetch location list from locationmast
   const fetchLocationMast = async () => {
     const locationList = await fetchlocationRecords();
     setLocationList(locationList);
@@ -66,7 +65,11 @@ export default function InventoryMaster() {
   };
 
   const handleEdit = (record) => {
-    setFormData(record);
+    const locationArray = record.location?.split(",").filter(Boolean) || [];
+    setFormData({
+      ...record,
+      location: Array.from(new Set(locationArray.map((e) => e.trim()))),
+    });
     setEditingId(record._id);
     setShowForm(true);
   };
@@ -84,13 +87,17 @@ export default function InventoryMaster() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const method = editingId ? "PUT" : "POST";
-    const body = editingId ? { id: editingId, ...formData } : formData;
+    const body = editingId ? { id: editingId, ...formData } : { ...formData };
+    body.location = Array.isArray(formData.location)
+      ? formData.location.join(",")
+      : formData.location || "";
 
     await fetch("/api/createinvmast", {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+
     fetchRecords();
     setShowForm(false);
     setFormData({});
@@ -98,37 +105,34 @@ export default function InventoryMaster() {
   };
 
   const handleSearch = async (e) => {
-    setSearchQuery(e.target.value);
     const query = e.target.value.toLowerCase();
-    if (query == "") {
-      const filtered = records.filter((record) =>
-        Object.values(record).some((value) =>
-          String(value).toLowerCase().includes(query)
-        )
-      );
+    setSearchQuery(query);
 
-      setFilteredRecords(filtered);
-      setmainfilterbackup(filtered);
+    if (query === "") {
+      setFilteredRecords(mainfilterbackup);
     } else {
-      let req = await fetch("/api/searchinvmastpage?query=" + query);
-      let res = await req.json();
+      const req = await fetch("/api/searchinvmastpage?query=" + query);
+      const res = await req.json();
       setmainfilterbackup(res.data);
-      res.error ? setFilteredRecords(res.data) : setFilteredRecords(res.data);
+      setFilteredRecords(res.data);
     }
   };
 
-  const handleTypeSearch = (x) => {
-    if (x.target.value != "Select Type") {
-      let filterType = mainfilterbackup.filter((e) => e.type == x.target.value);
-      setFilteredRecords(filterType);
+  const handleTypeSearch = (e) => {
+    const value = e.target.value;
+    if (value !== "") {
+      const filtered = mainfilterbackup.filter((item) => item.type === value);
+      setFilteredRecords(filtered);
     } else {
       setFilteredRecords(mainfilterbackup);
     }
   };
-  const handleSizeSearch = (x) => {
-    if (x.target.value != "Select Size") {
-      let filterType = mainfilterbackup.filter((e) => e.size == x.target.value);
-      setFilteredRecords(filterType);
+
+  const handleSizeSearch = (e) => {
+    const value = e.target.value;
+    if (value !== "") {
+      const filtered = mainfilterbackup.filter((item) => item.size === value);
+      setFilteredRecords(filtered);
     } else {
       setFilteredRecords(mainfilterbackup);
     }
@@ -137,8 +141,8 @@ export default function InventoryMaster() {
   return (
     <>
       {rightread && (
-        <div className="min-h-screen p-4 bg-gray-100 ">
-          <div className="sticky top-0  flex flex-wrap justify-between items-center mb-4 gap-2">
+        <div className="min-h-screen p-4 bg-gray-100">
+          <div className="sticky top-0 flex flex-wrap justify-between items-center mb-4 gap-2">
             <button
               onClick={() => router.push("/dashboard")}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
@@ -146,14 +150,13 @@ export default function InventoryMaster() {
               <House className="w-5 h-5" />
               Home
             </button>
-            {/* <h1 className="text-2xl font-bold">Inventory Master</h1> */}
 
             <div className="flex flex-wrap items-center gap-2">
               <select
-                className="border rounded-full px-4 py-2 "
+                className="border rounded-full px-4 py-2"
                 onChange={handleTypeSearch}
               >
-                <option>Select Type</option>
+                <option value="">Select Type</option>
                 <option>Regular</option>
                 <option>Discontinue</option>
                 <option>On Order</option>
@@ -163,7 +166,7 @@ export default function InventoryMaster() {
                 className="rounded-full border px-4 py-2"
                 onChange={handleSizeSearch}
               >
-                <option>Select Size</option>
+                <option value="">Select Size</option>
                 {Array.from(new Set(mainfilterbackup.map((x) => x.size))).map(
                   (item, i) => (
                     <option key={i}>{item}</option>
@@ -171,7 +174,6 @@ export default function InventoryMaster() {
                 )}
               </select>
 
-              {/* Search Bar */}
               <input
                 type="text"
                 value={searchQuery}
@@ -179,6 +181,7 @@ export default function InventoryMaster() {
                 placeholder="Search"
                 className="w-full sm:w-auto px-4 py-2 border rounded-full"
               />
+
               {rightcreate && (
                 <button
                   onClick={showForm ? handleCancel : handleAdd}
@@ -188,11 +191,10 @@ export default function InventoryMaster() {
                       : "flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
                   }
                 >
-                  <Plus className="w-4 h-4 mr-2" />{" "}
+                  <Plus className="w-4 h-4 mr-2" />
                   {showForm ? "Cancel" : "Add Inventory"}
                 </button>
               )}
-
             </div>
           </div>
 
@@ -214,73 +216,126 @@ export default function InventoryMaster() {
                 "opstock",
                 "holdstock",
                 "location",
-                // "purprice",
-              ].map((field) =>
-                field === "type" ? (
-                  <select
-                    key={field}
-                    placeholder={field}
-                    value={formData[field] || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [field]: e.target.value })
-                    }
-                    className="p-2 border rounded-xl w-full"
-                  >
-                    <option value="" disabled>
-                      Select {field}
-                    </option>
-                    {typeList.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                ) : field === "location" ? (
-                  <select
-                    key={field}
-                    placeholder={field}
-                    value={formData[field] || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [field]: e.target.value })
-                    }
-                    className="p-2 border rounded-xl w-full"
-                  >
-                    <option value="" disabled>
-                      Select {field}
-                    </option>
-                    {locationList.map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    key={field}
-                    type={
-                      [
-                        "batchno",
-                        "weight",
-                        "pcperbox",
-                        "minqty",
-                        "maxqty",
-                        "opstock",
-                        "purprice",
-                        "holdstock",
-                      ].includes(field)
-                        ? "number"
-                        : "text"
-                    }
-                    placeholder={field}
-                    required
-                    value={formData[field] || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [field]: e.target.value })
-                    }
-                    className="p-2 border rounded-xl w-full"
-                  />
-                )
-              )}
+              ].map((field) => {
+                const label = field
+                  .replace("pcperbox", "Pcs per Box")
+                  .replace("opstock", "Opening Stock")
+                  .replace("holdstock", "Hold Stock")
+                  .replace("minqty", "Min Qty")
+                  .replace("maxqty", "Max Qty")
+                  .replace("batchno", "Batch No")
+                  .replace("coname", "Company Name")
+                  .replace("designname", "Design Name")
+                  .replace("type", "Type")
+                  .replace("size", "Size")
+                  .replace("weight", "Weight")
+                  .replace("location", "Location");
+
+                if (field === "type") {
+                  return (
+                    <div key={field}>
+                      <label className="text-xs">{label}</label>
+                      <select
+                        value={formData[field] || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, [field]: e.target.value })
+                        }
+                        className="p-2 border rounded-xl w-full"
+                      >
+                        <option value="" disabled>
+                          Select {label}
+                        </option>
+                        {typeList.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                } else if (field === "location") {
+                  return (
+                    <div key={field} className="border rounded-xl p-2">
+                      {/* <label className="block text-xs">
+                        Select {label}(s):
+                      </label> */}
+                      <button
+                        type="button"
+                        onClick={() => setShowLocations((prev) => !prev)}
+                        className="text-blue-600 underline block"
+                      >
+                        {showLocations ? "Hide Locations" : "Select Locations"}
+                      </button>
+                      {showLocations && (
+                        <div className="grid gap-2 max-h-40 overflow-y-auto">
+                          {locationList.map((loc, i) => (
+                            <label key={i} className="block">
+                              <input
+                                type="checkbox"
+                                checked={(formData.location || []).includes(
+                                  loc
+                                )}
+                                onChange={(e) => {
+                                  const selected = Array.isArray(
+                                    formData.location
+                                  )
+                                    ? formData.location
+                                    : formData.location
+                                        ?.split(",")
+                                        .filter(Boolean) || [];
+                                  if (e.target.checked) {
+                                    setFormData({
+                                      ...formData,
+                                      location: [
+                                        ...new Set([...selected, loc]),
+                                      ],
+                                    });
+                                  } else {
+                                    setFormData({
+                                      ...formData,
+                                      location: selected.filter(
+                                        (item) => item !== loc
+                                      ),
+                                    });
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              {loc}
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  const isNumber = [
+                    "batchno",
+                    "weight",
+                    "pcperbox",
+                    "minqty",
+                    "maxqty",
+                    "opstock",
+                    "holdstock",
+                  ].includes(field);
+
+                  return (
+                    <div key={field}>
+                      <label className="text-xs">{label}</label>
+                      <input
+                        type={isNumber ? "number" : "text"}
+                        placeholder={label}
+                        required
+                        value={formData[field] || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, [field]: e.target.value })
+                        }
+                        className="p-2 border rounded-xl w-full"
+                      />
+                    </div>
+                  );
+                }
+              })}
 
               <button
                 type="submit"
@@ -291,9 +346,9 @@ export default function InventoryMaster() {
             </form>
           )}
 
-          <div className="  bg-white p-0 rounded-xl shadow-md overflow-x-auto overflow-y-auto max-h-140 ">
-            <table className="min-w-full text-sm text-left table-auto ">
-              <thead className="bg-gray-400 sticky top-0  ">
+          <div className="bg-white p-0 rounded-xl shadow-md overflow-x-auto overflow-y-auto max-h-140">
+            <table className="min-w-full text-sm text-left table-auto">
+              <thead className="bg-gray-400 sticky top-0">
                 <tr>
                   <th className="p-2">Design</th>
                   <th className="p-2">Company</th>
@@ -308,7 +363,6 @@ export default function InventoryMaster() {
                   <th className="p-2">Op. Stock</th>
                   <th className="p-2">Hold Stock</th>
                   <th className="p-2">Cl. Stock</th>
-                  {/* <th className="p-2">Pur. Price</th> */}
                   <th className="p-2">Actions</th>
                 </tr>
               </thead>
@@ -323,12 +377,25 @@ export default function InventoryMaster() {
                     <td className="p-2">{rec.weight}</td>
                     <td className="p-2">{rec.pcperbox}</td>
                     <td className="p-2">{rec.location}</td>
-                    <td className={`p-2 ${rec.closingstock < rec.minqty ? "bg-amber-300 " : ''} `}>{rec.minqty}</td>
-                    <td className={`p-2 ${parseFloat(rec.closingstock) > parseFloat(rec.maxqty) ? "bg-orange-300 " : ''} `}>{rec.maxqty}</td>
+                    <td
+                      className={`p-2 ${
+                        rec.closingstock < rec.minqty ? "bg-amber-300" : ""
+                      }`}
+                    >
+                      {rec.minqty}
+                    </td>
+                    <td
+                      className={`p-2 ${
+                        parseFloat(rec.closingstock) > parseFloat(rec.maxqty)
+                          ? "bg-orange-300"
+                          : ""
+                      }`}
+                    >
+                      {rec.maxqty}
+                    </td>
                     <td className="p-2">{rec.opstock}</td>
                     <td className="p-2">{rec.holdstock}</td>
                     <td className="p-2">{rec.closingstock}</td>
-                    {/* <td className="p-2">{rec.purprice}</td> */}
                     <td className="p-2 space-x-2">
                       {rightedit && (
                         <button
