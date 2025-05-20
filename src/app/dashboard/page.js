@@ -48,7 +48,7 @@ export default function Dashboard() {
       const res = await fetch("api/itemdetailcount");
       const data = await res.json();
       setitemdetailcount(data);
-      
+
     } catch (err) {
       console.log("Failed to fetch Item Count Records", err);
     }
@@ -76,9 +76,9 @@ export default function Dashboard() {
     <>
       {/* <SideMenu /> */}
 
-      <div className="min-h-screen bg-gray-100 px-5 pt-4 ">
+      <div className="min-h-screen bg-gray-100 px-5 pt-2 ">
         {/* Header */}
-        <header className="flex justify-between bg-white shadow p-4 mb-6 rounded-xl">
+        <header className="flex justify-between bg-white shadow p-4 mb-3 rounded-xl">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
           <h1 className="text-2xl font-bold text-gray-800">
             {user.user?.name}
@@ -86,27 +86,27 @@ export default function Dashboard() {
         </header>
 
         {/* Main Content */}
-        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           {/* Card 1 */}
-          <div className=" bg-white text-xs p-4 rounded-xl shadow">
+          <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
             <div className="grid grid-cols-2 mb-2 ">
               <h6 className="text-left px-2 font-semibold ">Status :</h6>
               <h6 className="text-right px-2 font-semibold ">{today}</h6>
             </div>
-            <div className="py-2 ">
+            <div className="py-1 ">
               <table className="w-full font-bold ">
                 <tbody>
                   <tr className="grid grid-cols-2 w-full bg-blue-300 rounded-3xl py-0.5 mb-1">
-                    <td className="px-2   font-bold ">Total Hold</td>
+                    <td className="px-2 font-bold ">Total Hold</td>
                     <td className="text-right px-2 ">
                       {itemdetailcount.totalholdcount}
                     </td>
                   </tr>
-                  
+
                   <tr className="grid grid-cols-2 w-full">
                     <td className=" px-2 ">Today Hold</td>
                     <td className="text-right px-2 ">
-                      {itemdetailcount.todayoutcount}
+                      {itemdetailcount.todayholdcount}
                     </td>
                   </tr>
                   <tr className="grid grid-cols-2 w-full">
@@ -121,7 +121,7 @@ export default function Dashboard() {
                       {itemdetailcount.todaycancelcount}
                     </td>
                   </tr>
-                  
+
                 </tbody>
               </table>
             </div>
@@ -133,7 +133,7 @@ export default function Dashboard() {
               <h2 className=" font-semibold ">Status :</h2>
               <h2 className="text-right font-semibold ">Type</h2>
             </div>
-            <table className="w-full my-4 font-bold">
+            <table className="w-full my-3 font-bold">
               <tbody className="">
                 <tr className="grid grid-cols-2 w-full">
                   <td>Regular</td>
@@ -233,7 +233,7 @@ export default function Dashboard() {
             </button>
           )}
 
-                    {permissionitemstatus && (
+          {permissionitemstatus && (
             <button
               onClick={() => router.push("/stockout")}
               className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"

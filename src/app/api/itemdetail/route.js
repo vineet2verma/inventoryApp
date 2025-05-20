@@ -61,13 +61,13 @@ export async function PUT(req) {
     const { id, action, remarks } = await req.json();
     const today = new Date();
 
-    console.log("==>> :   ", id,action,remarks)
+    console.log("==>> :   ", id, action, remarks)
 
     await connectToDatabase();
 
     if (action == "Out") {
-      console.log("Chk Out =>  " , id,action,remarks)
-      const updated = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate : today })
+      console.log("Chk Out =>  ", id, action, remarks)
+      const updated = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate: today })
 
       if (!updated) {
         return NextResponse.json({ message: "Record not found" }, { status: 404 });
@@ -77,7 +77,7 @@ export async function PUT(req) {
     }
 
     if (action == "Cancel") {
-      console.log("Chk Cancel =>  ",id,action,remarks)
+      console.log("Chk Cancel =>  ", id, action, remarks)
 
       let { designname, coname, batchno, size, qty } = await itemDetailStock.findOne({ _id: id })
 
@@ -87,7 +87,7 @@ export async function PUT(req) {
 
       let updated = await createInvMast.findByIdAndUpdate(invdata._id, { holdstock: new_hold, closingstock: new_cl_stock })
 
-      let response = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate : today })
+      let response = await itemDetailStock.findByIdAndUpdate(id, { outtag: action, remarks: remarks, tagdate: today })
 
       if (!updated) {
         return NextResponse.json({ message: "Record not found" }, { status: 404 });

@@ -55,13 +55,17 @@ export default function InventoryMaster() {
     setrightdelete(user.user?.pinventory.includes("delete"));
   }, [user]);
 
-  const handleDelete = async (id) => {
-    await fetch("/api/createinvmast", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    fetchRecords();
+  const handleDelete = async (id, designname) => {
+    if (prompt("Enter Design Name").toLowerCase() == designname.toLowerCase()) {
+      await fetch("/api/createinvmast", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      alert("Record Was Deleted ")
+      fetchRecords();
+    }
+
   };
 
   const handleEdit = (record) => {
@@ -281,8 +285,8 @@ export default function InventoryMaster() {
                                   )
                                     ? formData.location
                                     : formData.location
-                                        ?.split(",")
-                                        .filter(Boolean) || [];
+                                      ?.split(",")
+                                      .filter(Boolean) || [];
                                   if (e.target.checked) {
                                     setFormData({
                                       ...formData,
@@ -378,18 +382,16 @@ export default function InventoryMaster() {
                     <td className="p-2">{rec.pcperbox}</td>
                     <td className="p-2">{rec.location}</td>
                     <td
-                      className={`p-2 ${
-                        rec.closingstock < rec.minqty ? "bg-amber-300" : ""
-                      }`}
+                      className={`p-2 ${rec.closingstock < rec.minqty ? "bg-amber-300" : ""
+                        }`}
                     >
                       {rec.minqty}
                     </td>
                     <td
-                      className={`p-2 ${
-                        parseFloat(rec.closingstock) > parseFloat(rec.maxqty)
-                          ? "bg-orange-300"
-                          : ""
-                      }`}
+                      className={`p-2 ${parseFloat(rec.closingstock) > parseFloat(rec.maxqty)
+                        ? "bg-orange-300"
+                        : ""
+                        }`}
                     >
                       {rec.maxqty}
                     </td>
@@ -407,7 +409,7 @@ export default function InventoryMaster() {
                       )}
                       {rightdelete && (
                         <button
-                          onClick={() => handleDelete(rec._id)}
+                          onClick={() => handleDelete(rec._id, rec.designname)}
                           className="text-red-600 hover:text-red-800"
                         >
                           <Trash2 className="w-4 h-4" />

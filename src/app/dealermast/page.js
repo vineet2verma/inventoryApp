@@ -198,10 +198,7 @@ export default function DealerMastPage() {
 
   // dealer mast delete
   const handleDelete = async (id, midname) => {
-    let result = prompt("Enter Customer Name")
-    console.log(midname, result)
-
-    if (result == midname) {
+    if (prompt("Enter Customer Name").toLowerCase() == midname.toLowerCase()) {
       try {
         const res = await fetch("/api/dealermast", {
           method: "DELETE",
@@ -313,7 +310,7 @@ export default function DealerMastPage() {
   // post and put in item detail page
   const handleItemSubmit = async (e) => {
 
-    console.log(initialitem)
+    // console.log(initialitem)
 
     // e.preventDefault();
     const method = "POST";

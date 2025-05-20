@@ -4,7 +4,12 @@ import itemDetail from "../models/itemDetail";
 
 // Type Count an itemDetail record
 export async function GET() {
-//   const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+  //   const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const endOfToday = new Date();
+  endOfToday.setHours(23, 59, 59, 999);
 
   try {
     const todayoutcount = await itemDetail.countDocuments({
@@ -26,8 +31,8 @@ export async function GET() {
     const todayholdcount = await itemDetail.countDocuments({
       outtag: { $regex: "Hold", $options: "i" },
       updatedAt: {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-        $lte: new Date(new Date().setHours(23, 59, 59, 999)),
+        $gte: startOfToday,
+        $lte: endOfToday,
       },
     });
 

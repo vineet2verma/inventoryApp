@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { House } from "lucide-react";
 import moment from "moment";
@@ -20,6 +20,7 @@ export default function StockTableItemDetailPage() {
   const [filterUpdatedAt, setFilterUpdatedAt] = useState("");
   const [itemid, setitemid] = useState("");
   const [inputval, setinputval] = useState("")
+  const [showfilter, setshowfilter] = useState(false)
 
 
   const fetchRecords = async () => {
@@ -47,18 +48,20 @@ export default function StockTableItemDetailPage() {
     filterUpdatedAt,
   ]);
 
-  const item_tag_update = async (id, action, remarks) => {
-    // console.log(id, action)
+  const item_tag_update = async (id, action) => {
+    console.log("chk 1 => ", inputval)
 
     if (action == "default") {
       setitemid(id);
       setisOutModal(true);
     }
     if (action == "Out" || action == "Cancel") {
+      console.log("chk 2 => ", inputval)
+
       const res = await fetch("/api/itemdetail", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: itemid, action, remarks }),
+        body: JSON.stringify({ id: itemid, action, remarks: inputval }),
       });
 
       let data = await res.json();
@@ -113,17 +116,30 @@ export default function StockTableItemDetailPage() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
+      <div className="grid grid-cols-4 gap-x-4 mb-4">
         <button
           onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+          className="flex max-w-50 gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
         >
           <House className="w-5 h-5" /> Home
         </button>
-        <h1 className="text-2xl font-bold">Stock Items</h1>
+        <h1 className="text-2xl text-center font-bold">Stock Items</h1>
+        <button
+          className="  gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"
+          onClick={() => { showfilter ? setshowfilter(false) : setshowfilter(true) }}
+        >
+          {showfilter ? "Hide Filter" : "Show Filter"}
+        </button>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search records..."
+          className="border p-2"
+        />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+      {showfilter && (<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 mb-4">
         <input
           type="date"
           className="border p-2"
@@ -165,14 +181,8 @@ export default function StockTableItemDetailPage() {
           onChange={(e) => setFilterUpdatedAt(e.target.value)}
           placeholder="Updated At"
         />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search records..."
-          className="border p-2"
-        />
-      </div>
+
+      </div>)}
 
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="w-full text-sm">
@@ -195,19 +205,19 @@ export default function StockTableItemDetailPage() {
                     field == "outtag" ? (
                       <td key={field} className="p-3">
                         {/* {record[field]} */}
-                        <button
+
+                        {(moment(record.updatedAt).format("DD/MM/YYYY") == moment(new Date).format("DD/MM/YYYY")) || record[field] == "Hold" ? (<button
                           onClick={() => {
                             item_tag_update(record._id, "default", "");
                             // alert(record._id);
                           }}
-                          className={`${
-                            record[field] == "Out"
-                              ? "bg-green-300"
-                              : "bg-yellow-300"
-                          } min-w-12  py-1 px-2 rounded-2xl `}
+                          className={`${record[field] == "Out"
+                            ? "bg-green-100"
+                            : "bg-yellow-300"
+                            } min-w-12  py-1 px-2 rounded-2xl `}
                         >
                           {record[field]}
-                        </button>
+                        </button>) : record[field]}
                       </td>
                     ) : (
                       <td key={field} className="p-3">
@@ -285,77 +295,6 @@ export default function StockTableItemDetailPage() {
       )}
       {/* /////////////////////////////////////// */}
 
-      {/* Modal Form
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg">
-            <h2 className="text-lg font-bold mb-4">
-              {isEditMode ? "Update Dealer Stock" : "Add Dealer Stock"}
-            </h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              {fields.map((field) => (
-                <div key={field}>
-                  <label
-                    htmlFor={field}
-                    className="block text-sm font-medium text-gray-700 capitalize"
-                  >
-                    {field
-                      .replace(/([a-z])([A-Z])/g, "$1 $2")
-                      .replace(/_/g, " ")}
-                  </label>
-                  {field === "date" ? (
-                    <input
-                      type="date"
-                      id={field}
-                      name={field}
-                      placeholder={field}
-                      value={formData[field] || ""}
-                      onChange={handleChange}
-                      className="p-2 border rounded w-full"
-                    />
-                  ) : field == "outtag" ? (
-                    <select
-                      className="p-2 border rounded w-full"
-                      onChange={handleChange}
-                      name={field}
-                      value={formData[field] || ""}
-                    >
-                      <option value="Hold">Hold</option>
-                      <option value="Out">Out</option>
-                      <option value="Cancel">Cancel</option>
-                    </select>
-                  ) : (
-                    <input
-                      id={field}
-                      name={field}
-                      placeholder={field}
-                      value={formData[field] || ""}
-                      onChange={handleChange}
-                      className="p-2 border rounded w-full"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex justify-end space-x-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                {isEditMode ? "Update" : "Create"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 }
