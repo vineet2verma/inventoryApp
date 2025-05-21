@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema(
     pcustomer: { type: mongoose.Schema.Types.Mixed, default: [] },
     pbreakage: { type: mongoose.Schema.Types.Mixed, default: [] },
     pitemstatus: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pmorbi: { type: mongoose.Schema.Types.Mixed, default: [] },
     pquotation: { type: mongoose.Schema.Types.Mixed, default: [] },
   },
   { timestamps: true }

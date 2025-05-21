@@ -15,6 +15,7 @@ const permissionFields = [
     "pbreakage",
     "pitemstatus",
     "pquotation",
+    "pmorbi"
 ];
 
 const actions = ["read","create", "update", "delete"];

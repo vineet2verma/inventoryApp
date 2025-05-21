@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [permissionbreakage, setpermissionbreakage] = useState(false);
   const [permissionitemstatus, setpermissionitemstatus] = useState(false);
   const [permissionquotation, setpermissionquotation] = useState(false);
+  const [permissionmorbi, setpermissionmorbi] = useState(false);
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -70,6 +71,7 @@ export default function Dashboard() {
     setpermissionbreakage(user.user?.pbreakage.includes("read"));
     setpermissionitemstatus(user.user?.pitemstatus.includes("read"));
     setpermissionquotation(user.user?.pquotation.includes("read"));
+    setpermissionmorbi(user.user?.pmorbi.includes("read"));
   }, [user]);
 
   return (
@@ -264,6 +266,14 @@ export default function Dashboard() {
               className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
             >
               Quotation
+            </button>
+          )}
+          {permissionmorbi && (
+            <button
+              onClick={() => router.push("/morbi")}
+              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+            >
+              Morbi
             </button>
           )}
         </div>
