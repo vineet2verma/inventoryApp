@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { Pencil, Trash2, PackagePlus } from "lucide-react";
+import { read } from "fs-extra";
 
 export default function MorbiOrderPage() {
   const [orders, setOrders] = useState([]);
+  const [finalfilter, setfinalfilter] = useState([]);
   const [showfilter, setshowfilter] = useState(false);
   const [formData, setFormData] = useState({
     date: moment().format("YYYY-MM-DD"),
@@ -15,15 +17,18 @@ export default function MorbiOrderPage() {
     customername: "",
     location: "",
     salesman: "",
-    orderconfirmation: "",
+    orderconfirmation: "Yes",
     remarks: "",
     availability: "",
     readydate: "",
     deliverydate: "",
   });
+  // const [finalilter,setfinalfilter]
   const [editingId, setEditingId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modal2open, setmodal2open] = useState(false);
   const [toast, setToast] = useState(null);
+  const [action, setaction] = useState({})
   const [filters, setFilters] = useState({
     design: "",
     size: "",
@@ -39,16 +44,71 @@ export default function MorbiOrderPage() {
     const res = await fetch("/api/morbi");
     const data = await res.json();
     setOrders(data);
+
+    const filteredOrders = data.filter((order) =>
+
+      Object.entries(filters).every(([key, value]) =>
+        value
+          ? order[key]?.toString().toLowerCase().includes(value.toLowerCase())
+          : true
+      )
+    );
+    setfinalfilter(filteredOrders);
+    console.log(filteredOrders)
   };
 
   useEffect(() => {
     fetchOrders();
+
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const handle2Change = (e) => {
+    const { name, value } = e.target;
+    setaction((prev) => ({ ...prev, [name]: value }));
+  }
+  const handleOpen2modal = (id, availability, readydate, deliverydate) => {
+    console.log("handle 2 submit")
+    setaction({ id, availability, readydate, deliverydate })
+    setmodal2open(true)
+  }
+  const handle2Submit = async (e) => {
+    e.preventDefault()
+    let newfilter = finalfilter.map(x => {
+      console.log(action.id, x._id)
+      if (x._id == action.id) {
+        return { ...x, availability: action.availability, readydate: action.readydate, deliverydate: action.deliverydate }
+      }
+      return x;
+    })
+    setfinalfilter(newfilter)
+    let toupdate = newfilter.filter(x => x._id == action.id)[0]
+    console.log("upd", toupdate)
+    let res = await fetch("/api/morbi/morbiaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        body: JSON.stringify(toupdate)
+      }
+    })
+
+
+    let dt = await res.json()
+    if (!dt.message) {
+      alert(dt.error)
+    }
+    alert(dt.message)
+
+
+
+
+    // console.log(newfilter)
+
+  }
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -69,7 +129,7 @@ export default function MorbiOrderPage() {
       customername: "",
       location: "",
       salesman: "",
-      orderconfirmation: "",
+      orderconfirmation: "Yes",
       remarks: "",
       availability: "",
       readydate: "",
@@ -78,8 +138,10 @@ export default function MorbiOrderPage() {
     setModalOpen(true);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData)
     const method = editingId ? "PUT" : "POST";
     const res = await fetch("/api/morbi", {
       method,
@@ -133,13 +195,13 @@ export default function MorbiOrderPage() {
     showToast("Order deleted", "error");
   };
 
-  const filteredOrders = orders.filter((order) =>
-    Object.entries(filters).every(([key, value]) =>
-      value
-        ? order[key]?.toString().toLowerCase().includes(value.toLowerCase())
-        : true
-    )
-  );
+
+
+
+  // useEffect(() => {
+
+  // }, [])
+
 
   return (
     <div className="p-4 max-w-7xl mx-auto">
@@ -184,9 +246,8 @@ export default function MorbiOrderPage() {
 
       {toast && (
         <div
-          className={`p-2 rounded text-white ${
-            toast.type === "error" ? "bg-red-500" : "bg-green-500"
-          }`}
+          className={`p-2 rounded text-white ${toast.type === "error" ? "bg-red-500" : "bg-green-500"
+            }`}
         >
           {toast.message}
         </div>
@@ -213,19 +274,19 @@ export default function MorbiOrderPage() {
             >
               {Object.keys(formData).map((key) =>
                 key != "_id" &&
-                key != "createdAt" &&
-                key != "updatedAt" &&
-                key != "__v" &&
-                key != "availability" &&
-                key != "readydate" &&
-                key != "deliverydate" ? (
+                  key != "createdAt" &&
+                  key != "updatedAt" &&
+                  key != "__v" &&
+                  key != "availability" &&
+                  key != "readydate" &&
+                  key != "deliverydate" ? (
                   <div key={key}>
                     <label className="block text-sm font-medium capitalize">
                       {key}
                     </label>
                     {key == "orderconfirmation" ? (
                       <select
-                        // type="text"
+                        type="text"
                         name={key}
                         value={formData[key]}
                         onChange={handleChange}
@@ -265,6 +326,75 @@ export default function MorbiOrderPage() {
         </div>
       )}
 
+      {modal2open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
+          <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
+            <button
+              onClick={() => {
+                setmodal2open(false);
+              }}
+              className="absolute top-2 right-2 text-gray-600 hover:text-black"
+            >
+              ✕
+            </button>
+            <h2 className="text-lg font-bold mb-4">
+              Action Form
+            </h2>
+            <form
+              onSubmit={handle2Submit}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            >
+              <div>
+                <label className="block text-sm font-medium capitalize">
+                  Availability
+                </label>
+                <input
+                  type="date"
+                  name="availability"
+                  value={action.availability}
+                  onChange={handle2Change}
+                  required
+                  className="mt-1 p-2 border w-full rounded"
+                />
+                <label className="block text-sm font-medium capitalize">
+                  Ready Date
+                </label>
+                <input
+                  type="date"
+                  name="readydate"
+                  value={action.readydate}
+                  onChange={handle2Change}
+                  required
+                  className="mt-1 p-2 border w-full rounded"
+                />
+                <label className="block text-sm font-medium capitalize">
+                  Delivery Date
+                </label>
+                <input
+                  type="date"
+                  name="deliverydate"
+                  value={action.deliverydate}
+                  onChange={handle2Change}
+                  required
+                  className="mt-1 p-2 border w-full rounded"
+                />
+              </div>
+
+              <div className="col-span-1 sm:col-span-2">
+                <button
+                  type="submit"
+                  onClick={handle2Submit}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                >
+                  Action Form
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+
       <h2 className="text-xl font-semibold mt-1 mb-2">Order List</h2>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-xs border mt-1">
@@ -286,7 +416,7 @@ export default function MorbiOrderPage() {
             </tr>
           </thead>
           <tbody className="">
-            {filteredOrders.map((order) => (
+            {finalfilter.map((order) => (
               <tr key={order._id} className="text-center">
                 <td className="p-2 border">
                   {moment(order.createdAt).format("DD/MM/YYYY")}
@@ -301,17 +431,16 @@ export default function MorbiOrderPage() {
                 <td className="p-2 border">{order.remarks}</td>
                 <td className="p-2 border">{order.availability}</td>
                 <td className="p-2 border">
-                  {moment(order.readydate).format("DD/MM/YYYY")}
+                  {order.readydate ? moment(order.readydate).format("DD/MM/YYYY") : ''}
                 </td>
                 <td className="p-2 border">
-                  {moment(order.deliverydate).format("DD/MM/YYYY")}
+                  {order.deliverydate ? moment(order.deliverydate).format("DD/MM/YYYY") : ''}
                 </td>
                 <td className="border px-2  ">
                   <button
                     onClick={() => {
-                      alert("On Working");
+                      handleOpen2modal(order._id, order.availability, order.readydate, order.deliverydate)
                     }}
-                    // onClick={() => handleEdit(order)}
                     className="px-1"
                   >
                     <PackagePlus />
