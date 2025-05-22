@@ -1,11 +1,16 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { Pencil, Trash2, PackagePlus } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
 
 export default function MorbiOrderPage() {
+  const [rightread, setrightread] = useState(false);
+  const [rightcreate, setrightcreate] = useState(false);
+  const [rightedit, setrightedit] = useState(false);
+  const [rightdelete, setrightdelete] = useState(false);
+  const router = useRouter();
   const { user } = LoginUserFunc();
   const [orders, setOrders] = useState([]);
   const [finalfilter, setfinalfilter] = useState([]);
@@ -52,6 +57,13 @@ export default function MorbiOrderPage() {
   }, []);
 
   useEffect(() => {
+    setrightread(user.user?.pmorbi.includes("read"));
+    setrightcreate(user.user?.pmorbi.includes("create"));
+    setrightedit(user.user?.pmorbi.includes("update"));
+    setrightdelete(user.user?.pmorbi.includes("delete"));
+  }, [user]);
+
+  useEffect(() => {
     const filteredOrders = orders.filter((order) =>
       Object.entries(filters).every(([key, value]) =>
         value
@@ -72,7 +84,13 @@ export default function MorbiOrderPage() {
     setaction((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleOpen2modal = (id, availability, readydate, deliverydate, remarks) => {
+  const handleOpen2modal = (
+    id,
+    availability,
+    readydate,
+    deliverydate,
+    remarks
+  ) => {
     setaction({ id, availability, readydate, deliverydate, remarks });
     setmodal2open(true);
   };
@@ -166,8 +184,12 @@ export default function MorbiOrderPage() {
     setFormData({
       ...order,
       date: moment(order.date).format("YYYY-MM-DD"),
-      readydate: order.readydate ? moment(order.readydate).format("YYYY-MM-DD") : "",
-      deliverydate: order.deliverydate ? moment(order.deliverydate).format("YYYY-MM-DD") : "",
+      readydate: order.readydate
+        ? moment(order.readydate).format("YYYY-MM-DD")
+        : "",
+      deliverydate: order.deliverydate
+        ? moment(order.deliverydate).format("YYYY-MM-DD")
+        : "",
     });
     setEditingId(order._id);
     setModalOpen(true);
@@ -184,178 +206,182 @@ export default function MorbiOrderPage() {
   };
 
   return (
-    <div className="p-4 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
-        <h1 className="text-center md:text-left text-2xl font-bold   ">
-          Morbi Order Management
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-            onClick={() => {
-              showfilter ? setshowfilter(false) : setshowfilter(true);
-            }}
-          >
-            {showfilter ? "Hide Filter" : "Show Filter"}
-          </button>
-          <button
-            onClick={() => handleNewOrder()}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-          >
-            + New Order
-          </button>
-        </div>
-      </div>
-
-      {showfilter && (
-        <div className="my-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.keys(filters).map((key) => (
-            <div key={key}>
-              <label className="block text-sm font-medium capitalize mb-1">
-                Filter by {key}
-              </label>
-              <input
-                type="text"
-                name={key}
-                value={filters[key]}
-                onChange={handleFilterChange}
-                className="border p-2 rounded w-full"
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {toast && (
-        <div
-          className={`p-2 rounded text-white ${
-            toast.type === "error" ? "bg-red-500" : "bg-green-500"
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
-
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
-          <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
-            <button
-              onClick={() => {
-                setModalOpen(false);
-                setEditingId(null);
-              }}
-              className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
-            >
-              ✕
-            </button>
-            <h2 className="text-lg font-bold mb-4">
-              {editingId ? "Edit" : "New"} Order
-            </h2>
-            <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            >
-              {Object.keys(formData).map((key) =>
-                key != "_id" &&
-                key != "createdAt" &&
-                key != "updatedAt" &&
-                key != "__v" &&
-                key != "availability" &&
-                key != "readydate" &&
-                key != "deliverydate" &&
-                key != "salesman" &&
-                key != "remarks" ? (
-                  <div key={key}>
-                    <label className="block text-sm font-medium capitalize">
-                      {key}
-                    </label>
-                    {key == "orderconfirmation" ? (
-                      <select
-                        type="text"
-                        name={key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        className="mt-1 p-2 border w-full rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="Cancel">Cancel</option>
-                      </select>
-                    ) : (
-                      <input
-                        type={key.includes("date") ? "date" : "text"}
-                        name={key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        required
-                        // required={
-                        //   key !== "salesmanremarks" &&
-                        //   key !== "orderconfirmation"
-                        // }
-                        className="mt-1 p-2 border w-full rounded"
-                      />
-                    )}
-                  </div>
-                ) : (
-                  ""
-                )
-              )}
-              <div className="col-span-1 sm:col-span-2">
+    <>
+      {rightread && (
+        <div className="p-4 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+            <h1 className="text-center md:text-left text-2xl font-bold   ">
+              Morbi Order Management
+            </h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                onClick={() => {
+                  showfilter ? setshowfilter(false) : setshowfilter(true);
+                }}
+              >
+                {showfilter ? "Hide Filter" : "Show Filter"}
+              </button>
+              {rightcreate && (
                 <button
-                  type="submit"
+                  onClick={() => handleNewOrder()}
                   className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 >
-                  {editingId ? "Update" : "Create"} Order
+                  + New Order
                 </button>
-              </div>
-            </form>
+              )}
+            </div>
           </div>
-        </div>
-      )}
 
-      {modal2open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
-          <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
-            <button
-              onClick={() => {
-                setmodal2open(false);
-              }}
-              className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red"
+          {showfilter && (
+            <div className="my-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.keys(filters).map((key) => (
+                <div key={key}>
+                  <label className="block text-sm font-medium capitalize mb-1">
+                    Filter by {key}
+                  </label>
+                  <input
+                    type="text"
+                    name={key}
+                    value={filters[key]}
+                    onChange={handleFilterChange}
+                    className="border p-2 rounded w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {toast && (
+            <div
+              className={`p-2 rounded text-white ${
+                toast.type === "error" ? "bg-red-500" : "bg-green-500"
+              }`}
             >
-              ✕
-            </button>
-            <h2 className="text-lg font-bold mb-4">Action Form</h2>
-            <form
-              onSubmit={handle2Submit}
-              className="grid grid-cols-1 gap-y-10"
-            >
-              <div>
-                <label className="block text-sm my-2 font-medium capitalize">
-                  Availability
-                </label>
-                <select
-                  type="text"
-                  name="availability"
-                  value={action.availability}
-                  onChange={handle2Change}
-                  className="mt-1 p-2 my-2 border w-full rounded"
+              {toast.message}
+            </div>
+          )}
+
+          {modalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
+              <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    setEditingId(null);
+                  }}
+                  className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
                 >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                  <option value="Cancel">Cancel</option>
-                </select>
-                <label className="block text-sm my-2 font-medium capitalize">
-                  Ready Date
-                </label>
-                <input
-                  type="date"
-                  name="readydate"
-                  value={action.readydate}
-                  onChange={handle2Change}
-                  required
-                  className="mt-1 p-2 my-2 border w-full rounded"
-                />
-                {/* <label className="block text-sm font-medium capitalize">
+                  ✕
+                </button>
+                <h2 className="text-lg font-bold mb-4">
+                  {editingId ? "Edit" : "New"} Order
+                </h2>
+                <form
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                >
+                  {Object.keys(formData).map((key) =>
+                    key != "_id" &&
+                    key != "createdAt" &&
+                    key != "updatedAt" &&
+                    key != "__v" &&
+                    key != "availability" &&
+                    key != "readydate" &&
+                    key != "deliverydate" &&
+                    key != "salesman" &&
+                    key != "remarks" ? (
+                      <div key={key}>
+                        <label className="block text-sm font-medium capitalize">
+                          {key}
+                        </label>
+                        {key == "orderconfirmation" ? (
+                          <select
+                            type="text"
+                            name={key}
+                            value={formData[key]}
+                            onChange={handleChange}
+                            className="mt-1 p-2 border w-full rounded"
+                          >
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                            <option value="Cancel">Cancel</option>
+                          </select>
+                        ) : (
+                          <input
+                            type={key.includes("date") ? "date" : "text"}
+                            name={key}
+                            value={formData[key]}
+                            onChange={handleChange}
+                            required
+                            // required={
+                            //   key !== "salesmanremarks" &&
+                            //   key !== "orderconfirmation"
+                            // }
+                            className="mt-1 p-2 border w-full rounded"
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      ""
+                    )
+                  )}
+                  <div className="col-span-1 sm:col-span-2">
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                    >
+                      {editingId ? "Update" : "Create"} Order
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {modal2open && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
+              <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
+                <button
+                  onClick={() => {
+                    setmodal2open(false);
+                  }}
+                  className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red"
+                >
+                  ✕
+                </button>
+                <h2 className="text-lg font-bold mb-4">Action Form</h2>
+                <form
+                  onSubmit={handle2Submit}
+                  className="grid grid-cols-1 gap-y-10"
+                >
+                  <div>
+                    <label className="block text-sm my-2 font-medium capitalize">
+                      Availability
+                    </label>
+                    <select
+                      type="text"
+                      name="availability"
+                      value={action.availability}
+                      onChange={handle2Change}
+                      className="mt-1 p-2 my-2 border w-full rounded"
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Cancel">Cancel</option>
+                    </select>
+                    <label className="block text-sm my-2 font-medium capitalize">
+                      Ready Date
+                    </label>
+                    <input
+                      type="date"
+                      name="readydate"
+                      value={action.readydate}
+                      onChange={handle2Change}
+                      required
+                      className="mt-1 p-2 my-2 border w-full rounded"
+                    />
+                    {/* <label className="block text-sm font-medium capitalize">
                   Delivery Date
                 </label>
                 <input
@@ -366,119 +392,155 @@ export default function MorbiOrderPage() {
                   required
                   className="mt-1 p-2 border w-full rounded"
                 /> */}
-                <label className="block text-sm my-2 font-medium capitalize">
-                  Remarks
-                </label>
-                <input
-                  type="text"
-                  name="remarks"
-                  value={action.remarks}
-                  onChange={handle2Change}
-                  required
-                  className="mt-1 p-2 border w-full rounded"
-                />
+                    <label className="block text-sm my-2 font-medium capitalize">
+                      Remarks
+                    </label>
+                    <input
+                      type="text"
+                      name="remarks"
+                      value={action.remarks}
+                      onChange={handle2Change}
+                      required
+                      className="mt-1 p-2 border w-full rounded"
+                    />
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2">
+                    <button
+                      type="submit"
+                      onClick={handle2Submit}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                    >
+                      Action Form
+                    </button>
+                  </div>
+                </form>
               </div>
+            </div>
+          )}
 
-              <div className="col-span-1 sm:col-span-2">
-                <button
-                  type="submit"
-                  onClick={handle2Submit}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                >
-                  Action Form
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+          {/* <h2 className="text-xl font-semibold mt-1 mb-0">Order List</h2> */}
+          <div className="overflow-auto max-h-[500px] border mt-2">
+            <table className="w-full border-collapse text-xs border  ">
+              <thead className="overflow-auto  ">
+                <tr className="bg-gray-100 ">
+                  <th className="p-2 border bg-gray-600 text-white  sticky top-0 z-10">
+                    Date
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Tile Name
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Size
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                    Qty
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Customer
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Location
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Sales Person
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Ord Confirmation
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap ">
+                    Sales Person Remarks
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                    Availability
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                    Ready Date
+                  </th>
+                  {/* <th className="p-2 border bg-gray-600 text-white sticky top-0">Delivery Date</th> */}
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Remarks
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="">
+                {finalfilter.map((order) => (
+                  <tr key={order._id} className="text-center">
+                    <td className="p-2 border">
+                      {moment(order.createdAt).format("DD/MM/YYYY")}
+                    </td>
+                    <td className="p-2 border text-wrap">{order.tilename}</td>
+                    <td className="p-2 border text-wrap">{order.size}</td>
+                    <td className="p-2 border text-wrap">{order.qty}</td>
+                    <td className="p-2 border text-wrap">
+                      {order.customername}
+                    </td>
+                    <td className="p-2 border text-wrap">{order.location}</td>
+                    <td className="p-2 border text-wrap">{order.salesman}</td>
+                    <td className="p-2 border text-wrap">
+                      {order.orderconfirmation}
+                    </td>
+                    <td className="p-2 border text-wrap">
+                      {order.salesmanremarks}
+                    </td>
+                    <td className="p-2 border text-wrap">
+                      {order.availability}
+                    </td>
 
-      {/* <h2 className="text-xl font-semibold mt-1 mb-0">Order List</h2> */}
-      <div className="overflow-auto max-h-[500px] border mt-2">
-        <table className="w-full border-collapse text-xs border  ">
-          <thead className="overflow-auto  ">
-            <tr className="bg-gray-100 ">
-              <th className="p-2 border bg-gray-600 text-white  sticky top-0 z-10">Date</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Tile Name</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Size</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0">Qty</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Customer</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Location</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Sales Person</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Ord Confirmation</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap ">Sales Person Remarks</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0">Availability</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0">Ready Date</th>
-              {/* <th className="p-2 border bg-gray-600 text-white sticky top-0">Delivery Date</th> */}
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Remarks</th>
-              <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="">
-            {finalfilter.map((order) => (
-              <tr key={order._id} className="text-center">
-                <td className="p-2 border">
-                  {moment(order.createdAt).format("DD/MM/YYYY")}
-                </td>
-                <td className="p-2 border text-wrap">{order.tilename}</td>
-                <td className="p-2 border text-wrap">{order.size}</td>
-                <td className="p-2 border text-wrap">{order.qty}</td>
-                <td className="p-2 border text-wrap">{order.customername}</td>
-                <td className="p-2 border text-wrap">{order.location}</td>
-                <td className="p-2 border text-wrap">{order.salesman}</td>
-                <td className="p-2 border text-wrap">
-                  {order.orderconfirmation}
-                </td>
-                <td className="p-2 border text-wrap">
-                  {order.salesmanremarks}
-                </td>
-                <td className="p-2 border text-wrap">{order.availability}</td>
-
-                <td className="p-2 border">
-                  {order.readydate
-                    ? moment(order.readydate).format("DD/MM/YYYY")
-                    : ""}
-                </td>
-                {/* <td className="p-2 border">
+                    <td className="p-2 border">
+                      {order.readydate
+                        ? moment(order.readydate).format("DD/MM/YYYY")
+                        : ""}
+                    </td>
+                    {/* <td className="p-2 border">
                   {order.deliverydate
                     ? moment(order.deliverydate).format("DD/MM/YYYY")
                     : ""}
                 </td> */}
-                <td className="p-2 border text-wrap">{order.remarks}</td>
-                <td className="border text-wrap px-2 py-3 flex ">
-                  <button
-                    onClick={() => {
-                      handleOpen2modal(
-                        order._id,
-                        order.availability,
-                        order.readydate,
-                        order.deliverydate,
-                        order.remarks
-                      );
-                    }}
-                    className="px-1"
-                  >
-                    <PackagePlus />
-                  </button>
-                  <button
-                    onClick={() => handleEdit(order)}
-                    className="px-1 text-green-500 "
-                  >
-                    <Pencil />
-                  </button>
-                  <button
-                    // onClick={()=>{alert(order._id)}}
-                    onClick={() => handleDelete(order._id)}
-                    className="px-1 text-red-600"
-                  >
-                    <Trash2 />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                    <td className="p-2 border text-wrap">{order.remarks}</td>
+                    <td className="border text-wrap px-2 py-3 flex ">
+                      <button
+                        onClick={() => {
+                          handleOpen2modal(
+                            order._id,
+                            order.availability,
+                            order.readydate,
+                            order.deliverydate,
+                            order.remarks
+                          );
+                        }}
+                        className="px-1"
+                      >
+                        <PackagePlus />
+                      </button>
+                      { rightedit
+                        && (<button
+                        onClick={() => handleEdit(order)}
+                        className="px-1 text-green-500 "
+                      >
+                        <Pencil />
+                      </button>)
+                      }
+                      {rightdelete && (
+                        <button
+                          // onClick={()=>{alert(order._id)}}
+                          onClick={() => handleDelete(order._id)}
+                          className="px-1 text-red-600"
+                        >
+                          <Trash2 />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
