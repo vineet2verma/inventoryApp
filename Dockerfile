@@ -32,6 +32,7 @@ COPY --from=builder /app/package.json ./
 
 # Set environment variables (optional)
 ENV NODE_ENV=production
+ENV MONGO_URL = mongodb+srv://vineet2verma:aa01234567890aa@cluster0.tbq16sn.mongodb.net/user_mast?retryWrites=true&w=majority&appName=Cluster0
 
 # Start the app
 EXPOSE 3000
