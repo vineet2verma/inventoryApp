@@ -1,6 +1,7 @@
 "use client";
-import { React, useContext, useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import SideMenu from "../components/sidebar";
+import { LogOut } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
@@ -9,7 +10,6 @@ export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([]);
-  // const [typelen, settypelen] = useState([]);
   const [itemdetailcount, setitemdetailcount] = useState([]);
   const [permissionloc, setpermissionloc] = useState(false);
   const [permissiontype, setpermissiontype] = useState(false);
@@ -28,13 +28,12 @@ export default function Dashboard() {
 
   const { user } = LoginUserFunc();
   const router = useRouter();
-  const invdemodata = [
-    { name: "Total Hold", value: 20 },
-    { name: "Today Hold", value: 10 },
-    { name: "Today Cancel", value: 5 },
-  ];
 
-  // fetching inv mast
+  const handleSignOut = () => {
+    localStorage.clear(); // or your auth logout logic
+    router.push("/signin");
+  };
+
   const fetchMastDataCount = async () => {
     try {
       const res = await fetch("api/typecount");
@@ -44,12 +43,12 @@ export default function Dashboard() {
       console.error("Failed to fetch records:", err);
     }
   };
+
   const fetchItemDetailCount = async () => {
     try {
       const res = await fetch("api/itemdetailcount");
       const data = await res.json();
       setitemdetailcount(data);
-
     } catch (err) {
       console.log("Failed to fetch Item Count Records", err);
     }
@@ -76,15 +75,22 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* <SideMenu /> */}
-
-      <div className="min-h-screen bg-gray-100 px-5 pt-2 ">
+      <div className="min-h-screen bg-gray-100 px-5 pt-2">
         {/* Header */}
-        <header className="flex justify-between bg-white shadow p-4 mb-3 rounded-xl">
+        <header className="flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl">
           <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-          <h1 className="text-2xl font-bold text-gray-800">
-            {user.user?.name}
-          </h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-gray-800">
+              {user.user?.name}
+            </h1>
+            <button
+              onClick={handleSignOut}
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+            >
+              {/* Sign Out */}
+              <LogOut />
+            </button>
+          </div>
         </header>
 
         {/* Main Content */}
@@ -104,7 +110,6 @@ export default function Dashboard() {
                       {itemdetailcount.totalholdcount}
                     </td>
                   </tr>
-
                   <tr className="grid grid-cols-2 w-full">
                     <td className=" px-2 ">Today Hold</td>
                     <td className="text-right px-2 ">
@@ -123,7 +128,6 @@ export default function Dashboard() {
                       {itemdetailcount.todaycancelcount}
                     </td>
                   </tr>
-
                 </tbody>
               </table>
             </div>
@@ -136,22 +140,22 @@ export default function Dashboard() {
               <h2 className="text-right font-semibold ">Type</h2>
             </div>
             <table className="w-full my-3 font-bold">
-              <tbody className="">
+              <tbody>
                 <tr className="grid grid-cols-2 w-full">
                   <td>Regular</td>
-                  <td className="text-right  font-semibold">
+                  <td className="text-right font-semibold">
                     {mastdata.regularcount}
                   </td>
                 </tr>
                 <tr className="grid grid-cols-2 w-full">
                   <td>Discontinue</td>
-                  <td className="text-right  font-semibold">
+                  <td className="text-right font-semibold">
                     {mastdata.discontinuecount}
                   </td>
                 </tr>
                 <tr className="grid grid-cols-2 w-full">
                   <td>On Order</td>
-                  <td className="text-right  font-semibold">
+                  <td className="text-right font-semibold">
                     {mastdata.onordercount}
                   </td>
                 </tr>
@@ -176,7 +180,6 @@ export default function Dashboard() {
               Location Mast
             </button>
           )}
-
           {permissiontype && (
             <button
               onClick={() => router.push("/typemast")}
@@ -185,12 +188,6 @@ export default function Dashboard() {
               Type Mast
             </button>
           )}
-          {/* <button
-            onClick={() => router.push("/tilemast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Tile Mast
-          </button> */}
           {permissionpayment && (
             <button
               onClick={() => router.push("/paymentmast")}
@@ -207,7 +204,6 @@ export default function Dashboard() {
               Price List
             </button>
           )}
-
           {permissioninvmast && (
             <button
               onClick={() => router.push("/createinvmast")}
@@ -216,7 +212,6 @@ export default function Dashboard() {
               Inventory Mast
             </button>
           )}
-
           {permissionstockkin && (
             <button
               onClick={() => router.push("/stockin")}
@@ -225,7 +220,6 @@ export default function Dashboard() {
               Stock In
             </button>
           )}
-
           {permissioncust && (
             <button
               onClick={() => router.push("/dealermast")}
@@ -234,7 +228,6 @@ export default function Dashboard() {
               Customers
             </button>
           )}
-
           {permissionitemstatus && (
             <button
               onClick={() => router.push("/stockout")}
@@ -243,14 +236,6 @@ export default function Dashboard() {
               Item Status
             </button>
           )}
-
-
-          {/* <button
-            onClick={() => router.push("/clientmast")}
-            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-          >
-            Clients
-          </button> */}
           {permissionbreakage && (
             <button
               onClick={() => router.push("/breakage")}
@@ -259,7 +244,6 @@ export default function Dashboard() {
               Breakage
             </button>
           )}
-
           {permissionquotation && (
             <button
               onClick={() => router.push("/quotation")}

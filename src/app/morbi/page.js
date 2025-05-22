@@ -209,11 +209,11 @@ export default function MorbiOrderPage() {
     <>
       {rightread && (
         <div className="p-4 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2  ">
             <h1 className="text-center md:text-left text-2xl font-bold   ">
               Morbi Order Management
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-yellow-300 ">
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 onClick={() => {
