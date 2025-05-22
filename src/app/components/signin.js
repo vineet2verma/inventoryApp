@@ -23,14 +23,14 @@ export default function SignInPage() {
     });
 
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     if (res.ok) {
       const tokendata = await fetch("api/tokenvarify", {
         method: "GET", // or "POST" if applicable
         cache: "no-store",
       });
       let dt = await tokendata.json()
-      console.log("data from s", dt)
+      // console.log("data from s", dt)
       setuser(dt)
 
       alert("Login successful!");

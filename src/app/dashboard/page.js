@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default function Dashboard() {
   const [mastdata, setmastdate] = useState([]);
+  const [permisson, setpermisson] = useState([]);
   const [itemdetailcount, setitemdetailcount] = useState([]);
   const [permissionloc, setpermissionloc] = useState(false);
   const [permissiontype, setpermissiontype] = useState(false);
@@ -29,9 +30,12 @@ export default function Dashboard() {
   const { user } = LoginUserFunc();
   const router = useRouter();
 
-  const handleSignOut = () => {
-    localStorage.clear(); // or your auth logout logic
-    router.push("/signin");
+  const handleSignOut = async () => {
+    let resp = await fetch("api/signout")
+    console.log(resp)
+    if (resp.ok) {
+      router.push("/signin");
+    }
   };
 
   const fetchMastDataCount = async () => {
@@ -71,6 +75,7 @@ export default function Dashboard() {
     setpermissionitemstatus(user.user?.pitemstatus.includes("read"));
     setpermissionquotation(user.user?.pquotation.includes("read"));
     setpermissionmorbi(user.user?.pmorbi.includes("read"));
+    setpermisson(user.user?.ppermission.includes("read"));
   }, [user]);
 
   return (
@@ -78,14 +83,14 @@ export default function Dashboard() {
       <div className="min-h-screen bg-gray-100 px-5 pt-2">
         {/* Header */}
         <header className="flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl">
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          <h1 className="font-bold text-gray-800">Dashboard</h1>
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className=" font-bold text-gray-800">
               {user.user?.name}
             </h1>
             <button
               onClick={handleSignOut}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+              className="bg-red-500 text-white px-1  rounded hover:bg-red-600 text-sm"
             >
               {/* Sign Out */}
               <LogOut />
@@ -260,6 +265,12 @@ export default function Dashboard() {
               Morbi
             </button>
           )}
+          {permisson && (<button
+            onClick={() => router.push("/permission")}
+            className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+          >
+            Permission
+          </button>)}
         </div>
 
         {/* Footer */}

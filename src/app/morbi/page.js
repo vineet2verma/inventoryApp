@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, PackagePlus } from "lucide-react";
+import { Pencil, Trash2, PackagePlus, House } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
 
 export default function MorbiOrderPage() {
@@ -100,12 +100,12 @@ export default function MorbiOrderPage() {
     let newfilter = finalfilter.map((x) =>
       x._id === action.id
         ? {
-            ...x,
-            availability: action.availability,
-            readydate: action.readydate,
-            deliverydate: action.deliverydate,
-            remarks: action.remarks,
-          }
+          ...x,
+          availability: action.availability,
+          readydate: action.readydate,
+          deliverydate: action.deliverydate,
+          remarks: action.remarks,
+        }
         : x
     );
     setfinalfilter(newfilter);
@@ -209,11 +209,20 @@ export default function MorbiOrderPage() {
     <>
       {rightread && (
         <div className="p-4 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2  ">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2  ">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex gap-2 items-center  px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+            >
+              <House className="w-6 h-5 " />
+              Home
+            </button>
+
             <h1 className="text-center md:text-left text-2xl font-bold   ">
               Morbi Order Management
             </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-yellow-300 ">
+
+            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-2 gap-2 bg-yellow-300 " : "grid grid-cols-1 gap-2 rounded-xl  "}>
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 onClick={() => {
@@ -254,9 +263,8 @@ export default function MorbiOrderPage() {
 
           {toast && (
             <div
-              className={`p-2 rounded text-white ${
-                toast.type === "error" ? "bg-red-500" : "bg-green-500"
-              }`}
+              className={`p-2 rounded text-white ${toast.type === "error" ? "bg-red-500" : "bg-green-500"
+                }`}
             >
               {toast.message}
             </div>
@@ -283,14 +291,14 @@ export default function MorbiOrderPage() {
                 >
                   {Object.keys(formData).map((key) =>
                     key != "_id" &&
-                    key != "createdAt" &&
-                    key != "updatedAt" &&
-                    key != "__v" &&
-                    key != "availability" &&
-                    key != "readydate" &&
-                    key != "deliverydate" &&
-                    key != "salesman" &&
-                    key != "remarks" ? (
+                      key != "createdAt" &&
+                      key != "updatedAt" &&
+                      key != "__v" &&
+                      key != "availability" &&
+                      key != "readydate" &&
+                      key != "deliverydate" &&
+                      key != "salesman" &&
+                      key != "remarks" ? (
                       <div key={key}>
                         <label className="block text-sm font-medium capitalize">
                           {key}
@@ -516,13 +524,13 @@ export default function MorbiOrderPage() {
                       >
                         <PackagePlus />
                       </button>
-                      { rightedit
+                      {rightedit
                         && (<button
-                        onClick={() => handleEdit(order)}
-                        className="px-1 text-green-500 "
-                      >
-                        <Pencil />
-                      </button>)
+                          onClick={() => handleEdit(order)}
+                          className="px-1 text-green-500 "
+                        >
+                          <Pencil />
+                        </button>)
                       }
                       {rightdelete && (
                         <button
