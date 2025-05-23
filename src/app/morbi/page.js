@@ -4,8 +4,11 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2, PackagePlus, House } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
+import LoadingSpinner from "../components/waiting";
 
 export default function MorbiOrderPage() {
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
@@ -128,6 +131,7 @@ export default function MorbiOrderPage() {
   };
 
   const showToast = (message, type = "success") => {
+
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
   };
@@ -153,6 +157,8 @@ export default function MorbiOrderPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return; // Prevent double-click
+    setSubmitting(true); // Start submitting
     const method = editingId ? "PUT" : "POST";
     await fetch("/api/morbi", {
       method,
@@ -178,6 +184,7 @@ export default function MorbiOrderPage() {
     });
     setEditingId(null);
     setModalOpen(false);
+    setSubmitting(false); // Done submitting
   };
 
   const handleEdit = (order) => {
@@ -222,7 +229,7 @@ export default function MorbiOrderPage() {
               Morbi Order Management
             </h1>
 
-            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-2 gap-2 bg-yellow-300 " : "grid grid-cols-1 gap-2 rounded-xl  "}>
+            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-2 gap-2  " : "grid grid-cols-1 gap-2 rounded-xl  "}>
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 onClick={() => {
@@ -337,6 +344,7 @@ export default function MorbiOrderPage() {
                   <div className="col-span-1 sm:col-span-2">
                     <button
                       type="submit"
+                      disabled={submitting}
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                     >
                       {editingId ? "Update" : "Create"} Order
