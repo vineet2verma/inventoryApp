@@ -5,10 +5,11 @@ import { LoginUserFunc } from "../context/loginuser";
 import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+
 export default function QuotationPage() {
   const router = useRouter();
   const { user } = LoginUserFunc();
-  const converter = require('number-to-words');
+  // const converter = require('number-to-words');
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
@@ -424,7 +425,7 @@ export default function QuotationPage() {
                 Grand Total: ₹{grandTotal.toFixed(2)}
               </div>
               <div className="text-lg font-bold">
-                <p>{"Amount :- "}{converter.toWords(grandTotal.toFixed(2))}</p>
+                {/* <p>{"Amount :- "}{converter.toWords(grandTotal.toFixed(2))}</p> */}
               </div>
             </div>
           </div>
@@ -437,14 +438,14 @@ export default function QuotationPage() {
                 </tr>
               </thead>
               <tbody>
-              {termcondition.map((field, i) => (
-                <tr key={i}>
-                  <td className="text-xs py-0.2 pl-3 flex">
-                    {"* "}
-                    {field}{" "}
-                  </td>
-                </tr>
-              ))}
+                {termcondition.map((field, i) => (
+                  <tr key={i}>
+                    <td className="text-xs py-0.2 pl-3 flex">
+                      {"* "}
+                      {field}{" "}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

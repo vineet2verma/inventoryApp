@@ -170,12 +170,12 @@ export default function StockInPage() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (record) => {
     try {
       const res = await fetch("/api/stockin", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ record }),
       });
       const result = await res.json();
       alert(result.message);
@@ -184,6 +184,21 @@ export default function StockInPage() {
       console.error("Failed to delete record:", err);
     }
   };
+
+  // const handleDelete = async (id) => {
+  //   try {
+  //     const res = await fetch("/api/stockin", {
+  //       method: "DELETE",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ id }),
+  //     });
+  //     const result = await res.json();
+  //     alert(result.message);
+  //     fetchRecords();
+  //   } catch (err) {
+  //     console.error("Failed to delete record:", err);
+  //   }
+  // };
 
   return (
     <>
@@ -322,7 +337,8 @@ export default function StockInPage() {
                       )}
                       {rightdelete && (
                         <button
-                          onClick={() => handleDelete(record._id)}
+                          onClick={() => handleDelete(record)}
+                          // onClick={() => handleDelete(record._id)}
                           className="text-red-600 hover:underline"
                         >
                           <Trash2 className="w-4 h-4 inline" />
@@ -348,7 +364,7 @@ export default function StockInPage() {
                       name="date"
                       disabled
                       value={formData.date}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="border p-2 rounded w-full"
                     />
                     <select

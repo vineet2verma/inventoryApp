@@ -63,7 +63,7 @@ export default function Dashboard() {
     // Simulate loading time (e.g., API call or page assets)
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // 2 seconds
+    }, 500); //  seconds
 
     return () => clearTimeout(timer);
   }, []);

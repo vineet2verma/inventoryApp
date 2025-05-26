@@ -5,22 +5,28 @@ import { useRouter } from "next/navigation";
 import { Pencil, Trash2, PackagePlus, House } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
 import LoadingSpinner from "../components/waiting";
+import Combobox from "../components/combobox_morbi";
+
+export const dynamic = "force-dynamic"; // This page should always be revalidated
 
 export default function MorbiOrderPage() {
+  const router = useRouter();
+  const { user } = LoginUserFunc();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
-  const router = useRouter();
-  const { user } = LoginUserFunc();
+
   const [orders, setOrders] = useState([]);
   const [finalfilter, setfinalfilter] = useState([]);
   const [showfilter, setshowfilter] = useState(false);
+  const [sizearray, setsizearray] = useState([]);
   const [formData, setFormData] = useState({
     date: moment().format("YYYY-MM-DD"),
     tilename: "",
+    coname: "",
     size: "",
     qty: "",
     customername: "",
@@ -35,11 +41,13 @@ export default function MorbiOrderPage() {
   });
   const [editingId, setEditingId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modal1Open, setModal1Open] = useState(false);
   const [modal2open, setmodal2open] = useState(false);
   const [toast, setToast] = useState(null);
   const [action, setaction] = useState({});
   const [filters, setFilters] = useState({
     tilename: "",
+    coname: "",
     size: "",
     customername: "",
     salesman: "",
@@ -140,6 +148,7 @@ export default function MorbiOrderPage() {
     setFormData({
       date: moment().format("YYYY-MM-DD"),
       tilename: "",
+      coname: "",
       size: "",
       qty: "",
       customername: "",
@@ -170,6 +179,7 @@ export default function MorbiOrderPage() {
     setFormData({
       date: moment().format("YYYY-MM-DD"),
       tilename: "",
+      coname: "",
       size: "",
       qty: "",
       customername: "",
@@ -246,6 +256,12 @@ export default function MorbiOrderPage() {
                   + New Order
                 </button>
               )}
+              <button
+                onClick={() => handleNewOrder()}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+              >
+                + Design Mast
+              </button>
             </div>
           </div>
 
@@ -278,6 +294,84 @@ export default function MorbiOrderPage() {
           )}
 
           {modalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
+              <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    setEditingId(null);
+                  }}
+                  className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
+                >
+                  ✕
+                </button>
+                <h2 className="text-lg font-bold mb-4">
+                  {editingId ? "Edit" : "New"} Order
+                </h2>
+                <form
+                  onSubmit={handleSubmit}
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                >
+                  {['tilename', 'coname', 'size', 'qty', 'customername', 'location', 'salesman'].map((key) =>
+                  (
+                    <div key={key}>
+                      <label className="block text-sm font-medium capitalize">
+                        {key}
+                      </label>
+                      {key == "tilename" ? (
+                        <Combobox formData={formData} setFormData={setFormData} setsizearray={setsizearray} />
+                      ) : key == "coname" ? (
+                        <input
+                          type="text"
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          required
+                          className="mt-1 p-2 border w-full rounded"
+                        />
+                      ) : key == "size" ? (
+                        <select
+                          name={key}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Size</option>
+                          {sizearray.map((size, index) => (
+                            <option key={index} value={size}>
+                              {size}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={key.includes("date") ? "date" : "text"}
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          required
+                          // required={
+                          //   key !== "salesmanremarks" &&
+                          //   key !== "orderconfirmation"
+                          // }
+                          className="mt-1 p-2 border w-full rounded"
+                        />
+                      )}
+                    </div>
+                  ))}
+                  <div className="col-span-1 sm:col-span-2">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                    >
+                      {editingId ? "Update" : "Create"} Order
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {modal1Open && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
               <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
                 <button
@@ -354,6 +448,7 @@ export default function MorbiOrderPage() {
               </div>
             </div>
           )}
+
 
           {modal2open && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
@@ -447,6 +542,9 @@ export default function MorbiOrderPage() {
                     Tile Name
                   </th>
                   <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                    Co Name
+                  </th>
+                  <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
                     Size
                   </th>
                   <th className="p-2 border bg-gray-600 text-white sticky top-0">
@@ -489,6 +587,7 @@ export default function MorbiOrderPage() {
                       {moment(order.createdAt).format("DD/MM/YYYY")}
                     </td>
                     <td className="p-2 border text-wrap">{order.tilename}</td>
+                    <td className="p-2 border text-wrap">{order.coname}</td>
                     <td className="p-2 border text-wrap">{order.size}</td>
                     <td className="p-2 border text-wrap">{order.qty}</td>
                     <td className="p-2 border text-wrap">

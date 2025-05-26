@@ -81,10 +81,20 @@ export async function PUT(req) {
 
 // DELETE - Delete a stock in record
 export async function DELETE(req) {
-  try {
-    const { id } = await req.json();
-    await connectToDatabase();
+  const { record } = await req.json();
+  const id = record._id;
+  const rest = { ...record };
 
+  const invData = await createInvMaster.findOne({ designname: rest.designname, coname: rest.coname, batchno: rest.batchno, size: rest.size })
+  const currStockId = invData._id;
+
+  invData.closingstock = parseFloat(invData.closingstock) - parseFloat(rest.quantity) + parseFloat(rest.breakage);
+  invData.breakage = parseFloat(invData.breakage) - parseFloat(rest.breakage);
+
+  await createInvMaster.findByIdAndUpdate(currStockId, { closingstock: invData.closingstock, breakage: invData.breakage }, { new: true });
+
+  try {
+    await connectToDatabase();
     const deleted = await StockIn.findByIdAndDelete(id);
 
     if (!deleted) {
