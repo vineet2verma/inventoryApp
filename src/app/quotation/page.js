@@ -6,45 +6,32 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function QuotationPage() {
+  const router = useRouter();
+  const { user } = LoginUserFunc();
+  const converter = require('number-to-words');
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
-  const router = useRouter();
-  const { user } = LoginUserFunc();
   const [showCharges, setShowCharges] = useState(false);
 
   useEffect(() => {
-    setrightread(user.user?.pquotation.includes("read"));
-    setrightcreate(user.user?.pquotation.includes("create"));
-    setrightedit(user.user?.pquotation.includes("update"));
-    setrightdelete(user.user?.pquotation.includes("delete"));
+    setrightread(user.user?.pquotation.includes("read") || false);
+    setrightcreate(user.user?.pquotation.includes("create") || false);
+    setrightedit(user.user?.pquotation.includes("update") || false);
+    setrightdelete(user.user?.pquotation.includes("delete") || false);
   }, [user]);
 
   const [quotation, setQuotation] = useState({
-    orderId: "Q-20250515",
-    date: "2025-05-15",
-    clientName: "John Doe",
-    companyName: "ABC Industries",
-    saleperson: "Abc",
+    orderId: `Q-${new Date().toISOString().split("T")[0].replace(/-/g, "")}`, // Order ID in format Q-YYYYMMDD,
+    date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+    clientName: "Abc",
+    companyName: "Abc Industries",
+    saleperson: user.user?.name || "",
     billingAddress: "123 Billing Address, City",
     shippingAddress: "456 Shipping Address, City",
     gst: "29ABCDE1234F2Z5",
     items: [
-      {
-        description: "Tile A",
-        size: "2x2",
-        qtypersqft: 10,
-        qtyperbox: 10,
-        price: 20,
-      },
-      {
-        description: "Tile A",
-        size: "2x2",
-        qtypersqft: 10,
-        qtyperbox: 10,
-        price: 20,
-      },
       {
         description: "Tile A",
         size: "2x2",
@@ -62,7 +49,7 @@ export default function QuotationPage() {
 
   const bankDetail = [
     { bank: "DEUTSCHE BANK" },
-    { 'a/c name': "ANTICA CERAMICA LLP" },
+    { "a/c name": "ANTICA CERAMICA LLP" },
     { Account: "100040626900019" },
     { ifsc: "DEUT0784PBC" },
     { branch: "KASTURBA GANDHI MARG" },
@@ -73,7 +60,7 @@ export default function QuotationPage() {
     "Goods will not return once sold",
     "Disputes subject to Delhi jurisdiction only",
     "Unloading Charges Extra",
-    "Transportation damge 3% will be accepted.",
+    "Transportation damage 3% will be accepted.",
   ];
 
   const handleItemChange = (index, field, value) => {
@@ -131,16 +118,16 @@ export default function QuotationPage() {
 
     let result = await res.json();
     if (result.success) {
-      alert("Quotation Save Scussfully ")
+      alert("Quotation Save Scussfully ");
     } else {
-      console.log("failed to post record in quotation ", err)
+      console.log("failed to post record in quotation ", result);
     }
-  }
+  };
 
   return (
     <>
       {rightread && (
-        <div className="p-2 max-w-5xl mx-auto bg-white shadow-xl rounded-xl mb-5 ">
+        <div className="p-2 max-w-5xl mx-auto bg-white  rounded-xl mb-5 ">
           <div className="flex justify-between items-center mb-4">
             <button
               onClick={() => router.push("/dashboard")}
@@ -152,8 +139,8 @@ export default function QuotationPage() {
 
             <div className="text-center w-full">
               <h1 className="text-3xl font-bold">Antica Ceramica</h1>
-              <p>Contact: 9999999999 | GSTIN: 09AAECA1234K1Z2</p>
-              <h2 className=" text-xl font-semibold underline">Quotation</h2>
+              <p>40 Raja Garden, New Delhi 110015 | GSTIN: 07ABUFA8367K1ZL</p>
+              <h2 className="text-xl font-semibold underline">Quotation</h2>
             </div>
             <div className="flex space-x-2 print:hidden">
               <button
@@ -220,7 +207,7 @@ export default function QuotationPage() {
               <label>Company Name</label>
               <input
                 type="text"
-                className=" border w-full px-2 py-1"
+                className=" border w-full px-2 py-0.5"
                 value={quotation.companyName}
                 onChange={(e) =>
                   setQuotation({ ...quotation, companyName: e.target.value })
@@ -247,7 +234,7 @@ export default function QuotationPage() {
                   className=" text-sm border w-full px-2 py-1"
                   value={quotation.saleperson}
                   onChange={(e) =>
-                    setQuotation({ ...quotation, gst: e.target.value })
+                    setQuotation({ ...quotation, saleperson: e.target.value })
                   }
                 />
               </div>
@@ -309,29 +296,29 @@ export default function QuotationPage() {
                       }
                     />
                   </td>
-                  <td className="border px-2 py-1">
+                  <td className="border px-2 py-1 max-w-20 ">
                     <input
-                      className="w-full  px-1"
+                      className="w-full  px-1 text-center "
                       value={item.size}
                       onChange={(e) =>
                         handleItemChange(index, "size", e.target.value)
                       }
                     />
                   </td>
-                  <td className="border px-2 py-1">
+                  <td className="border px-2 py-1 max-w-15">
                     <input
                       type="number"
-                      className="w-full  px-1"
+                      className="w-full  px-1 text-center"
                       value={item.qtypersqft}
                       onChange={(e) =>
                         handleItemChange(index, "qtypersqft", e.target.value)
                       }
                     />
                   </td>
-                  <td className="border px-2 py-1">
+                  <td className="border px-2 py-1 max-w-15">
                     <input
                       type="number"
-                      className="w-full  px-1"
+                      className="w-full  px-1 text-center"
                       value={item.qtyperbox}
                       onChange={(e) =>
                         handleItemChange(index, "qtyperbox", e.target.value)
@@ -339,22 +326,22 @@ export default function QuotationPage() {
                     />
                   </td>
 
-                  <td className="border px-2 py-1">
+                  <td className="border px-2 py-1 max-w-20">
                     <input
                       type="number"
-                      className="w-full  px-1"
+                      className="w-full px-1 text-center"
                       value={item.price}
                       onChange={(e) =>
                         handleItemChange(index, "price", e.target.value)
                       }
                     />
                   </td>
-                  <td className="border px-2 py-1 text-right">
+                  <td className="border px-2 py-1  text-right">
                     ₹{(item.qtyperbox * item.price).toFixed(2)}
                   </td>
-                  <td className="border px-2 py-1 text-center print:hidden ">
+                  <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
                     <button
-                      className="text-red-500"
+                      className="text-red-500 "
                       onClick={() => deleteItem(index)}
                     >
                       🗑️
@@ -376,7 +363,7 @@ export default function QuotationPage() {
 
             <div className="text-left p-2  rounded-2xl ">
               <img
-                src="bank bar code.jpg"
+                src="/bank-bar-code.jpg"
                 alt="Bank QR Code"
                 width="100"
                 height="100"
@@ -386,7 +373,12 @@ export default function QuotationPage() {
               <table className="mt-2">
                 <thead>
                   <tr>
-                    <th colSpan={2} className="text-left text-sm underline pb-1">Bank Detail</th>
+                    <th
+                      colSpan={2}
+                      className="text-left text-sm underline pb-1"
+                    >
+                      Bank Detail
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -395,7 +387,9 @@ export default function QuotationPage() {
                     const value = record[key];
                     return (
                       <tr key={index}>
-                        <td className="pr-3 text-xs font-medium">{key.toUpperCase()} :</td>
+                        <td className="pr-3 text-xs font-medium">
+                          {key.toUpperCase()} :
+                        </td>
                         <td className="pr-3 text-xs">{value}</td>
                       </tr>
                     );
@@ -403,7 +397,6 @@ export default function QuotationPage() {
                 </tbody>
               </table>
             </div>
-
 
             {/* Subtotal Right Side */}
             <div className=" text-sm text-right">
@@ -430,30 +423,38 @@ export default function QuotationPage() {
               <div className="text-lg font-bold">
                 Grand Total: ₹{grandTotal.toFixed(2)}
               </div>
+              <div className="text-lg font-bold">
+                <p>{"Amount :- "}{converter.toWords(grandTotal.toFixed(2))}</p>
+              </div>
             </div>
           </div>
 
           <div className="my-2">
             <table>
-              <th className="text-left underline">Term Condition</th>
-              {termcondition.map((field, i) => (
+              <thead>
                 <tr>
-                  <td className="text-xs py-0.2 pl-3" key={i}>
+                  <th className="text-left underline">Term Condition</th>
+                </tr>
+              </thead>
+              <tbody>
+              {termcondition.map((field, i) => (
+                <tr key={i}>
+                  <td className="text-xs py-0.2 pl-3 flex">
                     {"* "}
                     {field}{" "}
                   </td>
                 </tr>
               ))}
+              </tbody>
             </table>
           </div>
           <div className="print:hidden mb-5 text-right">
             <button
-              className="bg-green-500 rounded-2xl py-2 px-10 mr-5 w-60  "
+              className="bg-green-500 rounded-2xl py-2 px-10 mr-2 w-60 hover:bg-green-600 text-black"
               onClick={handleSubmit}
-            >Save
-
+            >
+              Submit
             </button>
-
           </div>
 
           {showCharges && (

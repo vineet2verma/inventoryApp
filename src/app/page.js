@@ -3,8 +3,8 @@ import { cookies } from 'next/headers';
 import Dashboard from "./dashboard/page";
 import SignIn from "./signin/page";
 
-export default function Home() {
-  const cookieStore = cookies();
+export default async function Home() {
+  const cookieStore = await cookies();
   const token = cookieStore.get('token'); // Replace 'token' with your actual cookie name
 
   return (
