@@ -144,7 +144,7 @@ export default function MorbiOrderPage() {
     setTimeout(() => setToast(null), 5000);
   };
 
-  const handleNewOrder = () => {
+  const handleNewOrder = (modalno) => {
     setFormData({
       date: moment().format("YYYY-MM-DD"),
       tilename: "",
@@ -161,7 +161,8 @@ export default function MorbiOrderPage() {
       deliverydate: "",
       remarks: "",
     });
-    setModalOpen(true);
+    modalno == "1" ? setModal1Open(true) : setModalOpen(true);
+    // setModalOpen(true);
   };
 
   const handleSubmit = async (e) => {
@@ -194,6 +195,7 @@ export default function MorbiOrderPage() {
     });
     setEditingId(null);
     setModalOpen(false);
+    setModal1Open(false);
     setSubmitting(false); // Done submitting
   };
 
@@ -229,7 +231,7 @@ export default function MorbiOrderPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2  ">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex gap-2 items-center  px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              className="flex gap-2 items-center text-xs  px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
             >
               <House className="w-6 h-5 " />
               Home
@@ -239,9 +241,9 @@ export default function MorbiOrderPage() {
               Morbi Order Management
             </h1>
 
-            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-2 gap-2  " : "grid grid-cols-1 gap-2 rounded-xl  "}>
+            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-3 gap-2  " : "grid grid-cols-3 gap-2 rounded-xl  "}>
               <button
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 onClick={() => {
                   showfilter ? setshowfilter(false) : setshowfilter(true);
                 }}
@@ -250,18 +252,20 @@ export default function MorbiOrderPage() {
               </button>
               {rightcreate && (
                 <button
-                  onClick={() => handleNewOrder()}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                  onClick={() => handleNewOrder(0)}
+                  className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 >
-                  + New Order
+                  + Design Mast
                 </button>
               )}
-              <button
-                onClick={() => handleNewOrder()}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+              {rightcreate && (
+                <button
+                onClick={() => handleNewOrder(1)}
+                className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
               >
-                + Design Mast
+                + New Order
               </button>
+              )}
             </div>
           </div>
 
@@ -376,7 +380,7 @@ export default function MorbiOrderPage() {
               <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
                 <button
                   onClick={() => {
-                    setModalOpen(false);
+                    setModal1Open(false);
                     setEditingId(null);
                   }}
                   className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
@@ -422,11 +426,11 @@ export default function MorbiOrderPage() {
                             name={key}
                             value={formData[key]}
                             onChange={handleChange}
-                            required
-                            // required={
-                            //   key !== "salesmanremarks" &&
-                            //   key !== "orderconfirmation"
-                            // }
+                            required={
+                              key !== "salesmanremarks" &&
+                              key !== "coname" &&
+                              key !== "orderconfirmation"
+                            }
                             className="mt-1 p-2 border w-full rounded"
                           />
                         )}
@@ -448,7 +452,6 @@ export default function MorbiOrderPage() {
               </div>
             </div>
           )}
-
 
           {modal2open && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
