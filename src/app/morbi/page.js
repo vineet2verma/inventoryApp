@@ -102,21 +102,23 @@ export default function MorbiOrderPage() {
     deliverydate,
     remarks
   ) => {
-    setaction({ id, availability, readydate, deliverydate, remarks });
+    setaction({ id, availability : availability || "Yes" , readydate, deliverydate, remarks });
     setmodal2open(true);
   };
 
   const handle2Submit = async (e) => {
     e.preventDefault();
+    console.log("action", action);
+
     let newfilter = finalfilter.map((x) =>
       x._id === action.id
         ? {
-          ...x,
-          availability: action.availability,
-          readydate: action.readydate,
-          deliverydate: action.deliverydate,
-          remarks: action.remarks,
-        }
+            ...x,
+            availability: action.availability,
+            readydate: action.readydate,
+            deliverydate: action.deliverydate,
+            remarks: action.remarks,
+          }
         : x
     );
     setfinalfilter(newfilter);
@@ -139,7 +141,6 @@ export default function MorbiOrderPage() {
   };
 
   const showToast = (message, type = "success") => {
-
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
   };
@@ -185,9 +186,9 @@ export default function MorbiOrderPage() {
       qty: "",
       customername: "",
       location: "",
-      salesman: "",
+      salesman: user.user?.name,
       orderconfirmation: "",
-      salesmanremarks: user.user?.name,
+      salesmanremarks: "",
       availability: "",
       readydate: "",
       deliverydate: "",
@@ -228,12 +229,12 @@ export default function MorbiOrderPage() {
     <>
       {rightread && (
         <div className="p-4 max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2  ">
+          <div className="grid grid-cols-1  md:grid-cols-3 gap-2  ">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex gap-2 items-center text-xs  px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              className="flex justify-center items-center gap-2 text-xs px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full lg:max-w-[50%]  "
             >
-              <House className="w-6 h-5 " />
+              <House className="w-6 h-5" />
               Home
             </button>
 
@@ -241,7 +242,13 @@ export default function MorbiOrderPage() {
               Morbi Order Management
             </h1>
 
-            <div className={rightcreate ? "grid grid-cols-1 md:grid-cols-3 gap-2  " : "grid grid-cols-3 gap-2 rounded-xl  "}>
+            <div
+              className={
+                rightcreate
+                  ? "grid grid-cols-1 md:grid-cols-3 gap-2  "
+                  : "grid grid-cols-3 gap-2 rounded-xl  "
+              }
+            >
               <button
                 className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
                 onClick={() => {
@@ -260,11 +267,11 @@ export default function MorbiOrderPage() {
               )}
               {rightcreate && (
                 <button
-                onClick={() => handleNewOrder(1)}
-                className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-              >
-                + New Order
-              </button>
+                  onClick={() => handleNewOrder(1)}
+                  className="bg-blue-600 text-white text-xs px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                >
+                  + New Order
+                </button>
               )}
             </div>
           </div>
@@ -290,8 +297,9 @@ export default function MorbiOrderPage() {
 
           {toast && (
             <div
-              className={`p-2 rounded text-white ${toast.type === "error" ? "bg-red-500" : "bg-green-500"
-                }`}
+              className={`p-2 rounded text-white ${
+                toast.type === "error" ? "bg-red-500" : "bg-green-500"
+              }`}
             >
               {toast.message}
             </div>
@@ -316,27 +324,40 @@ export default function MorbiOrderPage() {
                   onSubmit={handleSubmit}
                   className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                 >
-                  {['tilename', 'coname', 'size', 'qty', 'customername', 'location', 'salesman'].map((key) =>
-                  (
+                  {[
+                    "tilename",
+                    "coname",
+                    "size",
+                    "qty",
+                    "customername",
+                    "location",
+                    "orderconfirmation",
+                    "salesmanremarks",
+                  ].map((key) => (
                     <div key={key}>
                       <label className="block text-sm font-medium capitalize">
                         {key}
                       </label>
                       {key == "tilename" ? (
-                        <Combobox formData={formData} setFormData={setFormData} setsizearray={setsizearray} />
+                        <Combobox
+                          formData={formData}
+                          setFormData={setFormData}
+                          setsizearray={setsizearray}
+                        />
                       ) : key == "coname" ? (
                         <input
                           type="text"
                           name={key}
+                          required={key !== "coname"}
                           value={formData[key]}
                           onChange={handleChange}
-                          required
                           className="mt-1 p-2 border w-full rounded"
                         />
                       ) : key == "size" ? (
                         <select
                           name={key}
                           onChange={handleChange}
+                          className="mt-1 p-2 border w-full rounded"
                         >
                           <option value="">Select Size</option>
                           {sizearray.map((size, index) => (
@@ -345,15 +366,25 @@ export default function MorbiOrderPage() {
                             </option>
                           ))}
                         </select>
+                      ) : key == "orderconfirmation" ? (
+                        <select
+                          type="text"
+                          name={key}
+                          value={formData[key]}
+                          onChange={handleChange}
+                          className="mt-1 p-2 border w-full rounded"
+                        >
+                          <option value="Yes">Yes</option>
+                          <option value="Flow Up">Flow Up</option>
+                          <option value="Cancel">Cancel</option>
+                        </select>
                       ) : (
                         <input
                           type={key.includes("date") ? "date" : "text"}
                           name={key}
                           value={formData[key]}
                           onChange={handleChange}
-                          required
-                          // required={
-                          //   key !== "salesmanremarks" &&
+                          required={key !== "salesmanremarks"}
                           //   key !== "orderconfirmation"
                           // }
                           className="mt-1 p-2 border w-full rounded"
@@ -396,14 +427,14 @@ export default function MorbiOrderPage() {
                 >
                   {Object.keys(formData).map((key) =>
                     key != "_id" &&
-                      key != "createdAt" &&
-                      key != "updatedAt" &&
-                      key != "__v" &&
-                      key != "availability" &&
-                      key != "readydate" &&
-                      key != "deliverydate" &&
-                      key != "salesman" &&
-                      key != "remarks" ? (
+                    key != "createdAt" &&
+                    key != "updatedAt" &&
+                    key != "__v" &&
+                    key != "availability" &&
+                    key != "readydate" &&
+                    key != "deliverydate" &&
+                    key != "salesman" &&
+                    key != "remarks" ? (
                       <div key={key}>
                         <label className="block text-sm font-medium capitalize">
                           {key}
@@ -417,7 +448,7 @@ export default function MorbiOrderPage() {
                             className="mt-1 p-2 border w-full rounded"
                           >
                             <option value="Yes">Yes</option>
-                            <option value="No">No</option>
+                            <option value="Flow Up">Flow Up</option>
                             <option value="Cancel">Cancel</option>
                           </select>
                         ) : (
@@ -495,17 +526,6 @@ export default function MorbiOrderPage() {
                       required
                       className="mt-1 p-2 my-2 border w-full rounded"
                     />
-                    {/* <label className="block text-sm font-medium capitalize">
-                  Delivery Date
-                </label>
-                <input
-                  type="date"
-                  name="deliverydate"
-                  value={action.deliverydate}
-                  onChange={handle2Change}
-                  required
-                  className="mt-1 p-2 border w-full rounded"
-                /> */}
                     <label className="block text-sm my-2 font-medium capitalize">
                       Remarks
                     </label>
@@ -584,7 +604,12 @@ export default function MorbiOrderPage() {
                 </tr>
               </thead>
               <tbody className="">
-                {finalfilter.map((order) => (
+                {(user.user?.role == "admin"
+                  ? finalfilter
+                  : finalfilter.filter(
+                      (item) => item.salesman == user.user?.name || "Ankush"
+                    )
+                ).map((order) => (
                   <tr key={order._id} className="text-center">
                     <td className="p-2 border">
                       {moment(order.createdAt).format("DD/MM/YYYY")}
@@ -620,28 +645,32 @@ export default function MorbiOrderPage() {
                 </td> */}
                     <td className="p-2 border text-wrap">{order.remarks}</td>
                     <td className="border text-wrap px-2 py-3 flex ">
-                      <button
-                        onClick={() => {
-                          handleOpen2modal(
-                            order._id,
-                            order.availability,
-                            order.readydate,
-                            order.deliverydate,
-                            order.remarks
-                          );
-                        }}
-                        className="px-1"
-                      >
-                        <PackagePlus />
-                      </button>
-                      {rightedit
-                        && (<button
+                      {(user.user?.role == "admin" ||
+                        user.user?.name == "Ankush") && (
+                        <button
+                          onClick={() => {
+                            handleOpen2modal(
+                              order._id,
+                              order.availability,
+                              order.readydate,
+                              order.deliverydate,
+                              order.remarks
+                            );
+                          }}
+                          className="px-1"
+                        >
+                          <PackagePlus />
+                        </button>
+                      )}
+
+                      {rightedit && (
+                        <button
                           onClick={() => handleEdit(order)}
                           className="px-1 text-green-500 "
                         >
                           <Pencil />
-                        </button>)
-                      }
+                        </button>
+                      )}
                       {rightdelete && (
                         <button
                           // onClick={()=>{alert(order._id)}}
