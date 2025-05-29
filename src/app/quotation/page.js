@@ -21,7 +21,9 @@ export default function QuotationPage () {
     const res = await fetch('/api/quotation')
     const data = await res.json()
     const uniqueCount = data.data.length + 1
+
     console.log('Unique Quotation Count:', uniqueCount)
+
     setInterval(() => {
       setqnumber(uniqueCount)
     }, 2000)

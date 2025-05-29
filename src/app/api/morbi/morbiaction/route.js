@@ -4,13 +4,14 @@ import morbiorder from "@/app/api/models/morbiDB";
 
 // UPDATE Order
 export async function PUT(req) {
+  // console.log("PUT request received for morbi order update");
   try {
     await connectToDatabase();
     const data = await req.json();
     // console.log(data);
 
-    const updated = await morbiorder.findByIdAndUpdate(data._id, data);
-    // console.log(_id, "Data   =>  ", updated);
+    const updated = await morbiorder.findByIdAndUpdate(data._id, data, {new:true});
+    // console.log(data._id, "Data   =>  ", updated);
     if (!updated) {
       return NextResponse.json(
         { message: "Record not found" },

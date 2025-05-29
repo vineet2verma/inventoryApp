@@ -15,7 +15,7 @@ const MorbiSchema = new mongoose.Schema(
     salesmanremarks: { type: String, require: false },
     availability: { type: String, require: false },
     readydate: { type: String, require: false },
-    deliverydate: { type: String, require: false },
+    transitdate: { type: String, require: false },
     remarks: { type: String, require: false },
   },
   { timestamps: true }
