@@ -4,10 +4,12 @@ import { useState, useEffect, useRef } from 'react'
 import { LoginUserFunc } from '@/app/context/loginuser'
 import { House } from 'lucide-react'
 import { useRouter, useParams } from 'next/navigation'
+import moment from 'moment'
+import LoadingSpinner from '@/app/components/waiting'
 
 export default function QuotationPage ({}) {
+  const [loading, setLoading] = useState(true)
   const params = useParams()
-  console.log(params)
   const orderId = params.id
   const router = useRouter()
   const { user } = LoginUserFunc()
@@ -20,22 +22,11 @@ export default function QuotationPage ({}) {
   const [showClientModal, setShowClientModal] = useState(false)
   const [qnumber, setqnumber] = useState('')
 
-  const fetchQuotations = async () => {
-    const res = await fetch('/api/quotation/getbyid?orderId=' + orderId)
-    const data = await res.json()
-    console.log(data)
-    const uniqueCount = data.data.length + 1
-
-    console.log('Unique Quotation Count:', uniqueCount)
-
-    setInterval(() => {
-      setqnumber(uniqueCount)
-    }, 2000)
-    // console.log('Fetched Quotations:', data)
-  }
+  // const [quotation, setQuotation] = useState({})
 
   useEffect(() => {
     fetchQuotations()
+    setLoading(false)
   }, [])
 
   const handlemodelSubmit = () => {
@@ -55,7 +46,7 @@ export default function QuotationPage ({}) {
 
   const [quotation, setQuotation] = useState({
     orderId: `Q-${qnumber}`, // `Q-${new Date().toISOString().split('T')[0].replace(/-/g, '')}`, // Order ID in format Q-YYYYMMDD,
-    date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+    date: moment(new Date()).format('YYYY-MM-DD'), // new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
     clientName: 'Abc',
     companyName: 'Abc Industries',
     saleperson: user.user?.name || '',
@@ -77,6 +68,17 @@ export default function QuotationPage ({}) {
     cartageCharges: 0,
     packingCharges: 0
   })
+
+  const fetchQuotations = async () => {
+    const res = await fetch('/api/quotation/getbyid?orderId=' + orderId)
+    const data = await res.json()
+
+    setQuotation(data.data)
+
+    quotation.date = data.data.date = moment(data.data.date).format(
+      'YYYY-MM-DD'
+    )
+  }
 
   const bankDetail = [
     { bank: 'DEUTSCHE BANK' },
@@ -123,13 +125,13 @@ export default function QuotationPage ({}) {
   }
 
   const subtotal = quotation.items.reduce(
-    (sum, item) => sum + item.qtyperbox * item.price,
+    (sum, item) => sum + item.qtypersqft * item.price,
     0
   )
 
-  const discountAmt = (subtotal * quotation.discount) / 100
+  const discountAmt = (subtotal * quotation?.discount) / 100
   const afterDiscount = subtotal - discountAmt
-  const gstAmt = (afterDiscount * quotation.gstRate) / 100
+  const gstAmt = (afterDiscount * quotation?.gstRate) / 100
   const grandTotal =
     afterDiscount +
     gstAmt +
@@ -161,11 +163,11 @@ export default function QuotationPage ({}) {
         <div className='p-2 max-w-5xl mx-auto bg-white  rounded-xl mb-5 '>
           <div className='flex justify-between items-center mb-4'>
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.back()}
               className='flex items-center print:hidden gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition'
             >
               <House className='w-5 h-5' />
-              Home
+              Back
             </button>
 
             {showClientModal && (
@@ -471,7 +473,7 @@ export default function QuotationPage ({}) {
                     />
                   </td>
                   <td className='border px-2 py-1  text-right'>
-                    ₹{(item.qtyperbox * item.price).toFixed(2)}
+                    ₹{(item.qtypersqft * item.price).toFixed(2)}
                   </td>
                   <td className='border px-2 py-1 text-center max-w-2  print:hidden '>
                     <button

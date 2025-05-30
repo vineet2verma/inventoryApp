@@ -75,14 +75,18 @@ export async function DELETE (req) {
   await connectToDatabase()
   try {
     const body = await req.json()
-    const { orderId } = body
-    if (!orderId)
+
+    console.log('body', body)
+
+    // const { orderId } = body
+    const { _id } = body
+    if (!_id)
       return NextResponse.json(
-        { success: false, error: 'orderId is required' },
+        { success: false, error: 'Id is required' },
         { status: 400 }
       )
 
-    const deleted = await quotationOrder.findOneAndDelete({ orderId })
+    const deleted = await quotationOrder.findByIdAndDelete({ _id })
     if (!deleted)
       return NextResponse.json(
         { success: false, error: 'Quotation not found' },
