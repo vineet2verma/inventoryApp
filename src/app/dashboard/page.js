@@ -22,7 +22,11 @@ export default function Dashboard() {
   const [permissioncust, setpermissioncust] = useState(false);
   const [permissionbreakage, setpermissionbreakage] = useState(false);
   const [permissionitemstatus, setpermissionitemstatus] = useState(false);
+
   const [permissionquotation, setpermissionquotation] = useState(false);
+  const [permissionquotationimage, setpermissionquotationimage] = useState(false);
+  const [permissionquotationview, setpermissionquotationview] = useState(false);
+
   const [permissionmorbi, setpermissionmorbi] = useState(false);
   const [permisson, setpermisson] = useState([]);
 
@@ -85,6 +89,9 @@ export default function Dashboard() {
     setpermissionbreakage(user.user?.pbreakage.includes("read"));
     setpermissionitemstatus(user.user?.pitemstatus.includes("read"));
     setpermissionquotation(user.user?.pquotation.includes("read"));
+    setpermissionquotationimage(user.user?.pquotationimage.includes("read"));
+    setpermissionquotationview(user.user?.pquotationview.includes("read"));
+
     setpermissionmorbi(user.user?.pmorbi.includes("read"));
     setpermisson(user.user?.ppermission.includes("read"));
   }, [user]);
@@ -267,6 +274,22 @@ export default function Dashboard() {
                 className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
               >
                 Quotation
+              </button>
+            )}
+            {permissionquotationimage && (
+              <button
+                onClick={() => router.push("/quotationimage")}
+                className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+              >
+                Quotation Image
+              </button>
+            )}
+            {permissionquotationview && (
+              <button
+                onClick={() => router.push("/quotationview")}
+                className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+              >
+                Quotation View
               </button>
             )}
             {permissionmorbi && (

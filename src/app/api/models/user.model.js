@@ -20,6 +20,8 @@ const UserSchema = new mongoose.Schema(
     pitemstatus: { type: mongoose.Schema.Types.Mixed, default: [] },
     pmorbi: { type: mongoose.Schema.Types.Mixed, default: [] },
     pquotation: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pquotationimage: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pquotationview: { type: mongoose.Schema.Types.Mixed, default: [] },
     ppermission: { type: mongoose.Schema.Types.Mixed, default: [] },
   },
   { timestamps: true }

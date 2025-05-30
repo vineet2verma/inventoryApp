@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { LoginUserFunc } from '../context/loginuser'
 import { House } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { set } from 'mongoose'
+// import { set } from 'mongoose'
 
 export default function QuotationPage () {
   const router = useRouter()
@@ -14,15 +14,16 @@ export default function QuotationPage () {
   const [rightcreate, setrightcreate] = useState(false)
   const [rightedit, setrightedit] = useState(false)
   const [rightdelete, setrightdelete] = useState(false)
+  
   const [showCharges, setShowCharges] = useState(false)
   const [showClientModal, setShowClientModal] = useState(false)
   const [showimagename, setShowimagename] = useState(true)
 
   useEffect(() => {
-    setrightread(user.user?.pquotation.includes('read') || false)
-    setrightcreate(user.user?.pquotation.includes('create') || false)
-    setrightedit(user.user?.pquotation.includes('update') || false)
-    setrightdelete(user.user?.pquotation.includes('delete') || false)
+    setrightread(user.user?.pquotationimage.includes('read') || false)
+    setrightcreate(user.user?.pquotationimage.includes('create') || false)
+    setrightedit(user.user?.pquotationimage.includes('update') || false)
+    setrightdelete(user.user?.pquotationimage.includes('delete') || false)
   }, [user])
 
   const [quotation, setQuotation] = useState({

@@ -15,6 +15,8 @@ const permissionFields = [
     "pbreakage",
     "pitemstatus",
     "pquotation",
+    "pquotationimage",
+    "pquotationview",
     "pmorbi",
     "ppermission",
 ];
