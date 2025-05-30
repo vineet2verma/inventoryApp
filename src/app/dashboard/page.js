@@ -1,7 +1,7 @@
 "use client";
 import { React, useEffect, useState } from "react";
 import SideMenu from "../components/sidebar";
-import { LogOut } from 'lucide-react';
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
@@ -13,6 +13,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [mastdata, setmastdate] = useState([]);
   const [itemdetailcount, setitemdetailcount] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  const [filterSalesperson, setFilterSalesperson] = useState("");
+  const [filterClientName, setFilterClientName] = useState("");
+  const [filterCompany, setFilterCompany] = useState("");
+
   const [permissionloc, setpermissionloc] = useState(false);
   const [permissiontype, setpermissiontype] = useState(false);
   const [permissionpayment, setpermissionpayment] = useState(false);
@@ -24,7 +30,8 @@ export default function Dashboard() {
   const [permissionitemstatus, setpermissionitemstatus] = useState(false);
 
   const [permissionquotation, setpermissionquotation] = useState(false);
-  const [permissionquotationimage, setpermissionquotationimage] = useState(false);
+  const [permissionquotationimage, setpermissionquotationimage] =
+    useState(false);
   const [permissionquotationview, setpermissionquotationview] = useState(false);
 
   const [permissionmorbi, setpermissionmorbi] = useState(false);
@@ -37,7 +44,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    let resp = await fetch("api/signout")
+    let resp = await fetch("api/signout");
     if (resp.ok) {
       router.push("/signin");
     }
@@ -67,8 +74,7 @@ export default function Dashboard() {
     // Simulate loading time (e.g., API call or page assets)
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500); //  seconds
-
+    }, 300); //  seconds
     return () => clearTimeout(timer);
   }, []);
 
@@ -78,7 +84,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    console.log(user.user)
+    // console.log(user.user);
     setpermissionloc(user.user?.plocation.includes("read"));
     setpermissiontype(user.user?.ptype.includes("read"));
     setpermissionpayment(user.user?.ppaymenttype.includes("read"));
@@ -98,15 +104,15 @@ export default function Dashboard() {
 
   return (
     <>
-      {loading ? (<LoadingSpinner />) : (
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
         <div className="min-h-screen bg-gray-100 px-5 pt-2">
           {/* Header */}
           <header className="flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl">
             <h1 className="font-bold text-gray-800">Dashboard</h1>
             <div className="flex items-center gap-4">
-              <h1 className=" font-bold text-gray-800">
-                {user.user?.name}
-              </h1>
+              <h1 className=" font-bold text-gray-800">{user.user?.name}</h1>
               <button
                 onClick={handleSignOut}
                 className="bg-red-500 text-white px-1  rounded hover:bg-red-600 text-sm"
@@ -118,8 +124,7 @@ export default function Dashboard() {
           </header>
 
           {/* Main Content */}
-          <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {/* Card 1 */}
+          {/* <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
               <div className="grid grid-cols-2 mb-2 ">
                 <h6 className="text-left px-2 font-semibold ">Status :</h6>
@@ -157,7 +162,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Card 2 */}
             <div className="bg-white text-xs p-4 rounded-xl shadow">
               <div className="grid grid-cols-2 max-w-full ">
                 <h2 className=" font-semibold ">Status :</h2>
@@ -187,12 +191,11 @@ export default function Dashboard() {
               </table>
             </div>
 
-            {/* Card 3 */}
             <div className="bg-white p-6 rounded-2xl shadow">
               <h2 className="text-xl font-semibold mb-2">Notifications</h2>
               <p className="text-gray-600">You have 3 new messages.</p>
             </div>
-          </main>
+          </main> */}
 
           {/* Navigation Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4">
@@ -286,7 +289,7 @@ export default function Dashboard() {
             )}
             {permissionquotationview && (
               <button
-                onClick={() => router.push("/quotationview")}
+                onClick={() => router.push("/view-quotation")}
                 className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
               >
                 Quotation View
@@ -300,12 +303,14 @@ export default function Dashboard() {
                 Morbi
               </button>
             )}
-            {permisson && (<button
-              onClick={() => router.push("/permission")}
-              className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
-            >
-              Permission
-            </button>)}
+            {permisson && (
+              <button
+                onClick={() => router.push("/permission")}
+                className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+              >
+                Permission
+              </button>
+            )}
           </div>
 
           {/* Footer */}
@@ -313,9 +318,7 @@ export default function Dashboard() {
             &copy; Antica Ceramica. All rights reserved.
           </footer>
         </div>
-
       )}
-
     </>
   );
 }
