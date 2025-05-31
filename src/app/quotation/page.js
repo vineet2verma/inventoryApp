@@ -24,9 +24,11 @@ export default function QuotationPage() {
     const res = await fetch("/api/quotation");
     const data = await res.json();
     const uniqueCount = data.data.length + 1;
+    const currentPrefix = moment().format("YYMMDD"); // "202505"
+    const newId = currentPrefix + (uniqueCount + 1).toString().padStart(2, "0"); // Generate new ID with prefix and incremented number
 
     setInterval(() => {
-      setqnumber(uniqueCount);
+      setqnumber(newId);
     }, 2000);
     console.log("Fetched Quotations:", data);
   };
@@ -43,7 +45,7 @@ export default function QuotationPage() {
   }, [user]);
 
   const [quotation, setQuotation] = useState({
-    orderId: `Q-${qnumber}`, // `Q-${new Date().toISOString().split('T')[0].replace(/-/g, '')}`, // Order ID in format Q-YYYYMMDD,
+    orderId: ` `, // `Q-${new Date().toISOString().split('T')[0].replace(/-/g, '')}`, // Order ID in format Q-YYYYMMDD,
     date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
     clientName: "",
     companyName: "",
@@ -142,19 +144,6 @@ export default function QuotationPage() {
     if (!quotation.shippingAddress.trim())
       newErrors.shippingAddress = "Shipping Address is required";
 
-    const itemErrors = quotation.items.map((item) => {
-      const err = {};
-      if (!item.description.trim()) err.description = "Required";
-      if (!item.size.trim()) err.size = "Required";
-      if (!item.qtypersqft) err.qtypersqft = "Required";
-      if (!item.qtyperbox) err.qtyperbox = "Required";
-      if (!item.price) err.price = "Required";
-      return err;
-    });
-
-    const hasItemError = itemErrors.some((err) => Object.keys(err).length > 0);
-    if (hasItemError) newErrors.items = itemErrors;
-
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) {
       alert("Please fill all required fields.");
@@ -163,7 +152,7 @@ export default function QuotationPage() {
 
     fetchQuotations();
     setShowClientModal(false);
-    quotation.orderId = `Q-${qnumber}`; // Update orderId with new quotation number
+    quotation.orderId = `${qnumber}`; // Update orderId with new quotation number
   };
 
   const handleSubmit = async () => {
@@ -187,7 +176,7 @@ export default function QuotationPage() {
       if (!item.qtypersqft) err.qtypersqft = "Required";
       if (!item.price) err.price = "Required";
       if (!item.qtyperbox) err.qtyperbox = "Required";
-      if (!item.price ) err.price = "Required";
+      if (!item.price) err.price = "Required";
       return err;
     });
 
@@ -285,9 +274,7 @@ export default function QuotationPage() {
                       </div>
                       <div>
                         <label>Sale Person</label>
-                        <input
-                          type="text"
-                          required
+                        <select
                           className="border w-full px-2 py-1"
                           value={quotation.saleperson}
                           onChange={(e) =>
@@ -296,7 +283,19 @@ export default function QuotationPage() {
                               saleperson: e.target.value,
                             })
                           }
-                        />
+                        >
+                          <option value="">Select Sales Person</option>
+                          <option value="alveena">Alveena</option>
+                          <option value="Amit sharma">Amit Sharma</option>
+                          <option value="Aditya">Aditya</option>
+                          <option value="ajeet">Ajeet</option>
+                          <option value="Reshma">Reshma</option>
+                          <option value="Simran">Simran</option>
+                          <option value="Sonam">Sonam</option>
+                          <option value="Test">Test</option>
+                          <option value="Vikas">Vikas</option>
+                          <option value="vin verma">vin verma</option>
+                        </select>
                         {errors.saleperson && (
                           <p className="text-red-500 text-xs">
                             {errors.saleperson}
@@ -387,7 +386,7 @@ export default function QuotationPage() {
               <p>40 Raja Garden, New Delhi 110015 | GSTIN: 07ABUFA8367K1ZL</p>
               <h2 className="text-xl font-semibold underline">Quotation</h2>
             </div>
-            
+
             <div className="flex space-x-2 print:hidden">
               {!showdownload && (
                 <button
@@ -489,7 +488,7 @@ export default function QuotationPage() {
                 <th className="border px-2 py-1 print:hidden">Action</th>
               </tr>
             </thead>
-            
+
             <tbody>
               {quotation.items.map((item, index) => (
                 <tr key={index}>
@@ -503,7 +502,7 @@ export default function QuotationPage() {
                       }
                     />
                     {errors.items?.[index]?.description && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 text-xs text-center">
                         {errors.items[index].description}
                       </p>
                     )}
@@ -517,7 +516,7 @@ export default function QuotationPage() {
                       }
                     />
                     {errors.items?.[index]?.size && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 text-xs text-center">
                         {errors.items[index].size}
                       </p>
                     )}
@@ -532,7 +531,7 @@ export default function QuotationPage() {
                       }
                     />
                     {errors.items?.[index]?.qtypersqft && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 text-xs text-center">
                         {errors.items[index].qtypersqft}
                       </p>
                     )}
@@ -547,7 +546,7 @@ export default function QuotationPage() {
                       }
                     />
                     {errors.items?.[index]?.qtyperbox && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 text-xs text-center">
                         {errors.items[index].qtyperbox}
                       </p>
                     )}
@@ -563,7 +562,7 @@ export default function QuotationPage() {
                       }
                     />
                     {errors.items?.[index]?.price && (
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 text-xs text-center">
                         {errors.items[index].price}
                       </p>
                     )}

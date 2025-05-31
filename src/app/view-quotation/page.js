@@ -27,7 +27,9 @@ export default function ViewQuotation() {
 
   async function fetchQuotation(page = 1) {
     try {
-      const res = await fetch(`/api/quotation?page=${page}&limit=${itemsPerPage}`);
+      const res = await fetch(
+        `/api/quotation?page=${page}&limit=${itemsPerPage}`
+      );
       const data = await res.json();
       setQuotations(data.data);
       setTotalPages(data.totalPages);
@@ -90,23 +92,22 @@ export default function ViewQuotation() {
     saveAs(blob, "Quotations.xlsx");
   };
 
-const handlePDFExport = () => {
-  const doc = new jsPDF();
-  const tableData = filteredQuotations.map((item) => [
-    moment(item.date).format("DD/MM/YYYY"),
-    item.orderId,
-    item.clientName,
-    item.companyName,
-    item.saleperson,
-  ]);
+  const handlePDFExport = () => {
+    const doc = new jsPDF();
+    const tableData = filteredQuotations.map((item) => [
+      moment(item.date).format("DD/MM/YYYY"),
+      item.orderId,
+      item.clientName,
+      item.companyName,
+      item.saleperson,
+    ]);
 
-  autoTable(doc, {
-    head: [["Date", "Order ID", "Client", "Company", "Salesperson"]],
-    body: tableData,
-  });
-  doc.save("Quotations.pdf");
-};
-
+    autoTable(doc, {
+      head: [["Date", "Order ID", "Client", "Company", "Salesperson"]],
+      body: tableData,
+    });
+    doc.save("Quotations.pdf");
+  };
 
   return (
     <div className="px-4 py-2 bg-gray-100">
@@ -122,18 +123,22 @@ const handlePDFExport = () => {
           <h1 className="text-2xl font-bold">Quotation List</h1>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={handleExcelExport}
-            className="px-4 py-2 bg-green-600 text-white rounded-md"
-          >
-            Export Excel
-          </button>
-          <button
-            onClick={handlePDFExport}
-            className="px-4 py-2 bg-red-600 text-white rounded-md"
-          >
-            Export PDF
-          </button>
+          {user.user?.role == "admin" && (
+            <button
+              onClick={handleExcelExport}
+              className="px-4 py-2 bg-green-600 text-white rounded-md"
+            >
+              Export Excel
+            </button>
+          )}
+          {user.user?.role == "admin" && (
+            <button
+              onClick={handlePDFExport}
+              className="px-4 py-2 bg-red-600 text-white rounded-md"
+            >
+              Export PDF
+            </button>
+          )}
           <button
             onClick={() => setShowFilter(!showfilter)}
             className="px-4 py-2 bg-blue-600 text-white rounded-md"
@@ -201,9 +206,16 @@ const handlePDFExport = () => {
                     {moment(q.date).format("MM/DD/YYYY")}
                   </td>
                   <td className="px-2 text-center py-1 text-xs">{q.orderId}</td>
-                  <td className="px-2 text-center py-1 text-xs">{q.clientName}</td>
-                  <td className="px-2 text-center py-1 text-xs">{q.companyName}</td>
-                  <td className="px-2 text-center py-1 text-xs">{q.saleperson}</td>
+                  <td className="px-2 text-center py-1 text-xs">
+                    {q.clientName}
+                  </td>
+                  <td className="px-2 text-center py-1 text-xs">
+                    {q.companyName}
+                  </td>
+                  <td className="px-2 text-center py-1 text-xs">
+                    {q.saleperson}
+                  </td>
+                  
                   <td className="flex justify-center gap-2 py-1">
                     <Link
                       href={`/quotation/${q._id}`}
