@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { LoginUserFunc } from "../context/loginuser";
 import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
+import moment from "moment";
 
 export default function QuotationPage() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function QuotationPage() {
   const [showClientModal, setShowClientModal] = useState(false);
   const [qnumber, setqnumber] = useState("");
   const [showdownload, setShowDownload] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const fetchQuotations = async () => {
     const res = await fetch("/api/quotation");
@@ -26,18 +28,12 @@ export default function QuotationPage() {
     setInterval(() => {
       setqnumber(uniqueCount);
     }, 2000);
-    // console.log('Fetched Quotations:', data)
+    console.log("Fetched Quotations:", data);
   };
 
   useEffect(() => {
     fetchQuotations();
   }, []);
-
-  const handlemodelSubmit = () => {
-    fetchQuotations();
-    setShowClientModal(false);
-    quotation.orderId = `Q-${qnumber}`; // Update orderId with new quotation number
-  };
 
   useEffect(() => {
     setrightread(user.user?.pquotation.includes("read") || false);
@@ -49,19 +45,19 @@ export default function QuotationPage() {
   const [quotation, setQuotation] = useState({
     orderId: `Q-${qnumber}`, // `Q-${new Date().toISOString().split('T')[0].replace(/-/g, '')}`, // Order ID in format Q-YYYYMMDD,
     date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
-    clientName: "Abc",
-    companyName: "Abc Industries",
+    clientName: "",
+    companyName: "",
     saleperson: user.user?.name || "",
-    billingAddress: "123 Billing Address, City",
-    shippingAddress: "456 Shipping Address, City",
+    billingAddress: "",
+    shippingAddress: "",
     gst: "",
     items: [
       {
         description: "Tile A",
         size: "2x2",
-        qtypersqft: 10,
-        qtyperbox: 10,
-        price: 20,
+        qtypersqft: "",
+        qtyperbox: "",
+        price: "",
       },
     ],
     discount: 0,
@@ -85,6 +81,8 @@ export default function QuotationPage() {
     "Disputes subject to Delhi jurisdiction only",
     "Unloading Charges Extra",
     "Transportation damage 3% will be accepted.",
+    // `For Customization For Printed Tiles 10-15 Days Required`,
+    // `For Stones 25-30 Days Requjired`,
   ];
 
   const handleItemChange = (index, field, value) => {
@@ -101,7 +99,7 @@ export default function QuotationPage() {
       ...quotation,
       items: [
         ...quotation.items,
-        { description: "", size: "", qtypersqft: 0, qtyperbox: 0, price: 0 },
+        { description: "", size: "", qtypersqft: "", qtyperbox: "", price: "" },
       ],
     });
   };
@@ -130,7 +128,81 @@ export default function QuotationPage() {
     Number(quotation.cartageCharges || 0) +
     Number(quotation.packingCharges || 0);
 
+  const handlemodelSubmit = () => {
+    const newErrors = {};
+    if (!quotation.clientName.trim())
+      newErrors.clientName = "Client Name is required";
+    if (!quotation.companyName.trim())
+      newErrors.companyName = "Company Name is required";
+    if (!quotation.saleperson.trim())
+      newErrors.saleperson = "Salesperson is required";
+    if (!quotation.gst.trim()) newErrors.gst = "GSTIN is required";
+    if (!quotation.billingAddress.trim())
+      newErrors.billingAddress = "Billing Address is required";
+    if (!quotation.shippingAddress.trim())
+      newErrors.shippingAddress = "Shipping Address is required";
+
+    const itemErrors = quotation.items.map((item) => {
+      const err = {};
+      if (!item.description.trim()) err.description = "Required";
+      if (!item.size.trim()) err.size = "Required";
+      if (!item.qtypersqft) err.qtypersqft = "Required";
+      if (!item.qtyperbox) err.qtyperbox = "Required";
+      if (!item.price) err.price = "Required";
+      return err;
+    });
+
+    const hasItemError = itemErrors.some((err) => Object.keys(err).length > 0);
+    if (hasItemError) newErrors.items = itemErrors;
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
+    fetchQuotations();
+    setShowClientModal(false);
+    quotation.orderId = `Q-${qnumber}`; // Update orderId with new quotation number
+  };
+
   const handleSubmit = async () => {
+    const newErrors = {};
+    if (!quotation.clientName.trim())
+      newErrors.clientName = "Client Name is required";
+    if (!quotation.companyName.trim())
+      newErrors.companyName = "Company Name is required";
+    if (!quotation.saleperson.trim())
+      newErrors.saleperson = "Salesperson is required";
+    if (!quotation.gst.trim()) newErrors.gst = "GSTIN is required";
+    if (!quotation.billingAddress.trim())
+      newErrors.billingAddress = "Billing Address is required";
+    if (!quotation.shippingAddress.trim())
+      newErrors.shippingAddress = "Shipping Address is required";
+
+    const itemErrors = quotation.items.map((item) => {
+      const err = {};
+      if (!item.description.trim()) err.description = "Required";
+      if (!item.size.trim()) err.size = "Required";
+      if (!item.qtypersqft) err.qtypersqft = "Required";
+      if (!item.price) err.price = "Required";
+      if (!item.qtyperbox) err.qtyperbox = "Required";
+      if (!item.price ) err.price = "Required";
+      return err;
+    });
+
+    const hasItemError = itemErrors.some((err) => Object.keys(err).length > 0);
+    if (hasItemError) newErrors.items = itemErrors;
+
+    if (quotation.items.length === 0) {
+      newErrors.items = "At least one item is required";
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      alert("Please fill all required fields.");
+      return;
+    }
+
     const method = "POST";
     const url = "/api/quotation";
 
@@ -170,14 +242,14 @@ export default function QuotationPage() {
                       Edit Client & Order Info
                     </h2>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                      {/* Client Name */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                       <div>
                         <label>Client Name</label>
                         <input
                           type="text"
                           className="border w-full px-2 py-1"
                           value={quotation.clientName}
+                          required
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
@@ -185,46 +257,18 @@ export default function QuotationPage() {
                             })
                           }
                         />
+                        {errors.clientName && (
+                          <p className="text-red-500 text-xs">
+                            {errors.clientName}
+                          </p>
+                        )}
                       </div>
-
-                      {/* Order ID & Date */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                          <label>Order ID</label>
-                          <input
-                            type="text"
-                            className="border w-full px-2 py-1"
-                            value={quotation.orderId}
-                            onChange={(e) =>
-                              setQuotation({
-                                ...quotation,
-                                orderId: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div>
-                          <label>Date</label>
-                          <input
-                            type="date"
-                            className="border w-full px-2 py-1"
-                            value={quotation.date}
-                            onChange={(e) =>
-                              setQuotation({
-                                ...quotation,
-                                date: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      {/* Company Name */}
                       <div>
                         <label>Company Name</label>
                         <input
                           type="text"
                           className="border w-full px-2 py-1"
+                          required
                           value={quotation.companyName}
                           onChange={(e) =>
                             setQuotation({
@@ -233,46 +277,56 @@ export default function QuotationPage() {
                             })
                           }
                         />
+                        {errors.companyName && (
+                          <p className="text-red-500 text-xs">
+                            {errors.companyName}
+                          </p>
+                        )}
                       </div>
-
-                      {/* GSTIN & Sale Person */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <div>
-                          <label>GSTIN</label>
-                          <input
-                            type="text"
-                            className="border w-full px-2 py-1"
-                            value={quotation.gst}
-                            onChange={(e) =>
-                              setQuotation({
-                                ...quotation,
-                                gst: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div>
-                          <label>Sale Person</label>
-                          <input
-                            type="text"
-                            className="border w-full px-2 py-1"
-                            value={quotation.saleperson}
-                            onChange={(e) =>
-                              setQuotation({
-                                ...quotation,
-                                saleperson: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
+                      <div>
+                        <label>Sale Person</label>
+                        <input
+                          type="text"
+                          required
+                          className="border w-full px-2 py-1"
+                          value={quotation.saleperson}
+                          onChange={(e) =>
+                            setQuotation({
+                              ...quotation,
+                              saleperson: e.target.value,
+                            })
+                          }
+                        />
+                        {errors.saleperson && (
+                          <p className="text-red-500 text-xs">
+                            {errors.saleperson}
+                          </p>
+                        )}
                       </div>
-
-                      {/* Billing & Shipping Address */}
+                      <div>
+                        <label>GSTIN</label>
+                        <input
+                          type="text"
+                          required
+                          className="border w-full px-2 py-1"
+                          value={quotation.gst}
+                          onChange={(e) =>
+                            setQuotation({
+                              ...quotation,
+                              gst: e.target.value,
+                            })
+                          }
+                        />
+                        {errors.gst && (
+                          <p className="text-red-500 text-xs">{errors.gst}</p>
+                        )}
+                      </div>
                       <div>
                         <label>Billing Address</label>
                         <textarea
                           className="border w-full px-2 py-2 resize-none"
-                          rows={3}
+                          required
+                          rows={2}
                           value={quotation.billingAddress}
                           onChange={(e) =>
                             setQuotation({
@@ -281,12 +335,18 @@ export default function QuotationPage() {
                             })
                           }
                         />
+                        {errors.billingAddress && (
+                          <p className="text-red-500 text-xs">
+                            {errors.billingAddress}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label>Shipping Address</label>
                         <textarea
+                          required
                           className="border w-full px-2 py-2 resize-none"
-                          rows={3}
+                          rows={2}
                           value={quotation.shippingAddress}
                           onChange={(e) =>
                             setQuotation({
@@ -295,6 +355,11 @@ export default function QuotationPage() {
                             })
                           }
                         />
+                        {errors.shippingAddress && (
+                          <p className="text-red-500 text-xs">
+                            {errors.shippingAddress}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -322,6 +387,7 @@ export default function QuotationPage() {
               <p>40 Raja Garden, New Delhi 110015 | GSTIN: 07ABUFA8367K1ZL</p>
               <h2 className="text-xl font-semibold underline">Quotation</h2>
             </div>
+            
             <div className="flex space-x-2 print:hidden">
               {!showdownload && (
                 <button
@@ -423,6 +489,7 @@ export default function QuotationPage() {
                 <th className="border px-2 py-1 print:hidden">Action</th>
               </tr>
             </thead>
+            
             <tbody>
               {quotation.items.map((item, index) => (
                 <tr key={index}>
@@ -435,6 +502,11 @@ export default function QuotationPage() {
                         handleItemChange(index, "description", e.target.value)
                       }
                     />
+                    {errors.items?.[index]?.description && (
+                      <p className="text-red-500 text-xs">
+                        {errors.items[index].description}
+                      </p>
+                    )}
                   </td>
                   <td className="border px-2 py-1 max-w-20 ">
                     <input
@@ -444,6 +516,11 @@ export default function QuotationPage() {
                         handleItemChange(index, "size", e.target.value)
                       }
                     />
+                    {errors.items?.[index]?.size && (
+                      <p className="text-red-500 text-xs">
+                        {errors.items[index].size}
+                      </p>
+                    )}
                   </td>
                   <td className="border px-2 py-1 max-w-15">
                     <input
@@ -454,6 +531,11 @@ export default function QuotationPage() {
                         handleItemChange(index, "qtypersqft", e.target.value)
                       }
                     />
+                    {errors.items?.[index]?.qtypersqft && (
+                      <p className="text-red-500 text-xs">
+                        {errors.items[index].qtypersqft}
+                      </p>
+                    )}
                   </td>
                   <td className="border px-2 py-1 max-w-15">
                     <input
@@ -464,6 +546,11 @@ export default function QuotationPage() {
                         handleItemChange(index, "qtyperbox", e.target.value)
                       }
                     />
+                    {errors.items?.[index]?.qtyperbox && (
+                      <p className="text-red-500 text-xs">
+                        {errors.items[index].qtyperbox}
+                      </p>
+                    )}
                   </td>
 
                   <td className="border px-2 py-1 max-w-20">
@@ -475,6 +562,11 @@ export default function QuotationPage() {
                         handleItemChange(index, "price", e.target.value)
                       }
                     />
+                    {errors.items?.[index]?.price && (
+                      <p className="text-red-500 text-xs">
+                        {errors.items[index].price}
+                      </p>
+                    )}
                   </td>
                   <td className="border px-2 py-1  text-right">
                     ₹{(item.qtypersqft * item.price).toFixed(2)}
@@ -548,7 +640,7 @@ export default function QuotationPage() {
               )}
               {quotation.gstRate > 0 && (
                 <div>
-                  GST ({quotation.gstRate}%): ₹{gstAmt.toFixed(2)}
+                  GST Extra ({quotation.gstRate}%): ₹{gstAmt.toFixed(2)}
                 </div>
               )}
               {quotation.cuttingCharges > 0 && (
@@ -585,18 +677,24 @@ export default function QuotationPage() {
                     </td>
                   </tr>
                 ))}
+                <tr>
+                  <td className="text-xs py-0.2 pl-3 flex">
+                    <p>
+                      * For <strong>Customization</strong>, for Printed Tiles,
+                      10 - 15 days required.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="text-xs py-0.2 pl-3 flex">
+                    <p>
+                      * For <strong>Stones</strong>, 25 - 30 days required.
+                    </p>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
-          {/* <div className='print:hidden mb-5 text-right'>
-            <button
-              className='bg-green-500 rounded-2xl py-2 px-10 mr-2 w-60 hover:bg-green-600 text-black'
-              onClick={handleSubmit}
-            >
-              Submit
-            </button>
-          </div> */}
-
           {showCharges && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg shadow-md w-96">
