@@ -11,13 +11,9 @@ export const dynamic = 'force-dynamic'
 
 export default function Dashboard () {
   const [loading, setLoading] = useState(true)
+  // const [sidebarshow, setsidebarshow] = useState(false)
   const [mastdata, setmastdate] = useState([])
   const [itemdetailcount, setitemdetailcount] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-
-  const [filterSalesperson, setFilterSalesperson] = useState('')
-  const [filterClientName, setFilterClientName] = useState('')
-  const [filterCompany, setFilterCompany] = useState('')
 
   const [permissionloc, setpermissionloc] = useState(false)
   const [permissiontype, setpermissiontype] = useState(false)
@@ -28,12 +24,10 @@ export default function Dashboard () {
   const [permissioncust, setpermissioncust] = useState(false)
   const [permissionbreakage, setpermissionbreakage] = useState(false)
   const [permissionitemstatus, setpermissionitemstatus] = useState(false)
-
   const [permissionquotation, setpermissionquotation] = useState(false)
   const [permissionquotationimage, setpermissionquotationimage] =
     useState(false)
   const [permissionquotationview, setpermissionquotationview] = useState(false)
-
   const [permissionmorbi, setpermissionmorbi] = useState(false)
   const [permisson, setpermisson] = useState([])
 
@@ -100,24 +94,26 @@ export default function Dashboard () {
       {loading ? (
         <LoadingSpinner />
       ) : (
-        <div className='min-h-screen bg-gray-100 px-5 pt-2'>
-          {/* Header */}
-          <header className='flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl'>
-            <h1 className='font-bold text-gray-800'>Dashboard</h1>
-            <div className='flex items-center gap-4'>
-              <h1 className=' font-bold text-gray-800'>{user.user?.name}</h1>
-              <button
-                onClick={handleSignOut}
-                className='bg-red-500 text-white px-1  rounded hover:bg-red-600 text-sm'
-              >
-                {/* Sign Out */}
-                <LogOut />
-              </button>
-            </div>
-          </header>
+        <>
+          <SideMenu />
+          <div className={`min-h-screen pl-${20}   bg-gray-100 px-5 pt-2`}>
+            {/* Header */}
+            <header className='flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl'>
+              <h1 className='font-bold text-gray-800'>Dashboard</h1>
+              <div className='flex items-center gap-4'>
+                <h1 className=' font-bold text-gray-800'>{user.user?.name}</h1>
+                <button
+                  onClick={handleSignOut}
+                  className='bg-red-500 text-white px-1  rounded hover:bg-red-600 text-sm'
+                >
+                  {/* Sign Out */}
+                  <LogOut />
+                </button>
+              </div>
+            </header>
 
-          {/* Main Content */}
-          {/* <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+            {/* Main Content */}
+            {/* <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
               <div className="grid grid-cols-2 mb-2 ">
                 <h6 className="text-left px-2 font-semibold ">Status :</h6>
@@ -190,127 +186,128 @@ export default function Dashboard () {
             </div>
           </main> */}
 
-          {/* Navigation Buttons */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4'>
-            {permissionloc && (
-              <button
-                onClick={() => router.push('/locationmast')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Location Mast
-              </button>
-            )}
-            {permissiontype && (
-              <button
-                onClick={() => router.push('/typemast')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Type Mast
-              </button>
-            )}
-            {permissionpayment && (
-              <button
-                onClick={() => router.push('/paymentmast')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Payment Mast
-              </button>
-            )}
-            {permissionprice && (
-              <button
-                onClick={() => router.push('/pricelist')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Price List
-              </button>
-            )}
-            {permissioninvmast && (
-              <button
-                onClick={() => router.push('/createinvmast')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Inventory Mast
-              </button>
-            )}
-            {permissionstockkin && (
-              <button
-                onClick={() => router.push('/stockin')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Stock In
-              </button>
-            )}
-            {permissioncust && (
-              <button
-                onClick={() => router.push('/dealermast')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Customers
-              </button>
-            )}
-            {permissionitemstatus && (
-              <button
-                onClick={() => router.push('/stockout')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Item Status
-              </button>
-            )}
-            {permissionbreakage && (
-              <button
-                onClick={() => router.push('/breakage')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Breakage
-              </button>
-            )}
-            {permissionquotation && (
-              <button
-                onClick={() => router.push('/quotation')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Quotation
-              </button>
-            )}
-            {permissionquotationimage && (
-              <button
-                onClick={() => router.push('/quotationimage')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Quotation Image
-              </button>
-            )}
-            {permissionquotationview && (
-              <button
-                onClick={() => router.push('/view-quotation')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Quotation View
-              </button>
-            )}
-            {permissionmorbi && (
-              <button
-                onClick={() => router.push('/morbi')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Morbi
-              </button>
-            )}
-            {permisson && (
-              <button
-                onClick={() => router.push('/permission')}
-                className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
-              >
-                Permission
-              </button>
-            )}
-          </div>
+            {/* Navigation Buttons */}
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4'>
+              {permissionloc && (
+                <button
+                  onClick={() => router.push('/locationmast')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Location Mast
+                </button>
+              )}
+              {permissiontype && (
+                <button
+                  onClick={() => router.push('/typemast')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Type Mast
+                </button>
+              )}
+              {permissionpayment && (
+                <button
+                  onClick={() => router.push('/paymentmast')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Payment Mast
+                </button>
+              )}
+              {permissionprice && (
+                <button
+                  onClick={() => router.push('/pricelist')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Price List
+                </button>
+              )}
+              {permissioninvmast && (
+                <button
+                  onClick={() => router.push('/createinvmast')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Inventory Mast
+                </button>
+              )}
+              {permissionstockkin && (
+                <button
+                  onClick={() => router.push('/stockin')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Stock In
+                </button>
+              )}
+              {permissioncust && (
+                <button
+                  onClick={() => router.push('/dealermast')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Customers
+                </button>
+              )}
+              {permissionitemstatus && (
+                <button
+                  onClick={() => router.push('/stockout')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Item Status
+                </button>
+              )}
+              {permissionbreakage && (
+                <button
+                  onClick={() => router.push('/breakage')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Breakage
+                </button>
+              )}
+              {permissionquotation && (
+                <button
+                  onClick={() => router.push('/quotation')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Quotation
+                </button>
+              )}
+              {permissionquotationimage && (
+                <button
+                  onClick={() => router.push('/quotationimage')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Quotation Image
+                </button>
+              )}
+              {permissionquotationview && (
+                <button
+                  onClick={() => router.push('/view-quotation')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Quotation View
+                </button>
+              )}
+              {permissionmorbi && (
+                <button
+                  onClick={() => router.push('/morbi')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Morbi
+                </button>
+              )}
+              {permisson && (
+                <button
+                  onClick={() => router.push('/permission')}
+                  className='bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600'
+                >
+                  Permission
+                </button>
+              )}
+            </div>
 
-          {/* Footer */}
-          <footer className='mt-10 text-center text-sm text-gray-500'>
-            &copy; Antica Ceramica. All rights reserved.
-          </footer>
-        </div>
+            {/* Footer */}
+            <footer className='mt-10 text-center text-sm text-gray-500'>
+              &copy; Antica Ceramica. All rights reserved.
+            </footer>
+          </div>
+        </>
       )}
     </>
   )

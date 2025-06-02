@@ -380,14 +380,16 @@ export default function InventoryMaster () {
                     <td className='p-2'>{rec.location}</td>
                     <td
                       className={`p-2 ${
-                        rec.closingstock < rec.minqty ? 'bg-amber-300' : ''
+                        parseFloat(rec.closingstock) <= parseFloat(rec.minqty)
+                          ? 'bg-amber-300'
+                          : ''
                       }`}
                     >
                       {rec.minqty}
                     </td>
                     <td
                       className={`p-2 ${
-                        parseFloat(rec.closingstock) > parseFloat(rec.maxqty)
+                        parseFloat(rec.closingstock) >= parseFloat(rec.maxqty)
                           ? 'bg-orange-300'
                           : ''
                       }`}
