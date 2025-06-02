@@ -95,7 +95,7 @@ export default function Dashboard () {
         <LoadingSpinner />
       ) : (
         <>
-          <SideMenu />
+          {user.user?.name == 'vin verma' && <SideMenu />}
           <div className={`min-h-screen pl-${20}   bg-gray-100 px-5 pt-2`}>
             {/* Header */}
             <header className='flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl'>
