@@ -1,7 +1,7 @@
 'use client'
 import moment from 'moment'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { House, FileText, Trash2 } from 'lucide-react'
 import { LoginUserFunc } from '../context/loginuser'
@@ -10,6 +10,7 @@ import { saveAs } from 'file-saver'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import autoTable from 'jspdf-autotable' // <== important!
+import Pagination from '../components/paginationcomp'
 
 export default function ViewQuotation () {
   const router = useRouter()
@@ -19,29 +20,43 @@ export default function ViewQuotation () {
   const [filterClientName, setFilterClientName] = useState('')
   const [filterCompany, setFilterCompany] = useState('')
   const [showfilter, setShowFilter] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const itemsPerPage = 1 // Number of items per page
-
+  const [page, setpage] = useState(1)
+  const [totalpage, setTotalPage] = useState()
   const { user } = LoginUserFunc()
 
-  async function fetchQuotation (page = 1) {
+  const handleprev = () => {
+    if (page > 1) {
+      const newPage = page - 1
+      setpage(newPage)
+      fetchQuotation(newPage)
+    }
+  }
+  const handlenext = () => {
+    if (page < totalpage) {
+      const newPage = page + 1
+      setpage(newPage)
+      fetchQuotation(newPage)
+    }
+  }
+
+  async function fetchQuotation (pageNumber = 1) {
     try {
       const res = await fetch(
-        `/api/quotation?page=${page}&limit=${itemsPerPage}`
+        // `/api/quotation/view?page=${pageNumber}`
+        `/api/quotation/view?page=${pageNumber}&limit=${5}`
+        // `/api/quotation?page=${page}&limit=${itemsPerPage}`
       )
       const data = await res.json()
-      console.log(data)
-      setQuotations(data.data)
-      // setTotalPages(data.totalPages)
+      setQuotations(data.records)
+      setTotalPage(data.totalPages)
     } catch (err) {
       alert(err.message)
     }
   }
 
   useEffect(() => {
-    fetchQuotation(currentPage)
-  }, [currentPage])
+    fetchQuotation(page)
+  }, [page])
 
   const filteredQuotations = quotations.filter(q => {
     return (
@@ -245,25 +260,29 @@ export default function ViewQuotation () {
           </tbody>
         </table>
       </div>
+      <div className='flex justify-between px-5 items-center max-w-100 m-auto mt-5'>
+        <button
+          className='bg-yellow-500 px-5 py-2 rounded-2xl border-1'
+          onClick={() => {
+            handleprev()
+          }}
+        >
+          Prev
+        </button>
+        <p className='px-4 py-2 items-center'>
+          <Pagination totalPages={totalpage} currentPage={page} />
 
-      {/* Page Number Buttons */}
-      {totalPages > 1 && (
-        <div className='flex justify-center mt-4 gap-2 flex-wrap'>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === index + 1
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-300 text-black'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      )}
+          {/* <strong>{page}</strong> */}
+        </p>
+        <button
+          className='bg-green-500 px-5 py-2 rounded-2xl border-1'
+          onClick={() => {
+            handlenext()
+          }}
+        >
+          Next
+        </button>
+      </div>
     </div>
   )
 }
