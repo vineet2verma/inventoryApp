@@ -23,19 +23,32 @@ export default function ViewQuotation() {
   const [showfilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 1; // Number of items per page
+  const itemsPerPage = 10; // Number of items per page
 
   const { user } = LoginUserFunc();
 
-  async function fetchQuotation(page = 1) {
+  const handleprev = () => {
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      setCurrentPage(newPage);
+      fetchQuotation(newPage);
+    }
+  };
+
+  const handlenext = () => {
+    const newPage = currentPage + 1;
+    setCurrentPage(newPage);
+    fetchQuotation(newPage);
+  };
+
+  async function fetchQuotation(currentPage) {
     try {
       const res = await fetch(
-        `/api/quotation?page=${page}&limit=${itemsPerPage}`
+        `/api/quotation/view?page=${currentPage}&limit=${itemsPerPage}`
       );
       const data = await res.json();
-      console.log(data);
-      setQuotations(data.data);
-      // setTotalPages(data.totalPages)
+      setQuotations(data.records);
+      setTotalPages(data.totalPages);
       setLoading(false);
     } catch (err) {
       alert(err.message);
@@ -256,23 +269,27 @@ export default function ViewQuotation() {
           </div>
 
           {/* Page Number Buttons */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-4 gap-2 flex-wrap">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === index + 1
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-300 text-black"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
+            <button
+              className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
+              onClick={() => {
+                handleprev();
+              }}
+            >
+              Prev
+            </button>
+            <p>
+              <strong>{currentPage}</strong>
+            </p>
+            <button
+              className="bg-green-500 px-5 py-2 rounded-2xl border-1"
+              onClick={() => {
+                handlenext();
+              }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </>
