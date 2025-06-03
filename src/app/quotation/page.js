@@ -24,14 +24,14 @@ export default function QuotationPage () {
   const fetchQuotations = async () => {
     const res = await fetch('/api/quotation')
     const data = await res.json()
-    const uniqueCount = data.data.length + 1
-    const currentPrefix = moment().format('YYMMDD') // "202505"
-    const newId = currentPrefix + (uniqueCount + 1).toString().padStart(2, '0') // Generate new ID with prefix and incremented number
 
-    setInterval(() => {
-      setqnumber(newId)
-    }, 2000)
-    console.log('Fetched Quotations:', data)
+    // const uniqueCount = data.data.length + 1
+    // const currentPrefix = moment().format('YYMMDD') // "202505"
+    // const newId = currentPrefix + (uniqueCount + 1).toString().padStart(2, '0') // Generate new ID with prefix and incremented number
+    // setInterval(() => {
+    //   setqnumber(newId)
+    // }, 2000)
+    // console.log('Fetched Quotations:', data)
   }
 
   useEffect(() => {
@@ -84,8 +84,6 @@ export default function QuotationPage () {
     'Disputes subject to Delhi jurisdiction only',
     'Unloading Charges Extra',
     'Transportation damage 3% will be accepted.'
-    // `For Customization For Printed Tiles 10-15 Days Required`,
-    // `For Stones 25-30 Days Requjired`,
   ]
 
   const handleItemChange = (index, field, value) => {

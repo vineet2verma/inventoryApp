@@ -1,269 +1,280 @@
-'use client'
-import moment from 'moment'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { House, FileText, Trash2 } from 'lucide-react'
-import { LoginUserFunc } from '../context/loginuser'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
-import autoTable from 'jspdf-autotable' // <== important!
+"use client";
+import moment from "moment";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { House, FileText, Trash2 } from "lucide-react";
+import { LoginUserFunc } from "../context/loginuser";
+import LoadingSpinner from "../components/waiting";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import autoTable from "jspdf-autotable"; // <== important!
 
-export default function ViewQuotation () {
-  const router = useRouter()
-  const [quotations, setQuotations] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterSalesperson, setFilterSalesperson] = useState('')
-  const [filterClientName, setFilterClientName] = useState('')
-  const [filterCompany, setFilterCompany] = useState('')
-  const [showfilter, setShowFilter] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const itemsPerPage = 1 // Number of items per page
+export default function ViewQuotation() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [quotations, setQuotations] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterSalesperson, setFilterSalesperson] = useState("");
+  const [filterClientName, setFilterClientName] = useState("");
+  const [filterCompany, setFilterCompany] = useState("");
+  const [showfilter, setShowFilter] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 1; // Number of items per page
 
-  const { user } = LoginUserFunc()
+  const { user } = LoginUserFunc();
 
-  async function fetchQuotation (page = 1) {
+  async function fetchQuotation(page = 1) {
     try {
       const res = await fetch(
         `/api/quotation?page=${page}&limit=${itemsPerPage}`
-      )
-      const data = await res.json()
-      console.log(data)
-      setQuotations(data.data)
+      );
+      const data = await res.json();
+      console.log(data);
+      setQuotations(data.data);
       // setTotalPages(data.totalPages)
+      setLoading(false);
     } catch (err) {
-      alert(err.message)
+      alert(err.message);
     }
   }
 
   useEffect(() => {
-    fetchQuotation(currentPage)
-  }, [currentPage])
+    fetchQuotation(currentPage);
+  }, [currentPage]);
 
-  const filteredQuotations = quotations.filter(q => {
+  const filteredQuotations = quotations.filter((q) => {
     return (
       q.saleperson?.toLowerCase().includes(filterSalesperson.toLowerCase()) &&
       q.clientName?.toLowerCase().includes(filterClientName.toLowerCase()) &&
       q.companyName?.toLowerCase().includes(filterCompany.toLowerCase()) &&
       JSON.stringify(q).toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  })
+    );
+  });
 
-  async function handledelete (id) {
-    if (confirm('Are you sure you want to delete this quotation?')) {
+  async function handledelete(id) {
+    if (confirm("Are you sure you want to delete this quotation?")) {
       try {
         const req = await fetch(`/api/quotation`, {
-          method: 'DELETE',
-          body: JSON.stringify({ _id: id })
-        })
-        const res = await req.json()
+          method: "DELETE",
+          body: JSON.stringify({ _id: id }),
+        });
+        const res = await req.json();
 
         if (res.success) {
-          alert('Quotation deleted successfully')
-          fetchQuotation(currentPage)
+          alert("Quotation deleted successfully");
+          fetchQuotation(currentPage);
         } else {
-          alert('Failed to delete quotation')
+          alert("Failed to delete quotation");
         }
       } catch (err) {
-        alert(err.message)
+        alert(err.message);
       }
     }
   }
 
   const handleExcelExport = () => {
-    const exportData = filteredQuotations.map(item => ({
-      Date: moment(item.date).format('DD/MM/YYYY'),
+    const exportData = filteredQuotations.map((item) => ({
+      Date: moment(item.date).format("DD/MM/YYYY"),
       OrderID: item.orderId,
       Client: item.clientName,
       Company: item.companyName,
-      Salesperson: item.saleperson
-    }))
+      Salesperson: item.saleperson,
+    }));
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData)
-    const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Quotations')
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Quotations");
     const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array'
-    })
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' })
-    saveAs(blob, 'Quotations.xlsx')
-  }
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "Quotations.xlsx");
+  };
 
   const handlePDFExport = () => {
-    const doc = new jsPDF()
-    const tableData = filteredQuotations.map(item => [
-      moment(item.date).format('DD/MM/YYYY'),
+    const doc = new jsPDF();
+    const tableData = filteredQuotations.map((item) => [
+      moment(item.date).format("DD/MM/YYYY"),
       item.orderId,
       item.clientName,
       item.companyName,
-      item.saleperson
-    ])
+      item.saleperson,
+    ]);
 
     autoTable(doc, {
-      head: [['Date', 'Order ID', 'Client', 'Company', 'Salesperson']],
-      body: tableData
-    })
-    doc.save('Quotations.pdf')
-  }
+      head: [["Date", "Order ID", "Client", "Company", "Salesperson"]],
+      body: tableData,
+    });
+    doc.save("Quotations.pdf");
+  };
 
   return (
-    <div className='px-4 py-2 bg-gray-100'>
-      <div className='flex flex-wrap justify-between gap-2 mb-4'>
-        <div className='flex items-center gap-x-4'>
-          <button
-            onClick={() => router.push('/dashboard')}
-            className='flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition'
-          >
-            <House className='w-5 h-5' />
-            Home
-          </button>
-          <h1 className='text-2xl font-bold'>Quotation List</h1>
-        </div>
-        <div className='flex gap-2 flex-wrap'>
-          {user.user?.role == 'admin' && (
-            <button
-              onClick={handleExcelExport}
-              className='px-4 py-2 bg-green-600 text-white rounded-md'
-            >
-              Export Excel
-            </button>
+    <>
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="px-4 py-2 bg-gray-100">
+          <div className="flex flex-wrap justify-between gap-2 mb-4">
+            <div className="flex items-center gap-x-4">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+              >
+                <House className="w-5 h-5" />
+                Home
+              </button>
+              <h1 className="text-2xl font-bold">Quotation List</h1>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {user.user?.role == "admin" && (
+                <button
+                  onClick={handleExcelExport}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md"
+                >
+                  Export Excel
+                </button>
+              )}
+              {user.user?.role == "admin" && (
+                <button
+                  onClick={handlePDFExport}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md"
+                >
+                  Export PDF
+                </button>
+              )}
+              <button
+                onClick={() => setShowFilter(!showfilter)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              >
+                {showfilter ? "Hide Filters" : "Show Filters"}
+              </button>
+            </div>
+          </div>
+
+          {showfilter && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="p-2 border rounded"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Filter by Salesperson"
+                className="p-2 border rounded"
+                value={filterSalesperson}
+                onChange={(e) => setFilterSalesperson(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Filter by Client Name"
+                className="p-2 border rounded"
+                value={filterClientName}
+                onChange={(e) => setFilterClientName(e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Filter by Company"
+                className="p-2 border rounded"
+                value={filterCompany}
+                onChange={(e) => setFilterCompany(e.target.value)}
+              />
+            </div>
           )}
-          {user.user?.role == 'admin' && (
-            <button
-              onClick={handlePDFExport}
-              className='px-4 py-2 bg-red-600 text-white rounded-md'
-            >
-              Export PDF
-            </button>
-          )}
-          <button
-            onClick={() => setShowFilter(!showfilter)}
-            className='px-4 py-2 bg-blue-600 text-white rounded-md'
-          >
-            {showfilter ? 'Hide Filters' : 'Show Filters'}
-          </button>
-        </div>
-      </div>
 
-      {showfilter && (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6'>
-          <input
-            type='text'
-            placeholder='Search...'
-            className='p-2 border rounded'
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Filter by Salesperson'
-            className='p-2 border rounded'
-            value={filterSalesperson}
-            onChange={e => setFilterSalesperson(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Filter by Client Name'
-            className='p-2 border rounded'
-            value={filterClientName}
-            onChange={e => setFilterClientName(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Filter by Company'
-            className='p-2 border rounded'
-            value={filterCompany}
-            onChange={e => setFilterCompany(e.target.value)}
-          />
-        </div>
-      )}
-
-      <div className='overflow-x-auto shadow-md rounded-lg'>
-        <table className='min-w-full table-auto border-collapse'>
-          <thead className='sticky top-0 bg-blue-600 text-white'>
-            <tr>
-              <th className='px-2 py-1 text-center'>Date</th>
-              <th className='px-2 py-1 text-center'>Order ID</th>
-              <th className='px-2 py-1 text-center'>Client Name</th>
-              <th className='px-2 py-1 text-center'>Company Name</th>
-              <th className='px-2 py-1 text-center'>Salesperson</th>
-              <th className='px-2 py-1 text-center'>Action</th>
-            </tr>
-          </thead>
-          <tbody className='bg-white divide-y divide-gray-200'>
-            {filteredQuotations.length > 0 ? (
-              (user.user?.role === 'admin'
-                ? filteredQuotations
-                : filteredQuotations.filter(
-                    item => item.saleperson === user.user?.name
-                  )
-              ).map((q, index) => (
-                <tr key={index} className='odd:bg-gray-200 even:bg-white'>
-                  <td className='px-2 text-center py-1 text-xs'>
-                    {moment(q.date).format('MM/DD/YYYY')}
-                  </td>
-                  <td className='px-2 text-center py-1 text-xs'>{q.orderId}</td>
-                  <td className='px-2 text-center py-1 text-xs'>
-                    {q.clientName}
-                  </td>
-                  <td className='px-2 text-center py-1 text-xs'>
-                    {q.companyName}
-                  </td>
-                  <td className='px-2 text-center py-1 text-xs'>
-                    {q.saleperson}
-                  </td>
-
-                  <td className='flex justify-center gap-2 py-1'>
-                    <Link
-                      href={`/quotation/${q._id}`}
-                      className='bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-md text-sm'
-                    >
-                      <FileText />
-                    </Link>
-                    {user.user?.role === 'admin' && (
-                      <button
-                        onClick={() => handledelete(q._id)}
-                        className='bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md text-sm'
-                      >
-                        <Trash2 className='w-4 h-4 inline-block' />
-                      </button>
-                    )}
-                  </td>
+          <div className="overflow-x-auto shadow-md rounded-lg">
+            <table className="min-w-full table-auto border-collapse">
+              <thead className="sticky top-0 bg-blue-600 text-white">
+                <tr>
+                  <th className="px-2 py-1 text-center">Date</th>
+                  <th className="px-2 py-1 text-center">Order ID</th>
+                  <th className="px-2 py-1 text-center">Client Name</th>
+                  <th className="px-2 py-1 text-center">Company Name</th>
+                  <th className="px-2 py-1 text-center">Salesperson</th>
+                  <th className="px-2 py-1 text-center">Action</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan='6' className='text-center py-4 text-gray-500'>
-                  No quotations found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredQuotations.length > 0 ? (
+                  (user.user?.role === "admin"
+                    ? filteredQuotations
+                    : filteredQuotations.filter(
+                        (item) => item.saleperson === user.user?.name
+                      )
+                  ).map((q, index) => (
+                    <tr key={index} className="odd:bg-gray-200 even:bg-white">
+                      <td className="px-2 text-center py-1 text-xs">
+                        {moment(q.date).format("MM/DD/YYYY")}
+                      </td>
+                      <td className="px-2 text-center py-1 text-xs">
+                        {q.orderId}
+                      </td>
+                      <td className="px-2 text-center py-1 text-xs">
+                        {q.clientName}
+                      </td>
+                      <td className="px-2 text-center py-1 text-xs">
+                        {q.companyName}
+                      </td>
+                      <td className="px-2 text-center py-1 text-xs">
+                        {q.saleperson}
+                      </td>
 
-      {/* Page Number Buttons */}
-      {totalPages > 1 && (
-        <div className='flex justify-center mt-4 gap-2 flex-wrap'>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded ${
-                currentPage === index + 1
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-300 text-black'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
+                      <td className="flex justify-center gap-2 py-1">
+                        <Link
+                          href={`/quotation/${q._id}`}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-md text-sm"
+                        >
+                          <FileText />
+                        </Link>
+                        {user.user?.role === "admin" && (
+                          <button
+                            onClick={() => handledelete(q._id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md text-sm"
+                          >
+                            <Trash2 className="w-4 h-4 inline-block" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4 text-gray-500">
+                      No quotations found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Page Number Buttons */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-4 gap-2 flex-wrap">
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === index + 1
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
-    </div>
-  )
+    </>
+  );
 }
