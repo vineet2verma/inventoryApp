@@ -14,24 +14,16 @@ export default function QuotationPage () {
   const [rightcreate, setrightcreate] = useState(false)
   const [rightedit, setrightedit] = useState(false)
   const [rightdelete, setrightdelete] = useState(false)
+
   const [showCharges, setShowCharges] = useState(false)
   const [showClientModal, setShowClientModal] = useState(false)
   const [qnumber, setqnumber] = useState('')
   const [showdownload, setShowDownload] = useState(false)
-
   const [errors, setErrors] = useState({})
 
   const fetchQuotations = async () => {
     const res = await fetch('/api/quotation')
     const data = await res.json()
-
-    // const uniqueCount = data.data.length + 1
-    // const currentPrefix = moment().format('YYMMDD') // "202505"
-    // const newId = currentPrefix + (uniqueCount + 1).toString().padStart(2, '0') // Generate new ID with prefix and incremented number
-    // setInterval(() => {
-    //   setqnumber(newId)
-    // }, 2000)
-    // console.log('Fetched Quotations:', data)
   }
 
   useEffect(() => {
@@ -96,6 +88,7 @@ export default function QuotationPage () {
   }
 
   const addItem = () => {
+
     setQuotation({
       ...quotation,
       items: [
@@ -201,8 +194,6 @@ export default function QuotationPage () {
     })
 
     let result = await res.json()
-    // console.log(result)
-
     if (result.success) {
       setQuotation({ ...quotation, orderId: result.data.orderId })
       setShowDownload(true)
