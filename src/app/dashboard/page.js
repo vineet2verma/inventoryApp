@@ -96,7 +96,7 @@ export default function Dashboard () {
       ) : (
         <>
           {user.user?.name == 'vin verma' && <SideMenu />}
-          <div className={`min-h-screen pl-17 bg-gray-100 px-5 pt-2`}>
+          <div className={`min-h-screen pl-18 bg-gray-100 px-5 pt-2`}>
             {/* Header */}
             <header className='flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl'>
               <h1 className='font-bold text-gray-800'>Dashboard</h1>
