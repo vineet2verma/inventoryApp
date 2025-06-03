@@ -8,7 +8,7 @@ import moment from 'moment'
 export async function GET () {
   await connectToDatabase()
   try {
-    const quotations = await quotationOrder.find({})
+    const quotations = await quotationOrder.find().sort({createdAt: -1})
     return NextResponse.json({ success: true, data: quotations })
   } catch (error) {
     return NextResponse.json(
