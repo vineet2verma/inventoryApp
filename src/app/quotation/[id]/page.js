@@ -23,10 +23,23 @@ export default function QuotationPage ({}) {
   const [showClientModal, setShowClientModal] = useState(false)
   const [qnumber, setqnumber] = useState('')
   const [errors, setErrors] = useState({})
-  const [btnclientDetails, setBtnClientDetails] = useState(true)
-  const [btnCharges, setBtnCharges] = useState(true)
-  const [btnadditem, setBtnAddItem] = useState(true)
+  const [btnclientDetails, setBtnClientDetails] = useState(false)
+  const [btnCharges, setBtnCharges] = useState(false)
+  const [btnadditem, setBtnAddItem] = useState(false)
   const [showsubmit, setshowsubmit] = useState(false)
+  const [showedit, setShowEdit ]= useState(true)
+
+  const handleEdit = ()=>{
+    setShowEdit(false)
+    console.log("edit run")
+    setBtnClientDetails(true)
+    setBtnAddItem(true)
+    setBtnCharges(true)
+    setshowsubmit(true)
+    setShowDownload(false)
+  }
+
+
 
   useEffect(() => {
     fetchQuotations()
@@ -100,6 +113,8 @@ export default function QuotationPage ({}) {
   }
 
   const addItem = () => {
+    setShowDownload(false)
+    setshowsubmit(true)
     setQuotation({
       ...quotation,
       items: [
@@ -133,10 +148,17 @@ export default function QuotationPage ({}) {
     Number(quotation.cartageCharges || 0) +
     Number(quotation.packingCharges || 0)
 
+  const handlechargesChanges = ()=>{
+    setShowCharges(true)
+    setShowDownload(false)
+    setshowsubmit(true)
+  }
+
   const handlemodelSubmit = () => {
     console.log('Check Point 1  ')
     setShowClientModal(false)
     setshowsubmit(true)
+    setShowDownload(false)
     // quotation.orderId = `Q-${qnumber}` // Update orderId with new quotation number
   }
 
@@ -190,11 +212,16 @@ export default function QuotationPage ({}) {
 
     let result = await res.json()
     if (result.success) {
-      alert('Quotation Save Scussfully ')
+      alert('Quotation Updated Scussfully ')
     } else {
       console.log('failed to post record in quotation ', result)
     }
     setshowsubmit(false)
+    setBtnCharges(false)
+    setBtnClientDetails(false)
+    setBtnAddItem(false)
+    setShowDownload(true)
+    setShowEdit(true)
   }
 
   return (
@@ -383,6 +410,14 @@ export default function QuotationPage ({}) {
                   Download
                 </button>
               )}
+              {showedit && (
+                <button
+                  onClick={()=>{handleEdit()}}
+                  className='px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600'
+                >
+                  Edit
+                </button>
+              )}
 
               {btnclientDetails && (
                 <button
@@ -395,7 +430,8 @@ export default function QuotationPage ({}) {
 
               {btnCharges && (
                 <button
-                  onClick={() => setShowCharges(true)}
+                  onClick={()=>{ handlechargesChanges() }}
+                  // onClick={() => setShowCharges(true)}
                   className='px-4 py-2 text-xs bg-gray-700 text-white rounded hover:bg-gray-600'
                 >
                   Charges
@@ -468,7 +504,10 @@ export default function QuotationPage ({}) {
                 <th className='border px-2 py-1'>Qty/Box</th>
                 <th className='border px-2 py-1'>Price</th>
                 <th className='border px-2 py-1'>Amount</th>
-                <th className='border px-2 py-1 print:hidden'>Action</th>
+                {showsubmit && (
+                  <th className='border px-2 py-1 print:hidden'>Action</th>
+                )}
+
               </tr>
             </thead>
             <tbody>
@@ -479,6 +518,7 @@ export default function QuotationPage ({}) {
                     <input
                       className='w-full  px-1 '
                       value={item.description}
+                      disabled={ showedit?true:false}
                       onChange={e =>
                         handleItemChange(index, 'description', e.target.value)
                       }
@@ -493,6 +533,7 @@ export default function QuotationPage ({}) {
                     <input
                       className='w-full  px-1 text-center '
                       value={item.size}
+                      disabled={ showedit?true:false}
                       onChange={e =>
                         handleItemChange(index, 'size', e.target.value)
                       }
@@ -508,6 +549,7 @@ export default function QuotationPage ({}) {
                       type='number'
                       className='w-full  px-1 text-center'
                       value={item.qtypersqft}
+                      disabled={ showedit?true:false}
                       onChange={e =>
                         handleItemChange(index, 'qtypersqft', e.target.value)
                       }
@@ -523,6 +565,7 @@ export default function QuotationPage ({}) {
                       type='number'
                       className='w-full  px-1 text-center'
                       value={item.qtyperbox}
+                      disabled={ showedit?true:false}
                       onChange={e =>
                         handleItemChange(index, 'qtyperbox', e.target.value)
                       }
@@ -539,6 +582,7 @@ export default function QuotationPage ({}) {
                       type='number'
                       className='w-full px-1 text-center'
                       value={item.price}
+                      disabled={ showedit?true:false}
                       onChange={e =>
                         handleItemChange(index, 'price', e.target.value)
                       }
@@ -552,14 +596,14 @@ export default function QuotationPage ({}) {
                   <td className='border px-2 py-1  text-right'>
                     ₹{(item.qtypersqft * item.price).toFixed(2)}
                   </td>
-                  <td className='border px-2 py-1 text-center max-w-2  print:hidden '>
+                  {showsubmit && (<td className='border px-2 py-1 text-center max-w-2  print:hidden '>
                     <button
                       className='text-red-500 '
                       onClick={() => deleteItem(index)}
                     >
                       🗑️
                     </button>
-                  </td>
+                  </td>)}
                 </tr>
               ))}
             </tbody>
