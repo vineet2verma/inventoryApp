@@ -70,7 +70,7 @@ export default function MorbiOrderPage () {
 
     setInterval(() => {
       fetchOrders()
-    }, 60000 * 10) //
+    }, 60000 * 5) //
   }, [])
 
   useEffect(() => {
@@ -185,7 +185,7 @@ export default function MorbiOrderPage () {
   ) => {
     setaction({
       id,
-      availability: availability || 'Query',
+      availability: availability || 'Yes',
       readydate: readydate || '',
       remarks: remarks || '',
       transitdate: transitdate || ''
@@ -201,7 +201,7 @@ export default function MorbiOrderPage () {
   ) => {
     setaction({
       id,
-      availability: availability || 'Query',
+      availability: availability || 'Yes',
       readydate: readydate || '',
       remarks: remarks || '',
       transitdate: transitdate || ''
