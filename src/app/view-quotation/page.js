@@ -144,7 +144,7 @@ export default function ViewQuotation() {
               <h1 className="text-2xl font-bold">Quotation List</h1>
             </div>
             <div className="flex gap-2 flex-wrap">
-              {user.user?.role == "admin" && (
+              {(user.user?.role === "admin" || user.user?.role === "super admin" ) && (
                 <button
                   onClick={handleExcelExport}
                   className="px-4 py-2 bg-green-600 text-white rounded-md"
@@ -152,7 +152,7 @@ export default function ViewQuotation() {
                   Export Excel
                 </button>
               )}
-              {user.user?.role == "admin" && (
+              {(user.user?.role === "admin" || user.user?.role === "super admin" ) && (
                 <button
                   onClick={handlePDFExport}
                   className="px-4 py-2 bg-red-600 text-white rounded-md"
@@ -216,7 +216,7 @@ export default function ViewQuotation() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredQuotations.length > 0 ? (
-                  (user.user?.role === "admin"
+                  ((user.user?.role === "admin" || user.user?.role === "super admin" )
                     ? filteredQuotations
                     : filteredQuotations.filter(
                         (item) => item.saleperson === user.user?.name
