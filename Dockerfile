@@ -1,38 +1,26 @@
-# Use official Node.js image
-FROM node:18-alpine AS builder
+# 1. Use official Node.js image
+FROM node:18-alpine
 
-# Set working directory
+# 2. Set working directory inside the container
 WORKDIR /app
 
-# Install dependencies
+# 3. Copy package.json and package-lock.json (if exists)
 COPY package*.json ./
+
+# 4. Install dependencies
 RUN npm install
 
-# Copy source code
+# 5. Copy the rest of the application code
 COPY . .
 
-# Build Next.js app
+# 6. Build the Next.js app
 RUN npm run build
 
-# ---- Production image ----
-FROM node:18-alpine AS runner
-
-WORKDIR /app
-
-# Install only production deps
-COPY --from=builder /app/package*.json ./
-RUN npm install --omit=dev
-
-# Copy built app
-COPY --from=builder /app/.next .next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
-
-# Set environment variables (optional)
-ENV NODE_ENV=production
-
-# Start the app
+# 7. Expose application port
 EXPOSE 3000
-CMD ["npx", "next", "start"]
+
+ENV NODE_ENV = "Production"
+
+# 8. Run the custom server
+CMD ["node", "server.js"]
+
