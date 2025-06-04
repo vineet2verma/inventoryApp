@@ -17,9 +17,8 @@ COPY . .
 RUN npm run build
 
 # 7. Expose application port
-EXPOSE 3000
-
-ENV NODE_ENV = "Production"
+# EXPOSE 3000
+EXPOSE 8080
 
 # 8. Run the custom server
 CMD ["node", "server.js"]
