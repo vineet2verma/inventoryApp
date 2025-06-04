@@ -5,19 +5,21 @@ import { Pencil, Trash2 } from "lucide-react";
 export default function TaskPage() {
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({
-    taskid: "",
+    mastid: "",
     taskname: "",
     doer: "",
     frequency: "",
-    startdate: "",
+    date: "",
     status: "",
-    createdby: "",
+    doneby: "",
+    actualdate: "",
+    remarks: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   const fetchTasks = async () => {
-    const res = await fetch("/api/checklistmast");
+    const res = await fetch("/api/checklisttask");
     const json = await res.json();
     if (json.success) {
       const data = json.data;
@@ -35,13 +37,15 @@ export default function TaskPage() {
 
   const openModalForCreate = () => {
     setForm({
-      taskid: "",
+      mastid: "",
       taskname: "",
       doer: "",
       frequency: "",
-      startdate: "",
+      date: "",
       status: "",
-      createdby: "",
+      doneby: "",
+      actualdate: "",
+      remarks: "",
     });
     setEditingId(null);
     setShowModal(true);
@@ -58,7 +62,7 @@ export default function TaskPage() {
     const method = editingId ? "PUT" : "POST";
     const payload = editingId ? { ...form, _id: editingId } : form;
 
-    const res = await fetch("/api/checklistmast", {
+    const res = await fetch("/api/checklisttask", {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -67,13 +71,15 @@ export default function TaskPage() {
     if (res.ok) {
       setShowModal(false);
       setForm({
-        taskid: "",
+        mastid: "",
         taskname: "",
         doer: "",
         frequency: "",
-        startdate: "",
+        date: "",
         status: "",
-        createdby: "",
+        doneby: "",
+        actualdate: "",
+        remarks: "",
       });
       setEditingId(null);
       fetchTasks();
@@ -103,13 +109,15 @@ export default function TaskPage() {
         <table className="min-w-full table-auto text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border px-3 py-2">Task ID</th>
+              <th className="border px-3 py-2">Task Mast ID</th>
               <th className="border px-3 py-2">Task Name</th>
               <th className="border px-3 py-2">Doer</th>
               <th className="border px-3 py-2">Frequency</th>
-              <th className="border px-3 py-2">Start Date</th>
+              <th className="border px-3 py-2">Date</th>
               <th className="border px-3 py-2">Status</th>
-              <th className="border px-3 py-2">Create By</th>
+              <th className="border px-3 py-2">Done By</th>
+              <th className="border px-3 py-2">Actual Date</th>
+              <th className="border px-3 py-2">Remarks</th>
               <th className="border px-3 py-2">Actions</th>
             </tr>
           </thead>
@@ -117,13 +125,15 @@ export default function TaskPage() {
             {tasks.length > 0 ? (
               tasks.map((task) => (
                 <tr key={task._id} className="hover:bg-gray-50 text-center">
-                  <td className="border px-3 py-2">{task.taskid}</td>
+                  <td className="border px-3 py-2">{task.mastid}</td>
                   <td className="border px-3 py-2">{task.taskname}</td>
                   <td className="border px-3 py-2">{task.doer}</td>
                   <td className="border px-3 py-2">{task.frequency}</td>
-                  <td className="border px-3 py-2">{task.startdate}</td>
+                  <td className="border px-3 py-2">{task.data}</td>
                   <td className="border px-3 py-2">{task.status}</td>
-                  <td className="border px-3 py-2">{task.createdby}</td>
+                  <td className="border px-3 py-2">{task.doneby}</td>
+                  <td className="border px-3 py-2">{task.actualdate}</td>
+                  <td className="border px-3 py-2">{task.remarks}</td>
                   <td className="border px-3 py-2 space-x-2">
                     <button
                       onClick={() => openModalForEdit(task)}
@@ -164,10 +174,10 @@ export default function TaskPage() {
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
             >
               <input
-                name="taskid"
-                value={form.taskid}
+                name="mastid"
+                value={form.mastid}
                 onChange={handleChange}
-                placeholder="Task ID"
+                placeholder="Task Mast ID"
                 className="border p-2 rounded"
               />
               <input
@@ -194,9 +204,9 @@ export default function TaskPage() {
               <input
                 type="date"
                 name="startdate"
-                value={form.startdate}
+                value={form.date}
                 onChange={handleChange}
-                placeholder="Start Date"
+                placeholder="Date"
                 className="border p-2 rounded"
               />
               <input
@@ -207,10 +217,25 @@ export default function TaskPage() {
                 className="border p-2 rounded"
               />
               <input
-                name="createdby"
-                value={form.createdby}
+                name="doneby"
+                value={form.doneby}
                 onChange={handleChange}
-                placeholder="Created By"
+                placeholder="Done By"
+                className="border p-2 rounded"
+              />
+              <input
+                type="date"
+                name="actualdate"
+                value={form.actualdate}
+                onChange={handleChange}
+                placeholder="Actual Date"
+                className="border p-2 rounded"
+              />
+              <input
+                name="remarks"
+                value={form.remarks}
+                onChange={handleChange}
+                placeholder="Remarks"
                 className="border p-2 rounded"
               />
 
@@ -220,13 +245,15 @@ export default function TaskPage() {
                   onClick={() => {
                     setShowModal(false);
                     setForm({
-                      taskid: "",
+                      mastid: "",
                       taskname: "",
                       doer: "",
                       frequency: "",
-                      startdate: "",
+                      date: "",
                       status: "",
-                      createdby: "",
+                      doneby: "",
+                      actualdate: "",
+                      remarks: "",
                     });
                     setEditingId(null);
                   }}

@@ -1,5 +1,4 @@
-
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
   {
@@ -8,8 +7,11 @@ const taskSchema = new mongoose.Schema(
     doer: { type: String, require: false },
     frequency: { type: String, require: false },
     startdate: { type: String, require: false }, // Use Date if needed: type: Date
+    status: { type: String, require: false },
+    createdby: { type: String, require: false },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.checklist || mongoose.model('checklist', taskSchema);
+export default mongoose.models.checklistMastDB ||
+  mongoose.model("checklistMastDB", taskSchema);

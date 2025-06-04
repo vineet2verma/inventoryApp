@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
-import checklistMastDB from "@/app/api/models/checklistMast";
+import checklistTaskDB from "../models/checklistTask";
 
 // READ with pagination
 export async function GET(req) {
@@ -11,9 +11,9 @@ export async function GET(req) {
     const limit = parseInt(searchParams.get("limit")) || 20;
     const skip = (page - 1) * limit;
 
-    const totallength = await checklistMastDB.countDocuments();
-    const totalPages = Math.ceil(totallength / limit);
-    const data = await checklistMastDB
+    const total = await checklistTaskDB.countDocuments();
+    const totalPages = Math.ceil(total / limit);
+    const data = await checklistTaskDB
       .find()
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -23,7 +23,7 @@ export async function GET(req) {
       success: true,
       page,
       limit,
-      totallength,
+      total,
       totalPages,
       data,
     });
@@ -40,7 +40,7 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    const task = await checklistMastDB.create(body);
+    const task = await checklistTaskDB.create(body);
     return NextResponse.json({ success: true, data: task });
   } catch (error) {
     return NextResponse.json(
@@ -64,7 +64,7 @@ export async function PUT(req) {
       );
     }
 
-    const updated = await checklistMastDB.findByIdAndUpdate(_id, updates, {
+    const updated = await checklistTaskDB.findByIdAndUpdate(_id, updates, {
       new: true,
     });
     return NextResponse.json({ success: true, data: updated });
@@ -90,7 +90,7 @@ export async function DELETE(req) {
       );
     }
 
-    await checklistMastDB.findByIdAndDelete(id);
+    await checklistTaskDB.findByIdAndDelete(id);
     return NextResponse.json({
       success: true,
       message: "Task deleted successfully",
