@@ -2,6 +2,7 @@ import * as mongoose from "mongoose";
 
 const crmClientSchema = new mongoose.Schema(
   {
+    date:{ type: String, require: false },
     oid: { type: String, require: false },
     name: { type: String, require: false },
     email: { type: String, require: false },
@@ -15,7 +16,7 @@ const crmClientSchema = new mongoose.Schema(
     referencetype: { type: String, require: false },
     protentialvalue: { type: String, require: false },
     nextfollowdate: { type: String, require: false },
-    followups: { type: String, require: false },
+    followupstage: { type: String, require: false },
     lastcontact: { type: String, require: false },
     status: { type: String, require: false },
   },
