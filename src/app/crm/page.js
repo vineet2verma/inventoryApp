@@ -16,8 +16,10 @@ export default function CRMClientPage() {
   const [isEditable, setIsEditable] = useState(false); //card input button state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
+  const [modalview, setmodalview] = useState(false);
+  const [modalfollowup, setmodalfollowup] = useState(false);
+  const [modaldelete, setmodaldelete] = useState(false);
   const submenuRef = useRef(null);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10; // Number of items per page
@@ -45,7 +47,7 @@ export default function CRMClientPage() {
     "referencetype",
   ];
 
-  const handleCardInputChg = (index, value) => { 
+  const handleCardInputChg = (index, value) => {
     // for card component input editable
     const updated = [...sections];
     updated[index].detail = value;
@@ -89,6 +91,28 @@ export default function CRMClientPage() {
       window.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    setmodalview(false);
+    setmodalfollowup(false);
+    setmodaldelete(false);
+
+    if (activeModal === "view Details") {
+      setmodalview(true);
+      setmodalfollowup(false);
+      setmodaldelete(false);
+    }
+    if (activeModal === "Follow Up") {
+      setmodalfollowup(true);
+      setmodalview(false);
+      setmodaldelete(false);
+    }
+    if (activeModal === "Delete") {
+      setmodaldelete(true);
+      setmodalview(false);
+      setmodalfollowup(false);
+    }
+  }, [activeModal]);
 
   useEffect(() => {
     fetchData(currentPage);
@@ -199,14 +223,12 @@ export default function CRMClientPage() {
           </button>
         </div>
       </div>
-
       {/* Filters */}
       {showFilter && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <input
             type="text"
             name="search"
-            
             placeholder="Search all..."
             value={filters.search}
             onChange={handleFilterChange}
@@ -238,12 +260,12 @@ export default function CRMClientPage() {
           />
         </div>
       )}
-
       {/* Table */}
       <div className="overflow-auto border rounded-lg">
         <table className="min-w-full table-auto text-sm">
           <thead className="bg-gray-200 text-gray-800">
-            <tr>
+            <tr className="bg-gray-700 text-white">
+              <th className="border px-3 py-2 text-center">#</th>
               {columns.map((col) => (
                 <th key={col} className="border px-3 py-2 text-center">
                   {col.toUpperCase()}
@@ -257,8 +279,12 @@ export default function CRMClientPage() {
               filteredData.map((item, index) => (
                 <tr
                   key={item._id}
-                  className="hover:bg-gray-50 text-center relative"
+                  className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
                 >
+                  <td key={index} className="border px-3 py-2">
+                    {index + 1}
+                  </td>
+
                   {columns.map((col) => (
                     <td key={col} className="border px-3 py-2">
                       {item[col] || ""}
@@ -334,7 +360,6 @@ export default function CRMClientPage() {
           </tbody>
         </table>
       </div>
-
       {/* CRUD Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -389,34 +414,33 @@ export default function CRMClientPage() {
       {["view Details", "Follow Up", "Delete"].includes(activeModal) && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
-            {/* <button
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500"
-            >
-              <X />
-            </button> */}
-
             <div className="flex justify-between  ">
               <h2 className="text-xl font-semibold ">
                 {activeModal.toUpperCase()}{" "}
               </h2>
               <div className="flex">
-                <button
-                  className="px-2 text-xs"
-                  onClick={() => {
-                    setIsEditable(!isEditable)
-                    console.log("Edit Details");
-                  }}
-                >
-                  <div className="flex border bg-gray-100 items-center px-4 py-1 rounded-sm ">
-                    {isEditable ?<X size={16} className="mx-2 text-red-500"/> : <Pencil size={16} className="mx-2" />}
-                    {isEditable ? "Cancel" : "Edit"}
-                  </div>
-                </button>
+                {modalview && (
+                  <button
+                    className="px-2 text-xs"
+                    onClick={() => {
+                      setIsEditable(!isEditable);
+                    }}
+                  >
+                    <div className="flex border bg-gray-100 items-center px-4 py-1 rounded-sm ">
+                      {isEditable ? (
+                        <X size={16} className="mx-2 text-red-500" />
+                      ) : (
+                        <Pencil size={16} className="mx-2" />
+                      )}
+                      {isEditable ? "Cancel" : "Edit"}
+                    </div>
+                  </button>
+                )}
+
                 <button
                   className=" px-2 text-xs "
                   onClick={() => {
-                    closeModal()
+                    closeModal();
                   }}
                 >
                   <div className="flex border bg-gray-100 items-center px-4 py-1 rounded-sm ">
@@ -426,93 +450,134 @@ export default function CRMClientPage() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
+            {modalview && (
+              <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
+                <InfoCardInput
+                  title={"Personal Detail"}
+                  sections={[
+                    {
+                      subtitle: "Name",
+                      detail: "Mr. Abc",
+                    },
+                    {
+                      subtitle: "Email",
+                      detail: "abc@gmail.com",
+                    },
+                    {
+                      subtitle: "Mob",
+                      detail: "+91 98123-45678",
+                    },
+                  ]}
+                  editable={isEditable}
+                  onChange={handleCardInputChg}
+                  width="w-[200px]"
+                  border="0"
+                />
 
-              <InfoCardInput
-                title={"Personal Detail"}
-                sections={[
-                  {
-                    subtitle: "Name",
-                    detail: "Mr. Abc",
-                  },
-                  {
-                    subtitle: "Email",
-                    detail: "abc@gmail.com",
-                  },
-                  {
-                    subtitle: "Mob",
-                    detail: "+91 98123-45678",
-                  },
-                ]}
-                editable={isEditable}
-                onChange={handleCardInputChg}
-                width="w-[200px]"
-                border="0"
-              />
+                <InfoCardInput
+                  title={"Company Info"}
+                  sections={[
+                    {
+                      subtitle: "Company",
+                      detail: "Abc Ltd",
+                    },
+                    {
+                      subtitle: "Query",
+                      detail: "Price Quota",
+                    },
+                    {
+                      subtitle: "Potential",
+                      detail: "N/a",
+                    },
+                  ]}
+                  width="w-[200px]"
+                  border="0"
+                  editable={isEditable}
+                  onChange={handleCardInputChg}
+                />
+                <InfoCard
+                  title={"Lead Info"}
+                  sections={[
+                    {
+                      subtitle: "Company",
+                      detail: "Abc Ltd",
+                    },
+                    {
+                      subtitle: "Query",
+                      detail: "Price Quota",
+                    },
+                    {
+                      subtitle: "Potential",
+                      detail: "N/a",
+                    },
+                  ]}
+                  width="w-[200px]"
+                  border="0"
+                />
+                <InfoCard
+                  title={"Other Info"}
+                  sections={[
+                    {
+                      subtitle: "Follow Up Stage",
+                      detail: "Follow Up",
+                    },
+                    {
+                      subtitle: "Reference Type",
+                      detail: "Referral",
+                    },
+                    {
+                      subtitle: "Last Contact",
+                      detail: "N/a",
+                    },
+                  ]}
+                  border="0"
+                  width="w-[200px]"
+                />
+              </div>
+            )}
 
+            {modalfollowup && (
+              <div className="grid grid-cols-1 gap-2 ">
+                <newline />
+                <p className="px-2 bg-gray-800 text-white">Lead Type</p>
+                <div className="flex justify-around">
+                  {["One", "Two", "Three"].map((item) => (
+                    <label>
+                      <input className="mx-2" type="radio" value="option1" />
+                      {item}
+                    </label>
+                  ))}
+                </div>
 
+                <div>
+                  <div className="bg-gray-200 grid grid-cols-2 gap-2 border rounded">
+                    <button className="px-2 " onClick={() => {}}>
+                      <strong>Schedule Follow Up</strong>
+                    </button>
+                    <button className="px-2 " onClick={() => {}}>
+                      <strong>Lead Clossing</strong>
+                    </button>
+                  </div>
 
-              <InfoCardInput
-                title={"Company Info"}
-                sections={[
-                  {
-                    subtitle: "Company",
-                    detail: "Abc Ltd",
-                  },
-                  {
-                    subtitle: "Query",
-                    detail: "Price Quota",
-                  },
-                  {
-                    subtitle: "Potential",
-                    detail: "N/a",
-                  },
-                ]}
-                width="w-[200px]"
-                border="0"
-                editable={isEditable}
-                onChange={handleCardInputChg}
-              />
-              <InfoCard
-                title={"Lead Info"}
-                sections={[
-                  {
-                    subtitle: "Company",
-                    detail: "Abc Ltd",
-                  },
-                  {
-                    subtitle: "Query",
-                    detail: "Price Quota",
-                  },
-                  {
-                    subtitle: "Potential",
-                    detail: "N/a",
-                  },
-                ]}
-                width="w-[200px]"
-                border="0"
-              />
-              <InfoCard
-                title={"Other Info"}
-                sections={[
-                  {
-                    subtitle: "Follow Up Stage",
-                    detail: "Follow Up",
-                  },
-                  {
-                    subtitle: "Reference Type",
-                    detail: "Referral",
-                  },
-                  {
-                    subtitle: "Last Contact",
-                    detail: "N/a",
-                  },
-                ]}
-                border="0"
-                width="w-[200px]"
-              />
-            </div>
-            <hr className="my-2" />
+                  <h4 className="font-semibold my-1">Follow Up Stage</h4>
+                  <div className="flex justify-around">
+                    {["Initial Contact", "Proposal", "Negotiation"].map(
+                      (item) => (
+                        <label>
+                          <input
+                            className="mx-2"
+                            type="radio"
+                            value="option1"
+                          />
+                          {item}
+                        </label>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="mt-2 px-2 text-xs"></div>
           </div>
         </div>
