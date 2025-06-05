@@ -35,6 +35,10 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
+
+    console.log(body)
+
+
     const created = await crmclientmast.create(body);
     return NextResponse.json({ success: true, data: created });
   } catch (err) {
