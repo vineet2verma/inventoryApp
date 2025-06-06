@@ -14,6 +14,11 @@ import InfoCardInput from "../components/card_input";
 
 export default function CRMClientPage() {
   const [viewdetail, setviewdetail] = useState({});
+  const [sections1, setSections1] = useState([]);
+  const [sections2, setSections2] = useState([]);
+  const [sections3, setSections3] = useState([]);
+  const [sections4, setSections4] = useState([]);
+
   const [isEditable, setIsEditable] = useState(false); //card input button state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
@@ -51,15 +56,77 @@ export default function CRMClientPage() {
     console.log("index => ", index);
     console.log("itemarray => ", itemarray);
 
+    setSections1([
+      {
+        subtitle: "Name",
+        detail: itemarray.name,
+      },
+      {
+        subtitle: "Email",
+        detail: "abc@gmail.com",
+      },
+      {
+        subtitle: "Mob",
+        detail: itemarray.mobile,
+      },
+    ]);
+    setSections2([
+      {
+        subtitle: "Company",
+        detail: "Abc Ltd",
+      },
+      {
+        subtitle: "Query",
+        detail: itemarray.querytype,
+      },
+      {
+        subtitle: "Potential",
+        detail: "N/a",
+      },
+    ]);
+    setSections3([
+      {
+        subtitle: "Company",
+        detail: "Abc Ltd",
+      },
+      {
+        subtitle: "Query",
+        detail: "Price Quota",
+      },
+      {
+        subtitle: "Potential",
+        detail: "N/a",
+      },
+    ]);
+    setSections4([
+      {
+        subtitle: "Follow Up Stage",
+        detail: viewdetail.followupstage,
+      },
+      {
+        subtitle: "Reference Type",
+        detail: viewdetail.referencetype,
+      },
+      {
+        subtitle: "Last Contact",
+        detail: "N/a",
+      },
+    ]);
+
     setOpenMenuIndex(openMenuIndex === index ? null : index);
     setviewdetail(itemarray);
   };
 
-  const handleCardInputChg = (index, value) => {
+  const handleCardInputChg = (section, index, value) => {
+    console.log("index =>  ", index);
+    console.log("value =>  ", value);
+    console.log("section", section);
+
     // for card component input editable
-    const updated = [...sections];
+    const updated = (section = "section1" ? [...sections1] : [...sections2]);
+    console.log("updated =>  ", updated);
     updated[index].detail = value;
-    setSections(updated);
+    section = "section1" ? setSections1(updated) : setSections2(updated);
   };
 
   const handleprev = () => {
@@ -510,6 +577,14 @@ export default function CRMClientPage() {
                     </div>
                   </button>
                 )}
+                <button
+                  className=" px-2 text-xs "
+                  onClick={() => {
+                    handleviewsave(viewdetail._id);
+                  }}
+                >
+                  Save
+                </button>
 
                 <button
                   className=" px-2 text-xs "
@@ -528,84 +603,39 @@ export default function CRMClientPage() {
             {modalview && (
               <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
                 {console.log(viewdetail)}
+
                 <InfoCardInput
                   title={"Personal Detail"}
-                  sections={[
-                    {
-                      subtitle: "Name",
-                      detail: viewdetail.name,
-                    },
-                    {
-                      subtitle: "Email",
-                      detail: "abc@gmail.com",
-                    },
-                    {
-                      subtitle: "Mob",
-                      detail: viewdetail.mobile,
-                    },
-                  ]}
+                  sections={sections1}
                   editable={isEditable}
-                  onChange={handleCardInputChg}
+                  onChange={(e) => {
+                    handleCardInputChg("sections1");
+                  }}
                   width="w-[200px]"
                   border="0"
                 />
 
                 <InfoCardInput
+                  id={viewdetail._id}
                   title={"Company Info"}
-                  sections={[
-                    {
-                      subtitle: "Company",
-                      detail: "Abc Ltd",
-                    },
-                    {
-                      subtitle: "Query",
-                      detail: viewdetail.querytype,
-                    },
-                    {
-                      subtitle: "Potential",
-                      detail: "N/a",
-                    },
-                  ]}
+                  sections={sections2}
                   width="w-[200px]"
                   border="0"
                   editable={isEditable}
-                  onChange={handleCardInputChg}
+                  onChange={(e) => {
+                    handleCardInputChg("section2");
+                  }}
                 />
+
                 <InfoCard
                   title={"Lead Info"}
-                  sections={[
-                    {
-                      subtitle: "Company",
-                      detail: "Abc Ltd",
-                    },
-                    {
-                      subtitle: "Query",
-                      detail: "Price Quota",
-                    },
-                    {
-                      subtitle: "Potential",
-                      detail: "N/a",
-                    },
-                  ]}
+                  sections={sections3}
                   width="w-[200px]"
                   border="0"
                 />
                 <InfoCard
                   title={"Other Info"}
-                  sections={[
-                    {
-                      subtitle: "Follow Up Stage",
-                      detail: viewdetail.followupstage,
-                    },
-                    {
-                      subtitle: "Reference Type",
-                      detail: viewdetail.referencetype,
-                    },
-                    {
-                      subtitle: "Last Contact",
-                      detail: "N/a",
-                    },
-                  ]}
+                  sections={sections4}
                   border="0"
                   width="w-[200px]"
                 />

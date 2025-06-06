@@ -16,6 +16,7 @@ import {
 import { LoginUserFunc } from "../context/loginuser";
 // import LoadingSpinner from '../components/waiting'
 import Combobox from "../components/combobox_morbi";
+import { icon } from "@fortawesome/fontawesome-svg-core";
 
 export const dynamic = "force-dynamic"; // This page should always be revalidated
 
@@ -77,6 +78,24 @@ export default function MorbiOrderPage() {
     setOrders(data);
   };
 
+  function showNotification(title, options = {}) {
+    // Check if browser supports notifications
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notifications.");
+      return;
+    }
+    // Request permission if needed
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, options);
+        }
+      });
+    } else if (Notification.permission === "granted") {
+      new Notification(title, options);
+    }
+  }
+
   useEffect(() => {
     fetchOrders();
 
@@ -98,8 +117,8 @@ export default function MorbiOrderPage() {
     socket.on("disconnect", onDisconnect);
 
     socket.on("fetch-morbi-data", () => {
-      // console.log("For Testing => ");
       fetchOrders();
+
       showNotification("Hello!", {
         body: "This is a test notification",
       });
@@ -428,24 +447,6 @@ export default function MorbiOrderPage() {
 
     saveAs(dataBlob, `${fileName}.xlsx`);
   };
-
-  function showNotification(title, options = {}) {
-    // Check if browser supports notifications
-    if (!("Notification" in window)) {
-      alert("This browser does not support desktop notifications.");
-      return;
-    }
-    // Request permission if needed
-    if (Notification.permission === "default") {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          new Notification(title, options);
-        }
-      });
-    } else if (Notification.permission === "granted") {
-      new Notification(title, options);
-    }
-  }
 
   return (
     <>

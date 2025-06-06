@@ -1,5 +1,6 @@
 // components/Card.js
 export default function InfoCardInput({
+  id,
   title,
   sections,
   width = "w-full max-w-md",
@@ -9,7 +10,9 @@ export default function InfoCardInput({
 }) {
   return (
     <div className={`bg-white ${border} rounded-2xl shadow p-3 ${width}`}>
-      {console.log(" ==>>  ",sections)}
+      {/* {console.log("id  ==>>  ", id)} */}
+      {/* {console.log(" ==>>  ", sections)} */}
+
       <h2 className="font-bold mb-2">{title || "_"}</h2>
       <div className="grid grid-rows-2 gap-2 overflow-hidden">
         {sections.map((section, index) => (
