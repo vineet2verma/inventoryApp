@@ -96,9 +96,13 @@ export default function MorbiOrderPage() {
     }
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
+
     socket.on("fetch-morbi-data", () => {
       // console.log("For Testing => ");
       fetchOrders();
+      showNotification("Hello!", {
+        body: "This is a test notification",
+      });
     });
 
     return () => {
@@ -424,6 +428,24 @@ export default function MorbiOrderPage() {
 
     saveAs(dataBlob, `${fileName}.xlsx`);
   };
+
+  function showNotification(title, options = {}) {
+    // Check if browser supports notifications
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notifications.");
+      return;
+    }
+    // Request permission if needed
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification(title, options);
+        }
+      });
+    } else if (Notification.permission === "granted") {
+      new Notification(title, options);
+    }
+  }
 
   return (
     <>
