@@ -13,6 +13,7 @@ import InfoCard from "@/app/components/card_component";
 import InfoCardInput from "../components/card_input";
 
 export default function CRMClientPage() {
+  const [viewdetail, setviewdetail] = useState({});
   const [isEditable, setIsEditable] = useState(false); //card input button state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
@@ -40,12 +41,19 @@ export default function CRMClientPage() {
     "name",
     "mobile",
     "querytype",
-    "remarks",
     "salesperson",
     "nextfollowdate",
     "followupstage",
     "referencetype",
   ];
+
+  const handleCurrentrow = (index, itemarray) => {
+    console.log("index => ", index);
+    console.log("itemarray => ", itemarray);
+
+    setOpenMenuIndex(openMenuIndex === index ? null : index);
+    setviewdetail(itemarray);
+  };
 
   const handleCardInputChg = (index, value) => {
     // for card component input editable
@@ -200,10 +208,12 @@ export default function CRMClientPage() {
   });
 
   return (
-    <div className="p-6">
+    <div className="m-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">CRM Client Master</h1>
+        <div className="grid grid-cols-2 gap-2">
+          <h1 className="text-2xl font-bold">CRM Client Master</h1>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setShowFilter(!showFilter)}
@@ -293,21 +303,17 @@ export default function CRMClientPage() {
                   <td className="border px-3 py-2 relative">
                     <div className="flex justify-center space-x-2">
                       <button
-                        onClick={() =>
-                          setOpenMenuIndex(
-                            openMenuIndex === index ? null : index
-                          )
-                        }
+                        onClick={() => handleCurrentrow(index, item)}
                         className="text-blue-600"
                       >
                         <GripVertical size={16} />
                       </button>
-                      {/* <button
+                      <button
                         onClick={() => handleEdit(item)}
                         className="text-blue-600"
                       >
                         <Pencil size={16} />
-                      </button> */}
+                      </button>
                     </div>
 
                     {openMenuIndex === index && (
@@ -363,7 +369,7 @@ export default function CRMClientPage() {
       {/* CRUD Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-4xl relative">
+          <div className="bg-white p-2 rounded-lg w-full max-w-4xl relative">
             <button
               onClick={handleCancel}
               className="absolute top-2 right-2 text-gray-500"
@@ -373,39 +379,107 @@ export default function CRMClientPage() {
             <h2 className="text-lg font-semibold mb-4">
               {editingId ? "Edit Client" : "Add New Client"}
             </h2>
-            <form
-              onSubmit={handleSubmit}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
-            >
-              {columns.map((col) => (
-                <div key={col} className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium capitalize">
-                    {col}
-                  </label>
-                  <input
-                    name={col}
-                    value={form[col] || ""}
-                    onChange={handleChange}
-                    className="p-2 border rounded"
-                  />
+            <div className="max-h-[80vh] overflow-auto p-4">
+              <form
+                onSubmit={handleSubmit}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
+                {[
+                  "date",
+                  "name",
+                  "email",
+                  "mobile",
+                  "companyname",
+                  "querytype",
+                  "remarks",
+                  "salesperson",
+                  "nextfollowdate",
+                  "followupstage",
+                  "protentialvalue",
+                  "referencetype",
+                ].map((col) => (
+                  <div key={col} className="flex flex-col">
+                    <label className="mb-1 text-xs font-medium capitalize">
+                      <strong>{col}</strong>
+                    </label>
+                    {col == "date" || col == "nextfollowdate" ? (
+                      <input
+                        name={col}
+                        type="date"
+                        value={form[col] || ""}
+                        onChange={handleChange}
+                        className="p-2 border rounded"
+                      />
+                    ) : col == "mobile" || col == "protentialvalue" ? (
+                      <input
+                        name={col}
+                        type="number"
+                        min={0}
+                        max={999999999}
+                        value={form[col] || ""}
+                        onChange={handleChange}
+                        className="p-2 border rounded"
+                      />
+                    ) : col == "querytype" ? (
+                      <select>
+                        <option disabled>Select Query</option>
+                        {[
+                          "Query One",
+                          "Query Two",
+                          "Query Three",
+                          "Query Four",
+                        ].map((item, index) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    ) : col == "salesperson" ? (
+                      <select>
+                        <option disabled>Select Query</option>
+                        {[
+                          "Sales One",
+                          "Sales Two",
+                          "Sales Three",
+                          "Sales Four",
+                        ].map((item, index) => (
+                          <option value={item}>{item}</option>
+                        ))}
+                      </select>
+                    ) : col == "followupstage" ? (
+                      <select>
+                        <option disabled>Select Query</option>
+                        {["Initial Contact", "Proposal", "Negotiation"].map(
+                          (item, index) => (
+                            <option value={item}>{item}</option>
+                          )
+                        )}
+                      </select>
+                    ) : (
+                      <input
+                        name={col}
+                        value={form[col] || ""}
+                        onChange={handleChange}
+                        className="p-2 border rounded"
+                      />
+                    )}
+                  </div>
+                ))}
+                <div className="col-span-full flex justify-end gap-3 mt-4">
+                  <button
+                    type="submit"
+                    className="bg-green-600 text-white px-4 py-2 rounded"
+                  >
+                    {editingId ? "Update" : "Create"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="bg-gray-500 text-white px-4 py-2 rounded"
+                  >
+                    Cancel
+                  </button>
                 </div>
-              ))}
-              <div className="col-span-full flex justify-end gap-3 mt-4">
-                <button
-                  type="submit"
-                  className="bg-green-600 text-white px-4 py-2 rounded"
-                >
-                  {editingId ? "Update" : "Create"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       )}
@@ -416,7 +490,7 @@ export default function CRMClientPage() {
           <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
             <div className="flex justify-between  ">
               <h2 className="text-xl font-semibold ">
-                {activeModal.toUpperCase()}{" "}
+                {activeModal.toUpperCase()}
               </h2>
               <div className="flex">
                 {modalview && (
@@ -450,14 +524,16 @@ export default function CRMClientPage() {
                 </button>
               </div>
             </div>
+            {/* Modal View Detail */}
             {modalview && (
               <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
+                {console.log(viewdetail)}
                 <InfoCardInput
                   title={"Personal Detail"}
                   sections={[
                     {
                       subtitle: "Name",
-                      detail: "Mr. Abc",
+                      detail: viewdetail.name,
                     },
                     {
                       subtitle: "Email",
@@ -465,7 +541,7 @@ export default function CRMClientPage() {
                     },
                     {
                       subtitle: "Mob",
-                      detail: "+91 98123-45678",
+                      detail: viewdetail.mobile,
                     },
                   ]}
                   editable={isEditable}
@@ -483,7 +559,7 @@ export default function CRMClientPage() {
                     },
                     {
                       subtitle: "Query",
-                      detail: "Price Quota",
+                      detail: viewdetail.querytype,
                     },
                     {
                       subtitle: "Potential",
@@ -519,11 +595,11 @@ export default function CRMClientPage() {
                   sections={[
                     {
                       subtitle: "Follow Up Stage",
-                      detail: "Follow Up",
+                      detail: viewdetail.followupstage,
                     },
                     {
                       subtitle: "Reference Type",
-                      detail: "Referral",
+                      detail: viewdetail.referencetype,
                     },
                     {
                       subtitle: "Last Contact",
@@ -536,6 +612,7 @@ export default function CRMClientPage() {
               </div>
             )}
 
+            {/* Modal Follow Up */}
             {modalfollowup && (
               <div className="grid grid-cols-1 gap-2 ">
                 <newline />

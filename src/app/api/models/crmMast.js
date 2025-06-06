@@ -2,8 +2,8 @@ import * as mongoose from "mongoose";
 
 const crmClientSchema = new mongoose.Schema(
   {
-    date:{ type: String, require: false },
     oid: { type: String, require: false },
+    date:{ type: String, require: false },
     name: { type: String, require: false },
     email: { type: String, require: false },
     mobile: { type: String, require: false },

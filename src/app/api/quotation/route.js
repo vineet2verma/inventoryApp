@@ -29,12 +29,12 @@ export async function POST (req) {
 
   console.log('last Doc => ', lastDoc)
 
-  let lastId = lastDoc?._id
+  let lastId =  17 // lastDoc?._id
 
   console.log('last id => ', lastId)
 
   // console.log('lastDoc', lastDoc)
-  // const currentPrefix = moment().format('YYMMDD') // "202505"
+  const currentPrefix = moment().format('YYMMDD') // "202505"
 
   try {
     const body = await req.json()
