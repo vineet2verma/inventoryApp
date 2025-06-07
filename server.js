@@ -3,7 +3,7 @@ import next from "next";
 import { Server } from "socket.io";
 
 // when using middleware `hostname` and `port` must be provided below
-const app = next({ dev: true });
+const app = next({ dev: false });
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {
