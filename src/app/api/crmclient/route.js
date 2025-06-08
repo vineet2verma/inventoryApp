@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
-import crmclientmast from "@/app/api/models/crmMast"
-
+import crmclientmast from "@/app/api/models/crmMast";
 
 // GET - Read with Pagination
 export async function GET(req) {
@@ -9,13 +8,17 @@ export async function GET(req) {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 20;
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 20;
     const skip = (page - 1) * limit;
 
     const total = await crmclientmast.countDocuments();
     const totalPages = Math.ceil(total / limit);
-    const data = await crmclientmast.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+    const data = await crmclientmast
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
 
     return NextResponse.json({
       success: true,
@@ -26,7 +29,10 @@ export async function GET(req) {
       data,
     });
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 500 }
+    );
   }
 }
 
@@ -36,13 +42,15 @@ export async function POST(req) {
     await connectToDatabase();
     const body = await req.json();
 
-    console.log(body)
-
+    console.log(body);
 
     const created = await crmclientmast.create(body);
     return NextResponse.json({ success: true, data: created });
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 400 }
+    );
   }
 }
 
@@ -53,14 +61,24 @@ export async function PUT(req) {
     const body = await req.json();
     const { _id, ...updates } = body;
 
+    console.log("body => ", body);
+
     if (!_id) {
-      return NextResponse.json({ success: false, error: '_id is required' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "_id is required" },
+        { status: 400 }
+      );
     }
 
-    const updated = await crmclientmast.findByIdAndUpdate(_id, updates, { new: true });
+    const updated = await crmclientmast.findByIdAndUpdate(_id, updates, {
+      new: true,
+    });
     return NextResponse.json({ success: true, data: updated });
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 400 }
+    );
   }
 }
 
@@ -69,15 +87,24 @@ export async function DELETE(req) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
+    const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ success: false, error: 'Missing id' }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Missing id" },
+        { status: 400 }
+      );
     }
 
     await crmclientmast.findByIdAndDelete(id);
-    return NextResponse.json({ success: true, message: 'Deleted successfully' });
+    return NextResponse.json({
+      success: true,
+      message: "Deleted successfully",
+    });
   } catch (err) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: err.message },
+      { status: 400 }
+    );
   }
 }

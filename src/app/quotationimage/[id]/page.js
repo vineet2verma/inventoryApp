@@ -27,35 +27,14 @@ export default function QuotationPage({}) {
   const [btnadditem, setBtnAddItem] = useState(false);
   const [showsubmit, setshowsubmit] = useState(false);
   const [showedit, setShowEdit] = useState(true);
-  const [showimagename, setShowimagename] = useState(true);
-  const [imageinput, setimageinput] = useState(false);
 
-  const handleEdit = (type) => {
-    console.log("edit run");
-
-    if (type == "edit") {
-      setShowEdit(false);
-      setBtnClientDetails(true);
-      setBtnAddItem(true);
-      setBtnCharges(true);
-      setshowsubmit(true);
-      setShowDownload(false);
-    }
-    if (type == "new") {
-      setQuotation({ ...quotation, orderId: "" });
-      setShowEdit(false);
-      setBtnClientDetails(true);
-      setBtnAddItem(true);
-      setBtnCharges(true);
-      setshowsubmit(true);
-      setShowDownload(false);
-    }
-  };
-
-  const handleNew = () => {
-    console.log("New Create");
-    // setQuotation((quotation.orderId = ""));
-    setQuotation({ ...quotation, orderId: "" });
+  const handleEdit = () => {
+    setShowEdit(false);
+    setBtnClientDetails(true);
+    setBtnAddItem(true);
+    setBtnCharges(true);
+    setshowsubmit(true);
+    setShowDownload(false);
   };
 
   useEffect(() => {
@@ -203,8 +182,10 @@ export default function QuotationPage({}) {
       if (!item.price) err.price = "Required";
       return err;
     });
+
     const hasItemError = itemErrors.some((err) => Object.keys(err).length > 0);
     if (hasItemError) newErrors.items = itemErrors;
+
     if (quotation.items.length === 0) {
       newErrors.items = "At least one item is required";
     }
@@ -213,11 +194,12 @@ export default function QuotationPage({}) {
       alert("Please fill all required fields.");
       return;
     }
-    // setLoading(true);
+
+    setLoading(true);
 
     console.log("quotation => ", quotation);
 
-    const method = quotation.orderId == "" ? "POST" : "PUT";
+    const method = "PUT";
     const url = "/api/quotation";
 
     let res = await fetch(url, {
@@ -289,12 +271,12 @@ export default function QuotationPage({}) {
                         <input
                           type="text"
                           className="border w-full px-2 py-1"
-                          value={quotation.clientName.trim()}
+                          value={quotation.clientName}
                           required
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
-                              clientName: e.target.value.trim(),
+                              clientName: e.target.value,
                             })
                           }
                         />
@@ -310,11 +292,11 @@ export default function QuotationPage({}) {
                           type="text"
                           className="border w-full px-2 py-1"
                           required
-                          value={quotation.companyName.trim()}
+                          value={quotation.companyName}
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
-                              companyName: e.target.value.trim(),
+                              companyName: e.target.value,
                             })
                           }
                         />
@@ -330,7 +312,7 @@ export default function QuotationPage({}) {
                           type="text"
                           required
                           className="border w-full px-2 py-1"
-                          value={quotation.saleperson.trim()}
+                          value={quotation.saleperson}
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
@@ -350,11 +332,11 @@ export default function QuotationPage({}) {
                           type="text"
                           required
                           className="border w-full px-2 py-1"
-                          value={quotation.gst.trim()}
+                          value={quotation.gst}
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
-                              gst: e.target.value.trim(),
+                              gst: e.target.value,
                             })
                           }
                         />
@@ -368,11 +350,11 @@ export default function QuotationPage({}) {
                           className="border w-full px-2 py-2 resize-none"
                           required
                           rows={2}
-                          value={quotation.billingAddress.trim()}
+                          value={quotation.billingAddress}
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
-                              billingAddress: e.target.value.trim(),
+                              billingAddress: e.target.value,
                             })
                           }
                         />
@@ -388,11 +370,11 @@ export default function QuotationPage({}) {
                           required
                           className="border w-full px-2 py-2 resize-none"
                           rows={2}
-                          value={quotation.shippingAddress.trim()}
+                          value={quotation.shippingAddress}
                           onChange={(e) =>
                             setQuotation({
                               ...quotation,
-                              shippingAddress: e.target.value.trim(),
+                              shippingAddress: e.target.value,
                             })
                           }
                         />
@@ -453,18 +435,7 @@ export default function QuotationPage({}) {
               {showedit && (
                 <button
                   onClick={() => {
-                    handleEdit("new");
-                  }}
-                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
-                >
-                  New
-                </button>
-              )}
-
-              {showedit && (
-                <button
-                  onClick={() => {
-                    handleEdit("edit");
+                    handleEdit();
                   }}
                   className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
                 >
@@ -502,19 +473,17 @@ export default function QuotationPage({}) {
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Client:
                 </td>
-                <td className="p-2 border border-r">
-                  {quotation.clientName.trim()}
-                </td>
+                <td className="p-2 border border-r">{quotation.clientName}</td>
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Order ID:
                 </td>
                 <td className="p-2 border border-r w-40">
-                  {quotation.orderId.trim()}
+                  {quotation.orderId}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Date:
                 </td>
-                <td className="p-2 border border-r">{quotation.date.trim()}</td>
+                <td className="p-2 border border-r">{quotation.date}</td>
               </tr>
 
               <tr className="border border-gray-300">
@@ -522,18 +491,16 @@ export default function QuotationPage({}) {
                   Company:
                 </td>
                 <td className="p-2 border border-r ">
-                  {quotation.companyName.trim()}
+                  {quotation.companyName}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   GSTIN:
                 </td>
-                <td className="p-2 border border-r">{quotation.gst.trim()}</td>
+                <td className="p-2 border border-r">{quotation.gst}</td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Salesperson:
                 </td>
-                <td className="p-2 border border-r">
-                  {quotation.saleperson.trim()}
-                </td>
+                <td className="p-2 border border-r">{quotation.saleperson}</td>
               </tr>
 
               <tr className="border-b border-gray-300 align-top">
@@ -541,13 +508,13 @@ export default function QuotationPage({}) {
                   Billing Address:
                 </td>
                 <td className="p-2 border border-r text-wrap" colSpan={2}>
-                  {quotation.billingAddress.trim()}
+                  {quotation.billingAddress}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Shipping Address:
                 </td>
                 <td className="p-2 border border-r text-wrap" colSpan={3}>
-                  {quotation.shippingAddress.trim()}
+                  {quotation.shippingAddress}
                 </td>
               </tr>
             </tbody>
@@ -576,13 +543,9 @@ export default function QuotationPage({}) {
                     <div className="flex justify-between max-w-70">
                       <input
                         className="w-[80%]  text-sm"
-                        value={item.description.trim()}
+                        value={item.description}
                         onChange={(e) =>
-                          handleItemChange(
-                            index,
-                            "description",
-                            e.target.value.trim()
-                          )
+                          handleItemChange(index, "description", e.target.value)
                         }
                         placeholder="Description"
                       />
@@ -592,7 +555,7 @@ export default function QuotationPage({}) {
                         </p>
                       )}
 
-                      {showimagename && !showedit && (
+                      {showimagename && (
                         <input
                           type="file"
                           accept="image/*"
@@ -609,11 +572,6 @@ export default function QuotationPage({}) {
                         />
                       )}
                     </div>
-                    {errors.items?.[index]?.description && (
-                      <p className="text-red-500 text-xs">
-                        {errors.items[index].description.trim()}
-                      </p>
-                    )}
                   </td>
                   <td className="border px-2 py-1 max-w-20 ">
                     <input
@@ -621,7 +579,7 @@ export default function QuotationPage({}) {
                       value={item.size}
                       disabled={showedit ? true : false}
                       onChange={(e) =>
-                        handleItemChange(index, "size", e.target.value.trim())
+                        handleItemChange(index, "size", e.target.value)
                       }
                     />
                     {errors.items?.[index]?.size && (

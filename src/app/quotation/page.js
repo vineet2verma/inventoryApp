@@ -19,9 +19,10 @@ export default function QuotationPage() {
 
   const [showCharges, setShowCharges] = useState(false);
   const [showClientModal, setShowClientModal] = useState(false);
-  const [qnumber, setqnumber] = useState("");
+  // const [qnumber, setqnumber] = useState("");
   const [showdownload, setShowDownload] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showimagename, setShowimagename] = useState(true);
 
   const fetchQuotations = async () => {
     const res = await fetch("/api/quotation");
@@ -204,6 +205,24 @@ export default function QuotationPage() {
       alert("Quotation Save Scussfully ");
     } else {
       console.log("failed to post record in quotation ", result);
+    }
+  };
+
+  const imagehandleChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Update the last item in the quotation items array with the image data
+        setQuotation((prev) => {
+          const newItems = [...prev.items];
+          newItems[newItems.length - 1].image = reader.result;
+          console.log("Image URL:", newItems);
+          setShowimagename(false);
+          return { ...prev, items: newItems };
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -427,17 +446,19 @@ export default function QuotationPage() {
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Client:
                 </td>
-                <td className="p-2 border border-r">{quotation.clientName}</td>
+                <td className="p-2 border border-r">
+                  {quotation.clientName.trim()}
+                </td>
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Order ID:
                 </td>
                 <td className="p-2 border border-r w-40">
-                  {quotation.orderId}
+                  {quotation.orderId.trim()}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Date:
                 </td>
-                <td className="p-2 border border-r">{quotation.date}</td>
+                <td className="p-2 border border-r">{quotation.date.trim()}</td>
               </tr>
 
               <tr className="border border-gray-300">
@@ -445,16 +466,18 @@ export default function QuotationPage() {
                   Company:
                 </td>
                 <td className="p-2 border border-r ">
-                  {quotation.companyName}
+                  {quotation.companyName.trim()}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   GSTIN:
                 </td>
-                <td className="p-2 border border-r">{quotation.gst}</td>
+                <td className="p-2 border border-r">{quotation.gst.trim()}</td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Salesperson:
                 </td>
-                <td className="p-2 border border-r">{quotation.saleperson}</td>
+                <td className="p-2 border border-r">
+                  {quotation.saleperson.trim()}
+                </td>
               </tr>
 
               <tr className="border-b border-gray-300 align-top">
@@ -462,13 +485,13 @@ export default function QuotationPage() {
                   Billing Address:
                 </td>
                 <td className="p-2 border border-r text-wrap" colSpan={2}>
-                  {quotation.billingAddress}
+                  {quotation.billingAddress.trim()}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Shipping Address:
                 </td>
                 <td className="p-2 border border-r text-wrap" colSpan={3}>
-                  {quotation.shippingAddress}
+                  {quotation.shippingAddress.trim()}
                 </td>
               </tr>
             </tbody>
@@ -493,25 +516,49 @@ export default function QuotationPage() {
                 <tr key={index}>
                   <td className="border px-2 py-1 text-center">{index + 1}</td>
                   <td className="border px-2 py-1">
-                    <input
-                      className="w-full  px-1 "
-                      value={item.description}
-                      onChange={(e) =>
-                        handleItemChange(index, "description", e.target.value)
-                      }
-                    />
-                    {errors.items?.[index]?.description && (
-                      <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].description}
-                      </p>
-                    )}
+                    <div className="flex justify-between max-w-70">
+                      <input
+                        className="w-[80%]  text-sm"
+                        value={item.description.trim()}
+                        onChange={(e) =>
+                          handleItemChange(
+                            index,
+                            "description",
+                            e.target.value.trim()
+                          )
+                        }
+                        placeholder="Description"
+                      />
+                      {errors.items?.[index]?.description.trim() && (
+                        <p className="text-red-500 text-xs text-center">
+                          {errors.items[index].description.trim()}
+                        </p>
+                      )}
+
+                      {showimagename && (
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={imagehandleChange}
+                          className="w-[30%]  text-gray-700"
+                        />
+                      )}
+
+                      {item.image && (
+                        <img
+                          src={item.image}
+                          alt="Item"
+                          className="w-18 h-18 justify-end border rounded"
+                        />
+                      )}
+                    </div>
                   </td>
                   <td className="border px-2 py-1 max-w-20 ">
                     <input
                       className="w-full  px-1 text-center "
-                      value={item.size}
+                      value={item.size.trim()}
                       onChange={(e) =>
-                        handleItemChange(index, "size", e.target.value)
+                        handleItemChange(index, "size", e.target.value.trim())
                       }
                     />
                     {errors.items?.[index]?.size && (
@@ -524,14 +571,18 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full  px-1 text-center"
-                      value={item.qtypersqft}
+                      value={item.qtypersqft.trim()}
                       onChange={(e) =>
-                        handleItemChange(index, "qtypersqft", e.target.value)
+                        handleItemChange(
+                          index,
+                          "qtypersqft",
+                          e.target.value.trim()
+                        )
                       }
                     />
                     {errors.items?.[index]?.qtypersqft && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].qtypersqft}
+                        {errors.items[index].qtypersqft.trim()}
                       </p>
                     )}
                   </td>
@@ -539,14 +590,18 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full  px-1 text-center"
-                      value={item.qtyperbox}
+                      value={item.qtyperbox.trim()}
                       onChange={(e) =>
-                        handleItemChange(index, "qtyperbox", e.target.value)
+                        handleItemChange(
+                          index,
+                          "qtyperbox",
+                          e.target.value.trim()
+                        )
                       }
                     />
-                    {errors.items?.[index]?.qtyperbox && (
+                    {errors.items?.[index]?.qtyperbox.trim() && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].qtyperbox}
+                        {errors.items[index].qtyperbox.trim()}
                       </p>
                     )}
                   </td>
@@ -555,19 +610,19 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full px-1 text-center"
-                      value={item.price}
+                      value={item.price.trim()}
                       onChange={(e) =>
-                        handleItemChange(index, "price", e.target.value)
+                        handleItemChange(index, "price", e.target.value.trim())
                       }
                     />
                     {errors.items?.[index]?.price && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].price}
+                        {errors.items[index].price.trim()}
                       </p>
                     )}
                   </td>
                   <td className="border px-2 py-1  text-right">
-                    ₹{(item.qtypersqft * item.price).toFixed(2)}
+                    ₹{(item.qtypersqft.trim() * item.price.trim()).toFixed(2)}
                   </td>
                   <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
                     <button

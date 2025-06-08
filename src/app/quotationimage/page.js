@@ -2,13 +2,15 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { LoginUserFunc } from "../context/loginuser";
-import { House } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { House, ArrowBigLeft } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
 
 export default function QuotationPage() {
   const [loading, setloading] = useState(false);
+  const params = useParams();
+  const orderId = params.id;
   const router = useRouter();
   const { user } = LoginUserFunc();
   // const converter = require('number-to-words');
@@ -16,12 +18,17 @@ export default function QuotationPage() {
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
-
   const [showCharges, setShowCharges] = useState(false);
   const [showClientModal, setShowClientModal] = useState(false);
-  const [showimagename, setShowimagename] = useState(true);
-  const [showdownload, setShowDownload] = useState(false);
   const [errors, setErrors] = useState({});
+  const [btnclientDetails, setBtnClientDetails] = useState(false);
+  const [btnCharges, setBtnCharges] = useState(false);
+  const [btnadditem, setBtnAddItem] = useState(false);
+  const [showsubmit, setshowsubmit] = useState(false);
+  const [showedit, setShowEdit] = useState(true);
+
+  const [showdownload, setShowDownload] = useState(false);
+  const [showimagename, setShowimagename] = useState(true);
 
   const fetchQuotations = async () => {
     const res = await fetch("/api/quotation");

@@ -11,13 +11,10 @@ import {
 import { useEffect, useState, useRef } from "react";
 import InfoCard from "@/app/components/card_component";
 import InfoCardInput from "../components/card_input";
-
+//
 export default function CRMClientPage() {
   const [viewdetail, setviewdetail] = useState({});
-  const [sections1, setSections1] = useState([]);
-  const [sections2, setSections2] = useState([]);
-  const [sections3, setSections3] = useState([]);
-  const [sections4, setSections4] = useState([]);
+  const [sections, setSections] = useState({});
 
   const [isEditable, setIsEditable] = useState(false); //card input button state
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
@@ -29,7 +26,6 @@ export default function CRMClientPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 10; // Number of items per page
-
   const [data, setData] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
@@ -56,77 +52,80 @@ export default function CRMClientPage() {
     console.log("index => ", index);
     console.log("itemarray => ", itemarray);
 
-    setSections1([
-      {
-        subtitle: "Name",
-        detail: itemarray.name,
-      },
-      {
-        subtitle: "Email",
-        detail: "abc@gmail.com",
-      },
-      {
-        subtitle: "Mob",
-        detail: itemarray.mobile,
-      },
-    ]);
-    setSections2([
-      {
-        subtitle: "Company",
-        detail: "Abc Ltd",
-      },
-      {
-        subtitle: "Query",
-        detail: itemarray.querytype,
-      },
-      {
-        subtitle: "Potential",
-        detail: "N/a",
-      },
-    ]);
-    setSections3([
-      {
-        subtitle: "Company",
-        detail: "Abc Ltd",
-      },
-      {
-        subtitle: "Query",
-        detail: "Price Quota",
-      },
-      {
-        subtitle: "Potential",
-        detail: "N/a",
-      },
-    ]);
-    setSections4([
-      {
-        subtitle: "Follow Up Stage",
-        detail: viewdetail.followupstage,
-      },
-      {
-        subtitle: "Reference Type",
-        detail: viewdetail.referencetype,
-      },
-      {
-        subtitle: "Last Contact",
-        detail: "N/a",
-      },
-    ]);
+    const mergedSections = [
+      [
+        {
+          key: "name",
+          subtitle: "Name",
+          detail: itemarray.name,
+        },
+        {
+          key: "email",
+          subtitle: "Email",
+          detail: "abc@gmail.com",
+        },
+        {
+          key: "mobile",
+          subtitle: "Mob",
+          detail: itemarray.mobile,
+        },
+      ],
+      [
+        {
+          key: "companyname",
+          subtitle: "Company",
+          detail: "Abc Ltd",
+        },
+        {
+          key: "query",
+          subtitle: "Query",
+          detail: itemarray.querytype,
+        },
+        {
+          key: "potential",
+          subtitle: "Potential",
+          detail: "N/a",
+        },
+      ],
+      [
+        {
+          key: "companyname",
+          subtitle: "Company",
+          detail: "Abc Ltd",
+        },
+        {
+          key: "query",
+          subtitle: "Query",
+          detail: "Price Quota",
+        },
+        {
+          key: "potential",
+          subtitle: "Potential",
+          detail: "N/a",
+        },
+      ],
+      [
+        {
+          key: "",
+          subtitle: "Follow Up Stage",
+          detail: viewdetail.followupstage,
+        },
+        {
+          key: "",
+          subtitle: "Reference Type",
+          detail: viewdetail.referencetype,
+        },
+        {
+          key: "",
+          subtitle: "Last Contact",
+          detail: "N/a",
+        },
+      ],
+    ];
 
+    setSections(mergedSections);
     setOpenMenuIndex(openMenuIndex === index ? null : index);
     setviewdetail(itemarray);
-  };
-
-  const handleCardInputChg = (section, index, value) => {
-    console.log("index =>  ", index);
-    console.log("value =>  ", value);
-    console.log("section", section);
-
-    // for card component input editable
-    const updated = (section = "section1" ? [...sections1] : [...sections2]);
-    console.log("updated =>  ", updated);
-    updated[index].detail = value;
-    section = "section1" ? setSections1(updated) : setSections2(updated);
   };
 
   const handleprev = () => {
@@ -193,6 +192,10 @@ export default function CRMClientPage() {
     fetchData(currentPage);
   }, []);
 
+  const handletypeChange = (e) => {
+    setviewdetail({ ...viewdetail, [e.target.name]: e.target.value });
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -223,8 +226,10 @@ export default function CRMClientPage() {
   };
 
   const handleDelete = async (id) => {
-    const res = await fetch(`/api/crmclient?id=${id}`, { method: "DELETE" });
-    if (res.ok) fetchData(currentPage);
+    if (confirm("Are You Sure Want to Delete ?? ")) {
+      const res = await fetch(`/api/crmclient?id=${id}`, { method: "DELETE" });
+      if (res.ok) fetchData(currentPage);
+    }
   };
 
   const handleCancel = () => {
@@ -273,6 +278,24 @@ export default function CRMClientPage() {
       matchesSearch
     );
   });
+
+  async function handleviewsave() {
+    console.log("updated section data", viewdetail);
+
+    const req = await fetch("/api/crmclient", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(viewdetail),
+    });
+
+    const resp = await req.json();
+
+    fetchData();
+
+    if (resp.success) {
+      alert("Data Updated Sucessfully");
+    }
+  }
 
   return (
     <div className="m-6">
@@ -407,7 +430,10 @@ export default function CRMClientPage() {
                           </div>
                         </button>
                         <button
-                          onClick={() => openModal("Delete")}
+                          onClick={() => {
+                            handleDelete(item._id);
+                          }}
+                          // onClick={() => openModal("Delete")}
                           className="w-full text-left px-4 py-2 hover:bg-gray-100"
                         >
                           <div className="flex">
@@ -602,42 +628,45 @@ export default function CRMClientPage() {
             {/* Modal View Detail */}
             {modalview && (
               <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
-                {console.log(viewdetail)}
-
                 <InfoCardInput
                   title={"Personal Detail"}
-                  sections={sections1}
+                  sections={sections}
                   editable={isEditable}
-                  onChange={(e) => {
-                    handleCardInputChg("sections1");
-                  }}
+                  setSections={setSections}
+                  data={viewdetail}
+                  id={0}
+                  setviewdetail={setviewdetail}
                   width="w-[200px]"
                   border="0"
                 />
 
                 <InfoCardInput
-                  id={viewdetail._id}
                   title={"Company Info"}
-                  sections={sections2}
+                  sections={sections}
+                  setSections={setSections}
+                  id={1}
                   width="w-[200px]"
                   border="0"
                   editable={isEditable}
-                  onChange={(e) => {
-                    handleCardInputChg("section2");
-                  }}
+                  data={viewdetail}
+                  setviewdetail={setviewdetail}
                 />
 
                 <InfoCard
+                  id={2}
                   title={"Lead Info"}
-                  sections={sections3}
+                  sections={sections}
                   width="w-[200px]"
                   border="0"
+                  setviewdetail={setviewdetail}
                 />
                 <InfoCard
+                  id={3}
                   title={"Other Info"}
-                  sections={sections4}
+                  sections={sections}
                   border="0"
                   width="w-[200px]"
+                  setviewdetail={setviewdetail}
                 />
               </div>
             )}
@@ -648,19 +677,26 @@ export default function CRMClientPage() {
                 <newline />
                 <p className="px-2 bg-gray-800 text-white">Lead Type</p>
                 <div className="flex justify-around">
-                  {["One", "Two", "Three"].map((item) => (
+                  {["Hot", "Warm", "Cold"].map((item) => (
                     <label>
-                      <input className="mx-2" type="radio" value="option1" />
+                      <input
+                        name="leadtype"
+                        className="mx-2"
+                        defaultChecked={item.leadtype}
+                        type="radio"
+                        value={item}
+                        onChange={handletypeChange}
+                      />
                       {item}
                     </label>
                   ))}
                 </div>
-
                 <div>
                   <div className="bg-gray-200 grid grid-cols-2 gap-2 border rounded">
                     <button className="px-2 " onClick={() => {}}>
                       <strong>Schedule Follow Up</strong>
                     </button>
+
                     <button className="px-2 " onClick={() => {}}>
                       <strong>Lead Clossing</strong>
                     </button>
@@ -672,14 +708,36 @@ export default function CRMClientPage() {
                       (item) => (
                         <label>
                           <input
+                            name="followupstage"
                             className="mx-2"
                             type="radio"
-                            value="option1"
+                            value={item}
+                            onChange={handletypeChange}
                           />
                           {item}
                         </label>
                       )
                     )}
+                  </div>
+                  <div className="flex justify-between">
+                    <input
+                      type="date"
+                      name="nextfollowdate"
+                      onChange={handletypeChange}
+                    />
+                    <input type="time" name="time" />
+                  </div>
+                  <div>
+                    <select name="followupType" onChange={handletypeChange}>
+                      {["Call", "Whatapp", "Email"].map((item) => (
+                        <option value={item}>{item}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <textarea name="remarks" rows={3}>
+                      Remarks
+                    </textarea>
                   </div>
                 </div>
               </div>
