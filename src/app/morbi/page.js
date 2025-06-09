@@ -16,7 +16,7 @@ import {
 import { LoginUserFunc } from "../context/loginuser";
 // import LoadingSpinner from '../components/waiting'
 import Combobox from "../components/combobox_morbi";
-import { icon } from "@fortawesome/fontawesome-svg-core";
+// import { icon } from "@fortawesome/fontawesome-svg-core";
 
 export const dynamic = "force-dynamic"; // This page should always be revalidated
 
@@ -450,25 +450,22 @@ export default function MorbiOrderPage() {
 
   return (
     <>
-      <div className="pl-20">
-        <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-        <p>Transport: {transport}</p>
-      </div>
-
       {rightread && (
         <div className="p-4 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 ">
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="flex justify-center items-center gap-2 text-xs px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full lg:max-w-[50%]  "
-            >
-              <House className="w-6 h-5" />
-              Home
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="flex justify-center items-center gap-2 text-xs px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full lg:max-w-[50%]  "
+              >
+                <House className="w-6 h-5" />
+                Home
+              </button>
 
-            <h1 className="text-center md:text-left text-2xl font-bold   ">
-              Morbi Order Management
-            </h1>
+              <h1 className="text-center md:text-left text-2xl font-bold   ">
+                Morbi
+              </h1>
+            </div>
 
             <div
               className={
@@ -477,40 +474,45 @@ export default function MorbiOrderPage() {
                   : "flex gap-2 rounded-xl justify-end "
               }
             >
-              <button
-                className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                onClick={() => {
-                  showfilter ? setshowfilter(false) : setshowfilter(true);
-                }}
-              >
-                {showfilter ? "Hide Filter" : "Show Filter"}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                  onClick={() => {
+                    showfilter ? setshowfilter(false) : setshowfilter(true);
+                  }}
+                >
+                  {showfilter ? "Hide Filter" : "Show Filter"}
+                </button>
 
-              {(user.user.role == "admin" || user.user.name == "Ankush") && (
-                <button
-                  onClick={() => handledownload()}
-                  className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                >
-                  Download
-                </button>
-              )}
+                {(user.user.role == "admin" || user.user.name == "Ankush") && (
+                  <button
+                    onClick={() => handledownload()}
+                    className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                  >
+                    Download
+                  </button>
+                )}
+              </div>
 
-              {rightcreate && (
-                <button
-                  onClick={() => handleNewOrder(0)}
-                  className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                >
-                  + Design Mast
-                </button>
-              )}
-              {rightcreate && (
-                <button
-                  onClick={() => handleNewOrder(1)}
-                  className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                >
-                  + New Order
-                </button>
-              )}
+              <div className="flex gap-2">
+                {rightcreate && (
+                  <button
+                    onClick={() => handleNewOrder(0)}
+                    className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                  >
+                    + Design Mast
+                  </button>
+                )}
+
+                {rightcreate && (
+                  <button
+                    onClick={() => handleNewOrder(1)}
+                    className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                  >
+                    + New Order
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
