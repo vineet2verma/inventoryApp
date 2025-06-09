@@ -60,7 +60,7 @@ export default function QuotationPage() {
         description: "Tile A",
         size: "2x2",
         qtypersqft: "",
-        qtyperbox: "",
+        qtyperbox: 0,
         price: "",
       },
     ],
