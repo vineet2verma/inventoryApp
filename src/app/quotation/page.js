@@ -121,21 +121,24 @@ export default function QuotationPage() {
     afterDiscount +
     gstAmt +
     Number(quotation.cuttingCharges || 0) +
+    Number(quotation.cuttingCharges*quotation.gstRate/100 || 0) +
     Number(quotation.cartageCharges || 0) +
-    Number(quotation.packingCharges || 0);
+    Number(quotation.cartageCharges*quotation.gstRate/100 || 0) +
+    Number(quotation.packingCharges || 0) +
+    Number(quotation.packingCharges*quotation.gstRate/100 || 0);
 
   const handlemodelSubmit = () => {
     const newErrors = {};
-    if (!quotation.clientName.trim())
+    if (!quotation.clientName)
       newErrors.clientName = "Client Name is required";
-    if (!quotation.companyName.trim())
+    if (!quotation.companyName)
       newErrors.companyName = "Company Name is required";
-    if (!quotation.saleperson.trim())
+    if (!quotation.saleperson)
       newErrors.saleperson = "Salesperson is required";
-    if (!quotation.gst.trim()) newErrors.gst = "GSTIN is required";
-    if (!quotation.billingAddress.trim())
+    if (!quotation.gst) newErrors.gst = "GSTIN is required";
+    if (!quotation.billingAddress)
       newErrors.billingAddress = "Billing Address is required";
-    if (!quotation.shippingAddress.trim())
+    if (!quotation.shippingAddress)
       newErrors.shippingAddress = "Shipping Address is required";
 
     setErrors(newErrors);
@@ -151,25 +154,24 @@ export default function QuotationPage() {
 
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!quotation.clientName.trim())
+    if (!quotation.clientName)
       newErrors.clientName = "Client Name is required";
-    if (!quotation.companyName.trim())
+    if (!quotation.companyName)
       newErrors.companyName = "Company Name is required";
-    if (!quotation.saleperson.trim())
+    if (!quotation.saleperson)
       newErrors.saleperson = "Salesperson is required";
-    if (!quotation.gst.trim()) newErrors.gst = "GSTIN is required";
-    if (!quotation.billingAddress.trim())
+    if (!quotation.gst) newErrors.gst = "GSTIN is required";
+    if (!quotation.billingAddress)
       newErrors.billingAddress = "Billing Address is required";
-    if (!quotation.shippingAddress.trim())
+    if (!quotation.shippingAddress)
       newErrors.shippingAddress = "Shipping Address is required";
 
     const itemErrors = quotation.items.map((item) => {
       const err = {};
-      if (!item.description.trim()) err.description = "Required";
-      if (!item.size.trim()) err.size = "Required";
+      if (!item.description) err.description = "Required";
+      if (!item.size) err.size = "Required";
       if (!item.qtypersqft) err.qtypersqft = "Required";
       if (!item.price) err.price = "Required";
-      if (!item.qtyperbox) err.qtyperbox = "Required";
       if (!item.price) err.price = "Required";
       return err;
     });
@@ -443,12 +445,13 @@ export default function QuotationPage() {
           <table className="w-full text-sm border border-gray-300 mb-4">
             <tbody>
               <tr className="border border-gray-300 align-top">
-                <td className="p-2 border border-r text-xs font-semibold ">
-                  Client:
+                <td className="p-2 border border-r text-xs font-semibold">
+                  Company:
                 </td>
-                <td className="p-2 border border-r">
-                  {quotation.clientName.trim()}
+                <td className="p-2 border border-r ">
+                  {quotation.companyName.trim()}
                 </td>
+
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Order ID:
                 </td>
@@ -462,12 +465,13 @@ export default function QuotationPage() {
               </tr>
 
               <tr className="border border-gray-300">
-                <td className="p-2 border border-r text-xs font-semibold">
-                  Company:
+                <td className="p-2 border border-r text-xs font-semibold ">
+                  Client:
                 </td>
-                <td className="p-2 border border-r ">
-                  {quotation.companyName.trim()}
+                <td className="p-2 border border-r">
+                  {quotation.clientName.trim()}
                 </td>
+
                 <td className="p-2 border border-r text-xs font-semibold">
                   GSTIN:
                 </td>
@@ -529,9 +533,9 @@ export default function QuotationPage() {
                         }
                         placeholder="Description"
                       />
-                      {errors.items?.[index]?.description.trim() && (
+                      {errors.items?.[index]?.description && (
                         <p className="text-red-500 text-xs text-center">
-                          {errors.items[index].description.trim()}
+                          {errors.items[index].description}
                         </p>
                       )}
 
@@ -570,38 +574,30 @@ export default function QuotationPage() {
                   <td className="border px-2 py-1 max-w-15">
                     <input
                       type="number"
-                      className="w-full  px-1 text-center"
-                      value={item.qtypersqft.trim()}
+                      className="w-full px-1 text-center"
+                      value={item.qtypersqft ?? ""}
                       onChange={(e) =>
-                        handleItemChange(
-                          index,
-                          "qtypersqft",
-                          e.target.value.trim()
-                        )
+                        handleItemChange(index, "qtypersqft", e.target.value)
                       }
                     />
                     {errors.items?.[index]?.qtypersqft && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].qtypersqft.trim()}
+                        {errors.items[index].qtypersqft}
                       </p>
                     )}
                   </td>
                   <td className="border px-2 py-1 max-w-15">
                     <input
                       type="number"
-                      className="w-full  px-1 text-center"
-                      value={item.qtyperbox.trim()}
+                      className="w-full px-1 text-center"
+                      value={item.qtyperbox}
                       onChange={(e) =>
-                        handleItemChange(
-                          index,
-                          "qtyperbox",
-                          e.target.value.trim()
-                        )
+                        handleItemChange(index, "qtyperbox", e.target.value)
                       }
                     />
-                    {errors.items?.[index]?.qtyperbox.trim() && (
+                    {errors.items?.[index]?.qtyperbox && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].qtyperbox.trim()}
+                        {errors.items[index].qtyperbox}
                       </p>
                     )}
                   </td>
@@ -610,19 +606,22 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full px-1 text-center"
-                      value={item.price.trim()}
+                      value={item.price ?? ""}
                       onChange={(e) =>
                         handleItemChange(index, "price", e.target.value.trim())
                       }
                     />
                     {errors.items?.[index]?.price && (
                       <p className="text-red-500 text-xs text-center">
-                        {errors.items[index].price.trim()}
+                        {errors.items[index].price}
                       </p>
                     )}
                   </td>
                   <td className="border px-2 py-1  text-right">
-                    ₹{(item.qtypersqft.trim() * item.price.trim()).toFixed(2)}
+                    ₹
+                    {(
+                      (Number(item.qtypersqft) || 0) * (Number(item.price) || 0)
+                    ).toFixed(2)}
                   </td>
                   <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
                     <button
@@ -697,13 +696,31 @@ export default function QuotationPage() {
                 </div>
               )}
               {quotation.cuttingCharges > 0 && (
-                <div>Cutting Charges: ₹{quotation.cuttingCharges}</div>
+                <div>
+                  Cutting Charges: ₹
+                  {parseFloat(quotation.cuttingCharges) +
+                    parseFloat(
+                      (quotation.cuttingCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               {quotation.cartageCharges > 0 && (
-                <div>Cartage Charges: ₹{quotation.cartageCharges}</div>
+                <div>
+                  Cartage Charges: ₹
+                  {parseFloat(quotation.cartageCharges) +
+                    parseFloat(
+                      (quotation.cartageCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               {quotation.packingCharges > 0 && (
-                <div>Packing Charges: ₹{quotation.packingCharges}</div>
+                <div>
+                  Packing Charges: ₹
+                  {parseFloat(quotation.packingCharges) +
+                    parseFloat(
+                      (quotation.packingCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               <div className="text-lg font-bold">
                 Grand Total: ₹{grandTotal.toFixed(2)}
