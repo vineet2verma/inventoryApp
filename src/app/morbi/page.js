@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
 import { socket } from "@/socket"; // "../socket";
-
 import * as XLSX from "xlsx";
 import moment from "moment";
 import { useRouter } from "next/navigation";
@@ -14,9 +12,8 @@ import {
   TruckElectric,
 } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
-// import LoadingSpinner from '../components/waiting'
+import LoadingSpinner from "../components/waiting";
 import Combobox from "../components/combobox_morbi";
-// import { icon } from "@fortawesome/fontawesome-svg-core";
 
 export const dynamic = "force-dynamic"; // This page should always be revalidated
 
@@ -30,7 +27,7 @@ export default function MorbiOrderPage() {
 
   const router = useRouter();
   const { user } = LoginUserFunc();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [rightread, setrightread] = useState(false);
   const [rightcreate, setrightcreate] = useState(false);
@@ -100,6 +97,7 @@ export default function MorbiOrderPage() {
     console.log(data);
     setOrders(data.records);
     setTotalPages(data.totalPages);
+    setLoading(false);
   };
 
   function showNotification(title, options = {}) {
@@ -121,6 +119,7 @@ export default function MorbiOrderPage() {
   }
 
   useEffect(() => {
+    setLoading(true);
     fetchOrders();
 
     if (socket.connected) {
@@ -474,250 +473,177 @@ export default function MorbiOrderPage() {
 
   return (
     <>
-      {rightread && (
-        <div className="p-4 max-w-7xl mx-auto ">
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
-              <div className="grid grid-cols-2 gap-2 ">
-                <button
-                  onClick={() => router.push("/dashboard")}
-                  className="flex justify-center items-center gap-2 text-xs px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full lg:max-w-[50%]  "
-                >
-                  <House className="w-6 h-5" />
-                  Home
-                </button>
-
-                <h1 className="text-2xl text-center font-bold ">Morbi</h1>
-              </div>
-
-              <div
-                className={
-                  rightcreate
-                    ? "grid grid-cols-1 md:flex gap-2 justify-end "
-                    : "flex gap-2 rounded-xl justify-end "
-                }
-              >
-                <div className="grid grid-cols-2 gap-2">
+      {loading ? (
+        <LoadingSpinner />
+      ) : (
+        rightread && (
+          <div className="p-4 max-w-7xl mx-auto ">
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+                <div className="grid grid-cols-2 gap-2 ">
                   <button
-                    className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                    onClick={() => {
-                      showfilter ? setshowfilter(false) : setshowfilter(true);
-                    }}
+                    onClick={() => router.push("/dashboard")}
+                    className="flex justify-center items-center gap-2 text-xs px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full lg:max-w-[50%]  "
                   >
-                    {showfilter ? "Hide Filter" : "Show Filter"}
+                    <House className="w-6 h-5" />
+                    Home
                   </button>
 
-                  {(user.user.role == "admin" ||
-                    user.user.name == "Ankush") && (
-                    <button
-                      onClick={() => handledownload()}
-                      className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                    >
-                      Download
-                    </button>
-                  )}
+                  <h1 className="text-2xl text-center font-bold ">Morbi</h1>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  {rightcreate && (
-                    <button
-                      onClick={() => handleNewOrder(0)}
-                      className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                    >
-                      + Design Mast
-                    </button>
-                  )}
+                <div
+                  className={
+                    rightcreate
+                      ? "grid grid-cols-1 md:flex gap-2 justify-end "
+                      : "flex gap-2 rounded-xl justify-end "
+                  }
+                >
+                  <div
+                    className={
+                      user.user.role == "admin" || user.user.name == "purchase"
+                        ? "grid grid-cols-2 gap-2"
+                        : "grid grid-cols-1 gap-2"
+                    }
+                  >
+                    {(user.user.role == "admin" ||
+                      user.user.name == "purchase") && (
+                      <button
+                        onClick={() => handledownload()}
+                        className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                      >
+                        Download
+                      </button>
+                    )}
 
-                  {rightcreate && (
                     <button
-                      onClick={() => handleNewOrder(1)}
                       className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                      onClick={() => {
+                        showfilter ? setshowfilter(false) : setshowfilter(true);
+                      }}
                     >
-                      + New Order
+                      {showfilter ? "Hide Filter" : "Show Filter"}
                     </button>
-                  )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {rightcreate && (
+                      <button
+                        onClick={() => handleNewOrder(0)}
+                        className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                      >
+                        + Design Mast
+                      </button>
+                    )}
+
+                    {rightcreate && (
+                      <button
+                        onClick={() => handleNewOrder(1)}
+                        className="bg-blue-600 text-white text-xs px-2 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                      >
+                        + New Order
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {showfilter && (
-              <div className="my-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.keys(filters).map((key) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium capitalize mb-1">
-                      Filter by {key}
-                    </label>
-                    {renderFilterInput(key)}
+              {showfilter && (
+                <div className="my-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.keys(filters).map((key) => (
+                    <div key={key}>
+                      <label className="block text-sm font-medium capitalize mb-1">
+                        Filter by {key}
+                      </label>
+                      {renderFilterInput(key)}
 
-                    {/* <label className="block text-sm font-medium capitalize mb-1">
+                      {/* <label className="block text-sm font-medium capitalize mb-1">
                     Filter by {key}
                   </label> */}
-                    {/* <input
+                      {/* <input
                     type="text"
                     name={key}
                     value={filters[key]}
                     onChange={handleFilterChange}
                     className="border p-2 rounded w-full"
                   /> */}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {toast && (
-              <div
-                className={`p-2 rounded text-white ${
-                  toast.type === "error" ? "bg-red-500" : "bg-green-500"
-                }`}
-              >
-                {toast.message}
-              </div>
-            )}
-
-            {modalOpen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
-                <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
-                  <button
-                    onClick={() => {
-                      setModalOpen(false);
-                      setEditingId(null);
-                    }}
-                    className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
-                  >
-                    ✕
-                  </button>
-                  <h2 className="text-lg font-bold mb-4">
-                    {editingId ? "Edit" : "New"} Order
-                  </h2>
-                  <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  >
-                    {[
-                      "tilename",
-                      "coname",
-                      "size",
-                      "qty",
-                      "customername",
-                      "location",
-                      "orderconfirmation",
-                      "salesmanremarks",
-                    ].map((key) => (
-                      <div key={key}>
-                        <label className="block text-sm font-medium capitalize">
-                          {key}
-                        </label>
-                        {key == "tilename" ? (
-                          <Combobox
-                            formData={formData}
-                            setFormData={setFormData}
-                            setsizearray={setsizearray}
-                          />
-                        ) : key == "coname" ? (
-                          <input
-                            type="text"
-                            name={key}
-                            required={key !== "coname"}
-                            value={formData[key]}
-                            onChange={handleChange}
-                            className="mt-1 p-2 border w-full rounded"
-                          />
-                        ) : key == "size" ? (
-                          <select
-                            name={key}
-                            onChange={handleChange}
-                            className="mt-1 p-2 border w-full rounded"
-                          >
-                            <option value="">Select Size</option>
-                            {sizearray.map((size, index) => (
-                              <option key={index} value={size}>
-                                {size}
-                              </option>
-                            ))}
-                          </select>
-                        ) : key == "qty" ? (
-                          <input
-                            type={key.includes("qty") ? "number" : "text"}
-                            name={key}
-                            value={formData[key]}
-                            onChange={handleChange}
-                            required={key !== "salesmanremarks"}
-                            className="mt-1 p-2 border w-full rounded"
-                          />
-                        ) : key == "orderconfirmation" ? (
-                          <select
-                            type="text"
-                            name={key}
-                            value={formData[key]}
-                            onChange={handleChange}
-                            className="mt-1 p-2 border w-full rounded"
-                          >
-                            <option value="Flow Up">Query</option>
-                            <option value="Yes">Yes</option>
-                            <option value="Cancel">Cancel</option>
-                          </select>
-                        ) : (
-                          <input
-                            type={key.includes("date") ? "date" : "text"}
-                            name={key}
-                            value={formData[key]}
-                            onChange={handleChange}
-                            required={key !== "salesmanremarks"}
-                            className="mt-1 p-2 border w-full rounded"
-                          />
-                        )}
-                      </div>
-                    ))}
-                    <div className="col-span-1 sm:col-span-2">
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                      >
-                        {editingId ? "Update" : "Create"} Order
-                      </button>
                     </div>
-                  </form>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            {modal1Open && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
-                <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
-                  <button
-                    onClick={() => {
-                      setModal1Open(false);
-                      setEditingId(null);
-                    }}
-                    className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
-                  >
-                    ✕
-                  </button>
-                  <h2 className="text-lg font-bold mb-4">
-                    {editingId ? "Edit" : "New"} Order
-                  </h2>
-                  <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  >
-                    {Object.keys(formData).map((key) =>
-                      key != "_id" &&
-                      key != "date" &&
-                      key != "createdAt" &&
-                      key != "updatedAt" &&
-                      key != "__v" &&
-                      key != "availability" &&
-                      key != "readydate" &&
-                      key != "transitdate" &&
-                      key != "salesman" &&
-                      key != "deliverydate" &&
-                      key != "remarks" ? (
+              {toast && (
+                <div
+                  className={`p-2 rounded text-white ${
+                    toast.type === "error" ? "bg-red-500" : "bg-green-500"
+                  }`}
+                >
+                  {toast.message}
+                </div>
+              )}
+
+              {modalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
+                  <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
+                    <button
+                      onClick={() => {
+                        setModalOpen(false);
+                        setEditingId(null);
+                      }}
+                      className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
+                    >
+                      ✕
+                    </button>
+                    <h2 className="text-lg font-bold mb-4">
+                      {editingId ? "Edit" : "New"} Order
+                    </h2>
+                    <form
+                      onSubmit={handleSubmit}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    >
+                      {[
+                        "tilename",
+                        "coname",
+                        "size",
+                        "qty",
+                        "customername",
+                        "location",
+                        "orderconfirmation",
+                        "salesmanremarks",
+                      ].map((key) => (
                         <div key={key}>
                           <label className="block text-sm font-medium capitalize">
                             {key}
                           </label>
-                          {key == "qty" ? (
+                          {key == "tilename" ? (
+                            <Combobox
+                              formData={formData}
+                              setFormData={setFormData}
+                              setsizearray={setsizearray}
+                            />
+                          ) : key == "coname" ? (
+                            <input
+                              type="text"
+                              name={key}
+                              required={key !== "coname"}
+                              value={formData[key]}
+                              onChange={handleChange}
+                              className="mt-1 p-2 border w-full rounded"
+                            />
+                          ) : key == "size" ? (
+                            <select
+                              name={key}
+                              onChange={handleChange}
+                              className="mt-1 p-2 border w-full rounded"
+                            >
+                              <option value="">Select Size</option>
+                              {sizearray.map((size, index) => (
+                                <option key={index} value={size}>
+                                  {size}
+                                </option>
+                              ))}
+                            </select>
+                          ) : key == "qty" ? (
                             <input
                               type={key.includes("qty") ? "number" : "text"}
                               name={key}
@@ -744,272 +670,333 @@ export default function MorbiOrderPage() {
                               name={key}
                               value={formData[key]}
                               onChange={handleChange}
-                              required={
-                                key !== "salesmanremarks" &&
-                                key !== "coname" &&
-                                key !== "orderconfirmation"
-                              }
+                              required={key !== "salesmanremarks"}
                               className="mt-1 p-2 border w-full rounded"
                             />
                           )}
                         </div>
-                      ) : (
-                        ""
-                      )
-                    )}
-                    <div className="col-span-1 sm:col-span-2">
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                      >
-                        {editingId ? "Update" : "Create"} Order
-                      </button>
-                    </div>
-                  </form>
+                      ))}
+                      <div className="col-span-1 sm:col-span-2">
+                        <button
+                          type="submit"
+                          disabled={submitting}
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                        >
+                          {editingId ? "Update" : "Create"} Order
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Modal Action Form */}
-            {modal2open && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
-                <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
-                  <button
-                    onClick={() => {
-                      setmodal2open(false);
-                    }}
-                    className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red"
-                  >
-                    ✕
-                  </button>
-                  <h2 className="text-lg font-bold mb-4">Action Form</h2>
-                  <form
-                    onSubmit={handle2Submit}
-                    className="grid grid-cols-1 gap-y-10"
-                  >
-                    <div>
-                      <label className="block text-sm my-2 font-medium capitalize">
-                        Availability
-                      </label>
-                      <select
-                        type="text"
-                        name="availability"
-                        value={action.availability}
-                        onChange={handle2Change}
-                        className="mt-1 p-2 my-2 border w-full rounded"
-                      >
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                      </select>
-                      <label className="block text-sm my-2 font-medium capitalize">
-                        Ready Date
-                      </label>
-                      <input
-                        type="date"
-                        name="readydate"
-                        value={action.readydate}
-                        onChange={handle2Change}
-                        required
-                        className="mt-1 p-2 my-2 border w-full rounded"
-                      />
-                      <label className="block text-sm my-2 font-medium capitalize">
-                        Remarks
-                      </label>
-                      <input
-                        type="text"
-                        name="remarks"
-                        value={action.remarks}
-                        onChange={handle2Change}
-                        required
-                        className="mt-1 p-2 border w-full rounded"
-                      />
-                    </div>
-
-                    <div className="col-span-1 sm:col-span-2">
-                      <button
-                        type="submit"
-                        onClick={handle2Submit}
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                      >
-                        Action Form
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* Modal Transit */}
-            {modaltransitopen && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
-                <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
-                  <button
-                    onClick={() => setmodaltransitopen(false)}
-                    className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red-700"
-                  >
-                    ✕
-                  </button>
-                  <h2 className="text-lg font-bold mb-4">Transit Action</h2>
-                  <form
-                    onSubmit={handle2Submit}
-                    className="grid grid-cols-1 gap-y-10"
-                  >
-                    <div>
-                      <label className="block text-sm my-2 font-medium capitalize">
-                        Transit Date
-                      </label>
-                      <input
-                        type="date"
-                        name="transitdate"
-                        value={action.transitdate}
-                        onChange={handle2Change}
-                        className="mt-1 p-2 my-2 border w-full rounded"
-                      />
-                    </div>
-                    <div className="col-span-1 sm:col-span-2">
-                      <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
-                      >
-                        Transit Submit
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* <h2 className="text-xl font-semibold mt-1 mb-0">Order List</h2> */}
-            <div className="overflow-auto max-h-[500px] border mt-2">
-              <table className="w-full border-collapse text-xs border  ">
-                <thead className="overflow-auto  ">
-                  <tr className="bg-gray-100 ">
-                    <th className="p-2 border bg-gray-600 text-white  sticky top-0 z-10">
-                      Date
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Tile Name
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Co Name
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Size
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0">
-                      Qty
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Customer
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Location
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Sales Person
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Ord Confirmation
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap ">
-                      Sales Person Remarks
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0">
-                      Availability
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0">
-                      Ready Date
-                    </th>
-                    {/* <th className="p-2 border bg-gray-600 text-white sticky top-0">Delivery Date</th> */}
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      In Transit
-                    </th>
-                    {/* transitdate */}
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Remarks
-                    </th>
-                    <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="">
-                  {finalfilter.map((order, index) => (
-                    <tr
-                      key={order._id}
-                      className={`text-center border odd:bg-gray-200 even:bg-white `}
+              {modal1Open && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-10 z-50 overflow-y-auto">
+                  <div className="bg-white p-6 rounded shadow-lg w-[95%] sm:w-[90%] max-w-4xl relative">
+                    <button
+                      onClick={() => {
+                        setModal1Open(false);
+                        setEditingId(null);
+                      }}
+                      className="absolute top-2 right-2 text-red-600 font-extrabold size-10 hover:text-red"
                     >
-                      <td className="p-2 border text-xs ">
-                        {moment(order.createdAt).format("DD/MM/YY h:mm a")}
-                      </td>
-                      <td className="p-2 border text-wrap">{order.tilename}</td>
-                      <td className="p-2 border text-wrap">{order.coname}</td>
-                      <td className="p-2 border text-wrap">{order.size}</td>
-                      <td className="p-2 border text-wrap">{order.qty}</td>
-                      <td className="p-2 border text-wrap">
-                        {order.customername}
-                      </td>
-                      <td className="p-2 border text-wrap">{order.location}</td>
-                      <td className="p-2 border text-wrap">{order.salesman}</td>
-                      <td className="p-2 border text-wrap">
-                        {order.orderconfirmation}
-                      </td>
-                      <td className="p-2 border text-wrap">
-                        {order.salesmanremarks}
-                      </td>
-                      <td className="p-2 border text-wrap">
-                        {order.availability}
-                      </td>
+                      ✕
+                    </button>
+                    <h2 className="text-lg font-bold mb-4">
+                      {editingId ? "Edit" : "New"} Order
+                    </h2>
+                    <form
+                      onSubmit={handleSubmit}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                    >
+                      {Object.keys(formData).map((key) =>
+                        key != "_id" &&
+                        key != "date" &&
+                        key != "createdAt" &&
+                        key != "updatedAt" &&
+                        key != "__v" &&
+                        key != "availability" &&
+                        key != "readydate" &&
+                        key != "transitdate" &&
+                        key != "salesman" &&
+                        key != "deliverydate" &&
+                        key != "remarks" ? (
+                          <div key={key}>
+                            <label className="block text-sm font-medium capitalize">
+                              {key}
+                            </label>
+                            {key == "qty" ? (
+                              <input
+                                type={key.includes("qty") ? "number" : "text"}
+                                name={key}
+                                value={formData[key]}
+                                onChange={handleChange}
+                                required={key !== "salesmanremarks"}
+                                className="mt-1 p-2 border w-full rounded"
+                              />
+                            ) : key == "orderconfirmation" ? (
+                              <select
+                                type="text"
+                                name={key}
+                                value={formData[key]}
+                                onChange={handleChange}
+                                className="mt-1 p-2 border w-full rounded"
+                              >
+                                <option value="Flow Up">Query</option>
+                                <option value="Yes">Yes</option>
+                                <option value="Cancel">Cancel</option>
+                              </select>
+                            ) : (
+                              <input
+                                type={key.includes("date") ? "date" : "text"}
+                                name={key}
+                                value={formData[key]}
+                                onChange={handleChange}
+                                required={
+                                  key !== "salesmanremarks" &&
+                                  key !== "coname" &&
+                                  key !== "orderconfirmation"
+                                }
+                                className="mt-1 p-2 border w-full rounded"
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          ""
+                        )
+                      )}
+                      <div className="col-span-1 sm:col-span-2">
+                        <button
+                          type="submit"
+                          disabled={submitting}
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                        >
+                          {editingId ? "Update" : "Create"} Order
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
-                      <td className="p-2 border">
-                        {order.readydate
-                          ? moment(order.readydate).format("DD/MM/YYYY")
-                          : ""}
-                      </td>
-                      <td className="p-2 border">
-                        {order.transitdate
-                          ? moment(order.transitdate).format("DD/MM/YYYY")
-                          : ""}
-                      </td>
-                      <td className="p-2 border text-wrap">{order.remarks}</td>
+              {/* Modal Action Form */}
+              {modal2open && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
+                  <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
+                    <button
+                      onClick={() => {
+                        setmodal2open(false);
+                      }}
+                      className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red"
+                    >
+                      ✕
+                    </button>
+                    <h2 className="text-lg font-bold mb-4">Action Form</h2>
+                    <form
+                      onSubmit={handle2Submit}
+                      className="grid grid-cols-1 gap-y-10"
+                    >
+                      <div>
+                        <label className="block text-sm my-2 font-medium capitalize">
+                          Availability
+                        </label>
+                        <select
+                          type="text"
+                          name="availability"
+                          value={action.availability}
+                          onChange={handle2Change}
+                          className="mt-1 p-2 my-2 border w-full rounded"
+                        >
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
+                        </select>
+                        <label className="block text-sm my-2 font-medium capitalize">
+                          Ready Date
+                        </label>
+                        <input
+                          type="date"
+                          name="readydate"
+                          value={action.readydate}
+                          onChange={handle2Change}
+                          required
+                          className="mt-1 p-2 my-2 border w-full rounded"
+                        />
+                        <label className="block text-sm my-2 font-medium capitalize">
+                          Remarks
+                        </label>
+                        <input
+                          type="text"
+                          name="remarks"
+                          value={action.remarks}
+                          onChange={handle2Change}
+                          required
+                          className="mt-1 p-2 border w-full rounded"
+                        />
+                      </div>
 
-                      <td className=" items-center text-wrap px-2 py-2 flex ">
-                        {(user.user?.role == "admin" ||
-                          (user.user?.name == "Ankush" &&
-                            order.readydate == "")) && (
-                          <button
-                            onClick={() => {
-                              handleOpen2modal(
-                                order._id,
-                                order.availability,
-                                order.readydate,
-                                order.transitdate,
-                                order.remarks
-                              );
-                            }}
-                            className="px-1 "
-                          >
-                            <PackagePlus />
-                          </button>
-                        )}
+                      <div className="col-span-1 sm:col-span-2">
+                        <button
+                          type="submit"
+                          onClick={handle2Submit}
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                        >
+                          Action Form
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
-                        {rightedit && order.transitdate == "" && (
-                          <button
-                            onClick={() => handleEdit(order)}
-                            className="px-1 text-green-500 "
-                          >
-                            <Pencil />
-                          </button>
-                        )}
+              {/* Modal Transit */}
+              {modaltransitopen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center text-center items-start pt-10 z-50 overflow-y-auto">
+                  <div className="bg-white px-6 py-2 rounded shadow-lg w-[95%] sm:w-[30%] relative">
+                    <button
+                      onClick={() => setmodaltransitopen(false)}
+                      className="absolute top-2 right-4 font-extrabold text-red-600 hover:text-red-700"
+                    >
+                      ✕
+                    </button>
+                    <h2 className="text-lg font-bold mb-4">Transit Action</h2>
+                    <form
+                      onSubmit={handle2Submit}
+                      className="grid grid-cols-1 gap-y-10"
+                    >
+                      <div>
+                        <label className="block text-sm my-2 font-medium capitalize">
+                          Transit Date
+                        </label>
+                        <input
+                          type="date"
+                          name="transitdate"
+                          value={action.transitdate}
+                          onChange={handle2Change}
+                          className="mt-1 p-2 my-2 border w-full rounded"
+                        />
+                      </div>
+                      <div className="col-span-1 sm:col-span-2">
+                        <button
+                          type="submit"
+                          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full sm:w-auto"
+                        >
+                          Transit Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
 
-                        {order.readydate != "" &&
-                          (user.user?.role == "admin" ||
+              {/* <h2 className="text-xl font-semibold mt-1 mb-0">Order List</h2> */}
+              <div className="overflow-auto max-h-[500px] border mt-2">
+                <table className="w-full border-collapse text-xs border  ">
+                  <thead className="overflow-auto  ">
+                    <tr className="bg-gray-100 ">
+                      <th className="p-2 border bg-gray-600 text-white  sticky top-0 z-10">
+                        Date
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Tile Name
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Co Name
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Size
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                        Qty
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Customer
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Location
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Sales Person
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Ord Confirmation
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap ">
+                        Sales Person Remarks
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                        Availability
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0">
+                        Ready Date
+                      </th>
+                      {/* <th className="p-2 border bg-gray-600 text-white sticky top-0">Delivery Date</th> */}
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        In Transit
+                      </th>
+                      {/* transitdate */}
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Remarks
+                      </th>
+                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="">
+                    {finalfilter.map((order, index) => (
+                      <tr
+                        key={order._id}
+                        className={`text-center border odd:bg-gray-200 even:bg-white `}
+                      >
+                        <td className="p-2 border text-xs ">
+                          {moment(order.createdAt).format("DD/MM/YY h:mm a")}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.tilename}
+                        </td>
+                        <td className="p-2 border text-wrap">{order.coname}</td>
+                        <td className="p-2 border text-wrap">{order.size}</td>
+                        <td className="p-2 border text-wrap">{order.qty}</td>
+                        <td className="p-2 border text-wrap">
+                          {order.customername}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.location}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.salesman}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.orderconfirmation}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.salesmanremarks}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.availability}
+                        </td>
+
+                        <td className="p-2 border">
+                          {order.readydate
+                            ? moment(order.readydate).format("DD/MM/YYYY")
+                            : ""}
+                        </td>
+                        <td className="p-2 border">
+                          {order.transitdate
+                            ? moment(order.transitdate).format("DD/MM/YYYY")
+                            : ""}
+                        </td>
+                        <td className="p-2 border text-wrap">
+                          {order.remarks}
+                        </td>
+
+                        <td className=" items-center text-wrap px-2 py-2 flex ">
+                          {(user.user?.role == "admin" ||
                             (user.user?.name == "Ankush" &&
-                              order.transitdate == "")) && (
+                              order.readydate == "")) && (
                             <button
                               onClick={() => {
-                                handleOpen3modal(
+                                handleOpen2modal(
                                   order._id,
                                   order.availability,
                                   order.readydate,
@@ -1017,52 +1004,82 @@ export default function MorbiOrderPage() {
                                   order.remarks
                                 );
                               }}
-                              className="px-1  text-green-900 "
+                              className="px-1 "
                             >
-                              <TruckElectric />
+                              <PackagePlus />
                             </button>
                           )}
-                        {rightdelete && (
-                          <button
-                            // onClick={()=>{alert(order._id)}}
-                            onClick={() =>
-                              handleDelete(order._id, order.tilename)
-                            }
-                            className="px-1  text-red-600"
-                          >
-                            <Trash2 />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+                          {rightedit && order.transitdate == "" && (
+                            <button
+                              onClick={() => handleEdit(order)}
+                              className="px-1 text-green-500 "
+                            >
+                              <Pencil />
+                            </button>
+                          )}
+
+                          {order.readydate != "" &&
+                            (user.user?.role == "admin" ||
+                              (user.user?.name == "Ankush" &&
+                                order.transitdate == "")) && (
+                              <button
+                                onClick={() => {
+                                  handleOpen3modal(
+                                    order._id,
+                                    order.availability,
+                                    order.readydate,
+                                    order.transitdate,
+                                    order.remarks
+                                  );
+                                }}
+                                className="px-1  text-green-900 "
+                              >
+                                <TruckElectric />
+                              </button>
+                            )}
+                          {rightdelete && (
+                            <button
+                              // onClick={()=>{alert(order._id)}}
+                              onClick={() =>
+                                handleDelete(order._id, order.tilename)
+                              }
+                              className="px-1  text-red-600"
+                            >
+                              <Trash2 />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {/* Page Number Buttons */}
+            <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
+              <button
+                className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
+                onClick={() => {
+                  handleprev();
+                }}
+              >
+                Prev
+              </button>
+              <p>
+                <strong>{currentPage}</strong>
+              </p>
+              <button
+                className="bg-green-500 px-5 py-2 rounded-2xl border-1"
+                onClick={() => {
+                  handlenext();
+                }}
+              >
+                Next
+              </button>
             </div>
           </div>
-          {/* Page Number Buttons */}
-          <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
-            <button
-              className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
-              onClick={() => {
-                handleprev();
-              }}
-            >
-              Prev
-            </button>
-            <p>
-              <strong>{currentPage}</strong>
-            </p>
-            <button
-              className="bg-green-500 px-5 py-2 rounded-2xl border-1"
-              onClick={() => {
-                handlenext();
-              }}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        )
       )}
     </>
   );

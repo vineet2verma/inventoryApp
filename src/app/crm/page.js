@@ -11,8 +11,11 @@ import {
 import { useEffect, useState, useRef } from "react";
 import InfoCard from "@/app/components/card_component";
 import InfoCardInput from "../components/card_input";
+import { LoginUserFunc } from "../context/loginuser";
+import moment from "moment";
 //
 export default function CRMClientPage() {
+  const user = LoginUserFunc();
   const [viewdetail, setviewdetail] = useState({});
   const [sections, setSections] = useState({});
 
@@ -398,12 +401,12 @@ export default function CRMClientPage() {
                       >
                         <GripVertical size={16} />
                       </button>
-                      <button
+                      {/* <button
                         onClick={() => handleEdit(item)}
                         className="text-blue-600"
                       >
                         <Pencil size={16} />
-                      </button>
+                      </button> */}
                     </div>
 
                     {openMenuIndex === index && (
@@ -429,18 +432,21 @@ export default function CRMClientPage() {
                             Follow Up
                           </div>
                         </button>
-                        <button
-                          onClick={() => {
-                            handleDelete(item._id);
-                          }}
-                          // onClick={() => openModal("Delete")}
-                          className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        >
-                          <div className="flex">
-                            <Trash2 size={16} className="mx-2" />
-                            Delete
-                          </div>
-                        </button>
+
+                        {user.user.role == "admin" && (
+                          <button
+                            onClick={() => {
+                              handleDelete(item._id);
+                            }}
+                            // onClick={() => openModal("Delete")}
+                            className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                          >
+                            <div className="flex">
+                              <Trash2 size={16} className="mx-2" />
+                              Delete
+                            </div>
+                          </button>
+                        )}
                       </div>
                     )}
                   </td>
@@ -593,24 +599,26 @@ export default function CRMClientPage() {
                       setIsEditable(!isEditable);
                     }}
                   >
-                    <div className="flex border bg-gray-100 items-center px-4 py-1 rounded-sm ">
+                    <div className="flex border bg-gray-100 items-center px-3 py-1 rounded-sm ">
                       {isEditable ? (
                         <X size={16} className="mx-2 text-red-500" />
                       ) : (
-                        <Pencil size={16} className="mx-2" />
+                        <Pencil size={16} className="mx-1" />
                       )}
                       {isEditable ? "Cancel" : "Edit"}
                     </div>
                   </button>
                 )}
-                <button
-                  className=" px-2 text-xs "
-                  onClick={() => {
-                    handleviewsave(viewdetail._id);
-                  }}
-                >
-                  Save
-                </button>
+                {(isEditable || activeModal == "Follow Up") && (
+                  <button
+                    className="border bg-gray-100 items-center px-3 py-0 text-xs rounded-sm "
+                    onClick={() => {
+                      handleviewsave(viewdetail._id);
+                    }}
+                  >
+                    Save
+                  </button>
+                )}
 
                 <button
                   className=" px-2 text-xs "
@@ -618,7 +626,7 @@ export default function CRMClientPage() {
                     closeModal();
                   }}
                 >
-                  <div className="flex border bg-gray-100 items-center px-4 py-1 rounded-sm ">
+                  <div className="flex border bg-gray-100 items-center px-3 py-1 rounded-sm ">
                     <ArrowBigLeft size={14} className="mx-1" />
                     Back
                   </div>
@@ -653,20 +661,32 @@ export default function CRMClientPage() {
                 />
 
                 <InfoCard
-                  id={2}
+                  // id={2}
                   title={"Lead Info"}
-                  sections={sections}
-                  width="w-[200px]"
-                  border="0"
-                  setviewdetail={setviewdetail}
-                />
-                <InfoCard
-                  id={3}
-                  title={"Other Info"}
-                  sections={sections}
-                  border="0"
-                  width="w-[200px]"
-                  setviewdetail={setviewdetail}
+                  sections={[
+                    {
+                      "Lead Type": viewdetail.leadtype,
+                    },
+                    {
+                      "Follow Up Stage": viewdetail.followupstage,
+                    },
+                    {
+                      "Sales Person": viewdetail.salesperson,
+                    },
+                    {
+                      "Reference Type": viewdetail.referencetype,
+                    },
+                    {
+                      "Next Follow Up": `${viewdetail.nextfollowdate}  ${
+                        viewdetail.nextfollowtime || ""
+                      } `,
+                    },
+                    {
+                      "Last Contact": "N/a",
+                    },
+                  ]}
+                  width="w-[400px]"
+                  border="2"
                 />
               </div>
             )}
@@ -675,7 +695,9 @@ export default function CRMClientPage() {
             {modalfollowup && (
               <div className="grid grid-cols-1 gap-2 ">
                 <newline />
-                <p className="px-2 bg-gray-800 text-white">Lead Type</p>
+                <p className="px-2 bg-gray-200 text-black font-semibold max-w-full">
+                  Lead Type
+                </p>
                 <div className="flex justify-around">
                   {["Hot", "Warm", "Cold"].map((item) => (
                     <label>
@@ -702,7 +724,9 @@ export default function CRMClientPage() {
                     </button>
                   </div>
 
-                  <h4 className="font-semibold my-1">Follow Up Stage</h4>
+                  <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                    Follow Up Stage
+                  </h4>
                   <div className="flex justify-around">
                     {["Initial Contact", "Proposal", "Negotiation"].map(
                       (item) => (
@@ -719,25 +743,46 @@ export default function CRMClientPage() {
                       )
                     )}
                   </div>
-                  <div className="flex justify-between">
+                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                    Follow Up Date & Time
+                  </h6>
+                  <div className="flex justify-between my-2">
                     <input
                       type="date"
                       name="nextfollowdate"
                       onChange={handletypeChange}
+                      className="my-1 px-2"
                     />
-                    <input type="time" name="time" />
+                    <input
+                      type="time"
+                      name="nextfollowtime"
+                      onChange={handletypeChange}
+                      className="my-1"
+                    />
                   </div>
+                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                    Follow Up Tye
+                  </h6>
                   <div>
-                    <select name="followupType" onChange={handletypeChange}>
+                    <select
+                      name="followupType"
+                      className="my-2 w-full px-2 border rounded py-1"
+                      onChange={handletypeChange}
+                    >
                       {["Call", "Whatapp", "Email"].map((item) => (
                         <option value={item}>{item}</option>
                       ))}
                     </select>
                   </div>
+                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                    Remarks
+                  </h6>
                   <div>
-                    <textarea name="remarks" rows={3}>
-                      Remarks
-                    </textarea>
+                    <textarea
+                      className="my-2 px-2 border w-full rounded-xl"
+                      name="remarks"
+                      rows={3}
+                    ></textarea>
                   </div>
                 </div>
               </div>

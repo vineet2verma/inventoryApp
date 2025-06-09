@@ -15,7 +15,8 @@ const crmClientSchema = new mongoose.Schema(
     parent: { type: String, require: false },
     referencetype: { type: String, require: false }, // ref
     protentialvalue: { type: String, require: false }, // 5000, 10000,20000, 100000
-    nextfollowdate: { type: String, require: false }, // date time
+    nextfollowdate: { type: String, require: false }, // date
+    nextfollowtime: { type: String, require: false }, // time
     followupstage: { type: String, require: false }, // intial, poposal, negotiation
     followupType: { type: String, require: false }, // call , whatapp, email
     lastcontact: { type: String, require: false },

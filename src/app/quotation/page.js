@@ -121,20 +121,18 @@ export default function QuotationPage() {
     afterDiscount +
     gstAmt +
     Number(quotation.cuttingCharges || 0) +
-    Number(quotation.cuttingCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cuttingCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.cartageCharges || 0) +
-    Number(quotation.cartageCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cartageCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.packingCharges || 0) +
-    Number(quotation.packingCharges*quotation.gstRate/100 || 0);
+    Number((quotation.packingCharges * quotation.gstRate) / 100 || 0);
 
   const handlemodelSubmit = () => {
     const newErrors = {};
-    if (!quotation.clientName)
-      newErrors.clientName = "Client Name is required";
+    if (!quotation.clientName) newErrors.clientName = "Client Name is required";
     if (!quotation.companyName)
       newErrors.companyName = "Company Name is required";
-    if (!quotation.saleperson)
-      newErrors.saleperson = "Salesperson is required";
+    if (!quotation.saleperson) newErrors.saleperson = "Salesperson is required";
     if (!quotation.gst) newErrors.gst = "GSTIN is required";
     if (!quotation.billingAddress)
       newErrors.billingAddress = "Billing Address is required";
@@ -154,12 +152,10 @@ export default function QuotationPage() {
 
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!quotation.clientName)
-      newErrors.clientName = "Client Name is required";
+    if (!quotation.clientName) newErrors.clientName = "Client Name is required";
     if (!quotation.companyName)
       newErrors.companyName = "Company Name is required";
-    if (!quotation.saleperson)
-      newErrors.saleperson = "Salesperson is required";
+    if (!quotation.saleperson) newErrors.saleperson = "Salesperson is required";
     if (!quotation.gst) newErrors.gst = "GSTIN is required";
     if (!quotation.billingAddress)
       newErrors.billingAddress = "Billing Address is required";
@@ -305,6 +301,7 @@ export default function QuotationPage() {
                             })
                           }
                         >
+                          <option value="">Select Sales Person</option>
                           <option value="">Select Sales Person</option>
                           <option value="alveena">Alveena</option>
                           <option value="Amit sharma">Amit Sharma</option>
@@ -524,13 +521,9 @@ export default function QuotationPage() {
                     <div className="flex justify-between max-w-70">
                       <input
                         className="w-[80%]  text-sm"
-                        value={item.description.trim()}
+                        value={item.description}
                         onChange={(e) =>
-                          handleItemChange(
-                            index,
-                            "description",
-                            e.target.value.trim()
-                          )
+                          handleItemChange(index, "description", e.target.value)
                         }
                         placeholder="Description"
                       />
@@ -561,9 +554,9 @@ export default function QuotationPage() {
                   <td className="border px-2 py-1 max-w-20 ">
                     <input
                       className="w-full  px-1 text-center "
-                      value={item.size.trim()}
+                      value={item.size}
                       onChange={(e) =>
-                        handleItemChange(index, "size", e.target.value.trim())
+                        handleItemChange(index, "size", e.target.value)
                       }
                     />
                     {errors.items?.[index]?.size && (
@@ -591,7 +584,7 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full px-1 text-center"
-                      value={item.qtyperbox ?? "" }
+                      value={item.qtyperbox ?? ""}
                       onChange={(e) =>
                         handleItemChange(index, "qtyperbox", e.target.value)
                       }
