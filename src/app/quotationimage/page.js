@@ -102,7 +102,7 @@ export default function QuotationPage() {
       ...quotation,
       items: [
         ...quotation.items,
-        { description: "", size: "", qtypersqft: 0, qtyperbox: 0, price: 0 },
+        { description: "", size: "", qtypersqft: "", qtyperbox: 0, price: "" },
       ],
     });
   };
@@ -603,11 +603,11 @@ export default function QuotationPage() {
                           handleItemChange(index, "qtyperbox", e.target.value)
                         }
                       />
-                      {errors.items?.[index]?.qtyperbox && (
+                      {/* {errors.items?.[index]?.qtyperbox && (
                         <p className="text-red-500 text-xs text-center">
                           {errors.items[index].qtyperbox}
                         </p>
-                      )}
+                      )} */}
                     </td>
 
                     <td className="border px-2 py-1 max-w-20">
