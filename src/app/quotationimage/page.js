@@ -174,8 +174,8 @@ export default function QuotationPage() {
       if (!item.description) err.description = "Required";
       if (!item.size) err.size = "Required";
       if (!item.qtypersqft) err.qtypersqft = "Required";
+      // if (!item.qtyperbox) err.qtyperbox = "Required";
       if (!item.price) err.price = "Required";
-      if (!item.qtyperbox) err.qtyperbox = "Required";
       if (!item.price) err.price = "Required";
       return err;
     });
