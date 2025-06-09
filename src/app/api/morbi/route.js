@@ -3,11 +3,37 @@ import connectToDatabase from '@/app/api/models/connectDB'
 import morbiorder from '@/app/api/models/morbiDB'
 
 // GET All Orders
-export async function GET () {
+export async function GET (req) {
+  const param = await req.nextUrl.searchParams
+
+    console.log('param => ', param)
+    console.log('param page', param.get('page'))
+    console.log('param limit', param.get('limit'))
+
+  const page = param.get('page')
+  const limit = param.get('limit')
+  const skip = (page - 1) * limit
   try {
     await connectToDatabase()
-    const records = await morbiorder.find().sort({ createdAt: -1 }) // Newest first
-    return NextResponse.json(records, { status: 200 })
+    // Get total count of records
+    const totalCount = await morbiorder.countDocuments()
+
+    const records = await morbiorder
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+
+    return NextResponse.json(
+      {
+        totalCount,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        records
+      },
+      { status: 200 }
+    )
+    console.log('Fetched records:', records) // Log the fetched records
   } catch (err) {
     console.error(err)
     return NextResponse.json(
@@ -16,6 +42,22 @@ export async function GET () {
     )
   }
 }
+
+
+
+// export async function GET () {
+//   try {
+//     await connectToDatabase()
+//     const records = await morbiorder.find().sort({ createdAt: -1 }) // Newest first
+//     return NextResponse.json(records, { status: 200 })
+//   } catch (err) {
+//     console.error(err)
+//     return NextResponse.json(
+//       { message: 'Failed to fetch records' },
+//       { status: 500 }
+//     )
+//   }
+// }
 
 // CREATE New Order
 export async function POST (req) {

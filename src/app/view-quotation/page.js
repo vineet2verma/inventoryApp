@@ -3,7 +3,7 @@ import moment from "moment";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { House, FileText, Trash2, Eye } from "lucide-react";
+import { House, FileText, Trash2 } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
 import LoadingSpinner from "../components/waiting";
 import * as XLSX from "xlsx";
@@ -36,9 +36,11 @@ export default function ViewQuotation() {
   };
 
   const handlenext = () => {
-    const newPage = currentPage + 1;
-    setCurrentPage(newPage);
-    fetchQuotation(newPage);
+    if (totalPages > currentPage) {
+      const newPage = currentPage + 1;
+      setCurrentPage(newPage);
+      fetchQuotation(newPage);
+    }
   };
 
   async function fetchQuotation(currentPage) {
