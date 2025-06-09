@@ -54,7 +54,7 @@ export default function QuotationPage() {
         description: "Tile A",
         size: "2x2",
         qtypersqft: "",
-        qtyperbox: "",
+        qtyperbox: 0,
         price: "",
       },
     ],
@@ -95,7 +95,7 @@ export default function QuotationPage() {
       ...quotation,
       items: [
         ...quotation.items,
-        { description: "", size: "", qtypersqft: "", qtyperbox: "", price: "" },
+        { description: "", size: "", qtypersqft: "", qtyperbox: 0, price: "" },
       ],
     });
   };
@@ -171,6 +171,7 @@ export default function QuotationPage() {
       if (!item.description) err.description = "Required";
       if (!item.size) err.size = "Required";
       if (!item.qtypersqft) err.qtypersqft = "Required";
+      if (!item.qtypersqft) err.qtyperbox = "Required";
       if (!item.price) err.price = "Required";
       if (!item.price) err.price = "Required";
       return err;
@@ -590,7 +591,7 @@ export default function QuotationPage() {
                     <input
                       type="number"
                       className="w-full px-1 text-center"
-                      value={item.qtyperbox}
+                      value={item.qtyperbox ?? "" }
                       onChange={(e) =>
                         handleItemChange(index, "qtyperbox", e.target.value)
                       }

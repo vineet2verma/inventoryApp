@@ -583,7 +583,7 @@ export default function QuotationPage() {
                       <input
                         type="number"
                         className="w-full  px-1 text-center"
-                        value={item.qtypersqft}
+                        value={item.qtypersqft ?? "" }
                         onChange={(e) =>
                           handleItemChange(index, "qtypersqft", e.target.value)
                         }
@@ -598,7 +598,7 @@ export default function QuotationPage() {
                       <input
                         type="number"
                         className="w-full  px-1 text-center"
-                        value={item.qtyperbox}
+                        value={item.qtyperbox ?? ""}
                         onChange={(e) =>
                           handleItemChange(index, "qtyperbox", e.target.value)
                         }
