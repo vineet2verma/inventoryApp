@@ -415,8 +415,8 @@ export default function MorbiOrderPage() {
 
   const handleDelete = async (id, tilename) => {
     if (
-      prompt("Enter Tile Name to confirm delete").toLowerCase() ==
-      tilename.toLowerCase()
+      prompt(`Enter ${tilename.trim().toLowerCase()} to confirm delete`).toLowerCase() ==
+      tilename.trim().toLowerCase()
     ) {
       await fetch("/api/morbi", {
         method: "DELETE",
