@@ -920,11 +920,11 @@ export default function MorbiOrderPage() {
                       <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
                         Sales Person
                       </th>
-                      <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap">
-                        Ord Confirmation
+                      <th className="px-1 border bg-gray-600 text-white sticky top-0 text-wrap">
+                        Ord Confirm
                       </th>
                       <th className="p-2 border bg-gray-600 text-white sticky top-0 text-wrap ">
-                        Sales Person Remarks
+                        S.Person Remarks
                       </th>
                       <th className="p-2 border bg-gray-600 text-white sticky top-0">
                         Availability
@@ -951,7 +951,7 @@ export default function MorbiOrderPage() {
                         key={order._id}
                         className={`text-center border odd:bg-gray-200 even:bg-white `}
                       >
-                        <td className="p-2 border text-xs ">
+                        <td className="px-0.5 py-2 border text-xs text-wrap ">
                           {moment(order.createdAt).format("DD/MM/YY h:mm a")}
                         </td>
                         <td className="p-2 border text-wrap">
@@ -969,7 +969,7 @@ export default function MorbiOrderPage() {
                         <td className="p-2 border text-wrap text-xs">
                           {order.salesman}
                         </td>
-                        <td className="p-2 border text-wrap text-xs">
+                        <td className="px-0 border text-wrap text-xs">
                           {order.orderconfirmation}
                         </td>
                         <td className="p-2 border text-wrap text-xs">
@@ -1013,7 +1013,7 @@ export default function MorbiOrderPage() {
                             </button>
                           )}
 
-                          {rightedit && order.transitdate == "" && (
+                          {(rightedit && order.transitdate == "" && user.user.name==order.salesman ) && (
                             <button
                               onClick={() => handleEdit(order)}
                               className="px-1 text-green-500 "
