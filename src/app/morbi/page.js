@@ -75,6 +75,7 @@ export default function MorbiOrderPage() {
 
   const handleprev = () => {
     if (currentPage > 1) {
+      setLoading(true)
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
       fetchOrders(newPage);
@@ -82,7 +83,9 @@ export default function MorbiOrderPage() {
   };
 
   const handlenext = () => {
+
     if (totalPages > currentPage) {
+      setLoading(true)
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
       fetchOrders(newPage);
