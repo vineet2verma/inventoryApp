@@ -415,7 +415,7 @@ export default function MorbiOrderPage() {
 
   const handleDelete = async (id, tilename) => {
     if (
-      prompt(`Enter ${tilename.trim().toLowerCase()} to confirm delete`).toLowerCase() ==
+      prompt(`Enter ${tilename.trim().toLowerCase()}  to confirm delete`).toLowerCase() ==
       tilename.trim().toLowerCase()
     ) {
       await fetch("/api/morbi", {
@@ -995,7 +995,7 @@ export default function MorbiOrderPage() {
 
                         <td className=" items-center text-wrap text-xs px-2 py-2 flex ">
                           {(user.user?.role == "admin" ||
-                            (user.user?.name == "Ankush" &&
+                            (user.user?.name == "purchase" &&
                               order.readydate == "")) && (
                             <button
                               onClick={() => {
@@ -1023,9 +1023,9 @@ export default function MorbiOrderPage() {
                           )}
 
                           {order.readydate != "" &&
-                            (user.user?.role == "admin" ||
-                              (user.user?.name == "Ankush" &&
-                                order.transitdate == "")) && (
+                            ((user.user?.role == "admin" ||
+                              user.user?.role == "purchase") &&
+                                order.transitdate == "") && (
                               <button
                                 onClick={() => {
                                   handleOpen3modal(

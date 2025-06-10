@@ -32,9 +32,9 @@ export default function InfoCardInput({
   };
 
   return (
-    <div className={`bg-white ${border} rounded-2xl shadow p-3 ${width}`}>
+    <div className={`bg-white ${border} rounded shadow p-3 ${width}`}>
       <h2 className="font-bold mb-2">{title || "_"}</h2>
-      <div className="grid grid-rows-2 gap-2 overflow-hidden">
+      <div className="grid grid-rows-1 md:grid-rows-2 gap-2 overflow-hidden">
         {sections[id]?.map((section, index) => (
           <div key={index} className="grid grid-cols-1">
             <h3 className="text-xs font-semibold">{section.subtitle}</h3>

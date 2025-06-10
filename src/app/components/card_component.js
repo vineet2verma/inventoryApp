@@ -8,7 +8,7 @@ export default function InfoCard({
   return (
     <div className={`bg-white ${border} rounded-2xl shadow p-3 ${width}  `}>
       <h2 className=" font-bold mb-2">{title || "_"}</h2>
-      <div className="grid grid-cols-2 gap-2 overflow-hidden ">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 overflow-hidden ">
         {sections.map((section, index) => (
           <div key={index} className="grid gap-1 text-xs">
             {Object.entries(section).map(([key, value]) => (

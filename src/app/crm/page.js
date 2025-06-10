@@ -24,6 +24,7 @@ export default function CRMClientPage() {
   const [activeModal, setActiveModal] = useState(null);
   const [modalview, setmodalview] = useState(false);
   const [modalfollowup, setmodalfollowup] = useState(false);
+  const [followuptab, setfollowuptab] = useState(true);
   const [modaldelete, setmodaldelete] = useState(false);
   const submenuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -635,59 +636,61 @@ export default function CRMClientPage() {
             </div>
             {/* Modal View Detail */}
             {modalview && (
-              <div className="grid grid-cols-2 gap-x-2 gap-y-2 ">
-                <InfoCardInput
-                  title={"Personal Detail"}
-                  sections={sections}
-                  editable={isEditable}
-                  setSections={setSections}
-                  data={viewdetail}
-                  id={0}
-                  setviewdetail={setviewdetail}
-                  width="w-[200px]"
-                  border="0"
-                />
-
-                <InfoCardInput
-                  title={"Company Info"}
-                  sections={sections}
-                  setSections={setSections}
-                  id={1}
-                  width="w-[200px]"
-                  border="0"
-                  editable={isEditable}
-                  data={viewdetail}
-                  setviewdetail={setviewdetail}
-                />
-
-                <InfoCard
-                  // id={2}
-                  title={"Lead Info"}
-                  sections={[
-                    {
-                      "Lead Type": viewdetail.leadtype,
-                    },
-                    {
-                      "Follow Up Stage": viewdetail.followupstage,
-                    },
-                    {
-                      "Sales Person": viewdetail.salesperson,
-                    },
-                    {
-                      "Reference Type": viewdetail.referencetype,
-                    },
-                    {
-                      "Next Follow Up": `${viewdetail.nextfollowdate}  ${
-                        viewdetail.nextfollowtime || ""
-                      } `,
-                    },
-                    {
-                      "Last Contact": "N/a",
-                    },
-                  ]}
-                  width="w-[400px]"
-                  border="2"
-                />
+              // <div className="w-full h-[80vh] overflow-auto px-2">
+              // className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 "
+              <div className="w-full h-[80vh] overflow-auto px-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+                  <InfoCardInput
+                    title={"Personal Detail"}
+                    sections={sections}
+                    editable={isEditable}
+                    setSections={setSections}
+                    data={viewdetail}
+                    id={0}
+                    setviewdetail={setviewdetail}
+                    width="w-[200px]"
+                    border="0"
+                  />
+                  <InfoCardInput
+                    title={"Company Info"}
+                    sections={sections}
+                    setSections={setSections}
+                    id={1}
+                    width="w-[200px]"
+                    border="0"
+                    editable={isEditable}
+                    data={viewdetail}
+                    setviewdetail={setviewdetail}
+                  />
+                  <InfoCard
+                    // id={2}
+                    title={"Lead Info"}
+                    sections={[
+                      {
+                        "Lead Type": viewdetail.leadtype,
+                      },
+                      {
+                        "Follow Up Stage": viewdetail.followupstage,
+                      },
+                      {
+                        "Sales Person": viewdetail.salesperson,
+                      },
+                      {
+                        "Reference Type": viewdetail.referencetype,
+                      },
+                      {
+                        "Next Follow Up": `${viewdetail.nextfollowdate}  ${
+                          viewdetail.nextfollowtime || ""
+                        } `,
+                      },
+                      {
+                        "Last Contact": "N/a",
+                      },
+                    ]}
+                    width="w-[400px]"
+                    border="2"
+                  />
+                </div>
               </div>
             )}
 
@@ -714,76 +717,159 @@ export default function CRMClientPage() {
                   ))}
                 </div>
                 <div>
-                  <div className="bg-gray-200 grid grid-cols-2 gap-2 border rounded">
-                    <button className="px-2 " onClick={() => {}}>
+                  <div className=" grid grid-cols-2 gap-2">
+                    <button
+                      className={`px-2 ${
+                        followuptab ? "bg-gray-200" : ""
+                      } border rounded`}
+                      onClick={() => {
+                        setfollowuptab(true);
+                      }}
+                    >
                       <strong>Schedule Follow Up</strong>
                     </button>
 
-                    <button className="px-2 " onClick={() => {}}>
-                      <strong>Lead Clossing</strong>
+                    <button
+                      className={`px-2 ${
+                        !followuptab ? "bg-gray-200" : ""
+                      }  border rounded`}
+                      onClick={() => {
+                        setfollowuptab(false);
+                      }}
+                    >
+                      <strong>Lead Clossing...</strong>
                     </button>
                   </div>
 
-                  <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
-                    Follow Up Stage
-                  </h4>
-                  <div className="flex justify-around">
-                    {["Initial Contact", "Proposal", "Negotiation"].map(
-                      (item) => (
-                        <label>
-                          <input
-                            name="followupstage"
-                            className="mx-2"
-                            type="radio"
-                            value={item}
-                            onChange={handletypeChange}
-                          />
-                          {item}
-                        </label>
-                      )
-                    )}
-                  </div>
-                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
-                    Follow Up Date & Time
-                  </h6>
-                  <div className="flex justify-between my-2">
-                    <input
-                      type="date"
-                      name="nextfollowdate"
-                      onChange={handletypeChange}
-                      className="my-1 px-2"
-                    />
-                    <input
-                      type="time"
-                      name="nextfollowtime"
-                      onChange={handletypeChange}
-                      className="my-1"
-                    />
-                  </div>
-                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
-                    Follow Up Tye
-                  </h6>
-                  <div>
-                    <select
-                      name="followupType"
-                      className="my-2 w-full px-2 border rounded py-1"
-                      onChange={handletypeChange}
-                    >
-                      {["Call", "Whatapp", "Email"].map((item) => (
-                        <option value={item}>{item}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
-                    Remarks
-                  </h6>
-                  <div>
-                    <textarea
-                      className="my-2 px-2 border w-full rounded-xl"
-                      name="remarks"
-                      rows={3}
-                    ></textarea>
-                  </div>
+                  {followuptab && (
+                    <div>
+                      <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Follow Up Stage
+                      </h4>
+                      <div className="flex justify-around">
+                        {["Initial Contact", "Proposal", "Negotiation"].map(
+                          (item) => (
+                            <label>
+                              <input
+                                name="followupstage"
+                                className="mx-2"
+                                type="radio"
+                                value={item}
+                                onChange={handletypeChange}
+                              />
+                              {item}
+                            </label>
+                          )
+                        )}
+                      </div>
+                      <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Follow Up Date & Time
+                      </h6>
+                      <div className="flex justify-between my-2">
+                        <input
+                          type="date"
+                          name="nextfollowdate"
+                          onChange={handletypeChange}
+                          className="my-1 px-2"
+                        />
+                        <input
+                          type="time"
+                          name="nextfollowtime"
+                          onChange={handletypeChange}
+                          className="my-1"
+                        />
+                      </div>
+                      <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Follow Up Type
+                      </h6>
+                      <div>
+                        <select
+                          name="followupType"
+                          className="my-2 w-full px-2 border rounded py-1"
+                          onChange={handletypeChange}
+                        >
+                          {["Call", "Whatapp", "Email"].map((item) => (
+                            <option value={item}>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Remarks
+                      </h6>
+                      <div>
+                        <textarea
+                          className="my-2 px-2 border w-full rounded-xl"
+                          name="remarks"
+                          rows={3}
+                        ></textarea>
+                      </div>
+                    </div>
+                  )}
+
+                  {!followuptab && (
+                    <div>
+                      <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Closing Stage
+                      </h4>
+                      <div className="flex justify-around">
+                        {["Closing Won", "Closing Lost"].map((item) => (
+                          <label>
+                            <input
+                              name="status"
+                              className="mx-2"
+                              type="radio"
+                              value={item}
+                              onChange={handletypeChange}
+                            />
+                            {item}
+                          </label>
+                        ))}
+                      </div>
+                      <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Closing Reason
+                      </h4>
+                      <div>
+                        <select
+                          name="closingreason"
+                          className="my-2 w-full px-2 border rounded py-1"
+                          onChange={handletypeChange}
+                        >
+                          {[
+                            "Deal Won",
+                            "Budget Constraints",
+                            "Competitor Selected",
+                            "No Response",
+                            "Not Interested",
+                            "Other",
+                          ].map((item) => (
+                            <option value={item}>{item}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Closing Amount
+                      </h4>
+                      <div>
+                        <input
+                          className="my-2 px-2 border w-full rounded-xl"
+                          name="remarks"
+                          rows={3}
+                        ></input>
+                      </div>
+                      <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
+                        Closing Remarks / Notes
+                      </h4>
+
+                      <div>
+                        <textarea
+                          className="my-2 px-2 border w-full rounded-xl"
+                          name="closingRemarks"
+                          rows={3}
+                        ></textarea>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
