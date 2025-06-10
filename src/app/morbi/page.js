@@ -368,14 +368,14 @@ export default function MorbiOrderPage() {
     }
     try {
       const data = await response.json(); // attempt to parse JSON
-      console.log("Response:", data);
+      // console.log("Response:", data);
     } catch (err) {
       console.warn("No JSON returned from Morbi API Check it"); // Not critical unless needed
     }
 
     socket.emit("update-morbi", "true");
 
-    // await fetchOrders();
+    fetchOrders();
     showToast(editingId ? "Order updated" : "Order created");
     setFormData({
       date: moment().format("YYYY-MM-DD"),
@@ -397,6 +397,7 @@ export default function MorbiOrderPage() {
     setModalOpen(false);
     setModal1Open(false);
     setSubmitting(false); // Done submitting
+    
   };
 
   const handleEdit = (order) => {
