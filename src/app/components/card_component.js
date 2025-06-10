@@ -3,10 +3,10 @@ export default function InfoCard({
   title,
   sections,
   width = "w-full max-w-md",
-  border = "border",
+  border = "0",
 }) {
   return (
-    <div className={`bg-white ${border} rounded-2xl shadow p-3 ${width}  `}>
+    <div className={`bg-white border-${border} rounded shadow p-3 ${width}  `}>
       <h2 className=" font-bold mb-2">{title || "_"}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 overflow-hidden ">
         {sections.map((section, index) => (

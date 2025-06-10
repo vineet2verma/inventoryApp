@@ -2,14 +2,16 @@ import * as mongoose from "mongoose";
 
 const crmClientSchema = new mongoose.Schema(
   {
-    oid: { type: String, require: false },
-    date: { type: String, require: false },
+    cid: { type: String, require: false },
     name: { type: String, require: false },
     email: { type: String, require: false },
     mobile: { type: String, require: false },
+    billingaddress: { type: String, require: false },
+    shippingaddress: { type: String, require: false },
     companyname: { type: String, require: false },
     querytype: { type: String, require: false }, // price, Product Inquire, buy
     remarks: { type: String, require: false },
+    followupremarks: { type: String, require: false },
     leadtype: { type: String, require: false }, // hot , warm , cold
     salesperson: { type: String, require: false }, // sale person
     parent: { type: String, require: false },

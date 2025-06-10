@@ -5,7 +5,7 @@ export default function InfoCardInput({
   sections,
   setSections,
   width = "w-full max-w-md",
-  border = "border",
+  border = 0,
   editable = false,
   data,
   setviewdetail,
@@ -32,7 +32,7 @@ export default function InfoCardInput({
   };
 
   return (
-    <div className={`bg-white ${border} rounded shadow p-3 ${width}`}>
+    <div className={`bg-white border-${border} rounded shadow p-3 ${width}`}>
       <h2 className="font-bold mb-2">{title || "_"}</h2>
       <div className="grid grid-rows-1 md:grid-rows-2 gap-2 overflow-hidden">
         {sections[id]?.map((section, index) => (
