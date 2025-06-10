@@ -306,12 +306,12 @@ export default function CRMClientPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="grid grid-cols-2 gap-2">
-          <h1 className="text-2xl font-bold">CRM Client Master</h1>
+          <h1 className="text-2xl font-bold">CRM </h1>
         </div>
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setShowFilter(!showFilter)}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white text-xs px-2 py-2 rounded"
           >
             Show Filter
           </button>
@@ -321,9 +321,9 @@ export default function CRMClientPage() {
               setShowForm(true);
               setEditingId(null);
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white text-xs px-2 py-2 rounded"
           >
-            + Create New
+            Create New
           </button>
         </div>
       </div>
@@ -371,11 +371,11 @@ export default function CRMClientPage() {
             <tr className="bg-gray-700 text-white">
               <th className="border px-3 py-2 text-center">#</th>
               {columns.map((col) => (
-                <th key={col} className="border px-3 py-2 text-center">
+                <th key={col} className="border px-3 py-2 text-xs text-center">
                   {col.toUpperCase()}
                 </th>
               ))}
-              <th className="border px-3 py-2">ACTIONS</th>
+              <th className="border px-3 py-2 text-xs">ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -385,20 +385,20 @@ export default function CRMClientPage() {
                   key={item._id}
                   className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
                 >
-                  <td key={index} className="border px-3 py-2">
+                  <td key={index} className="border text-xs px-3 py-2">
                     {index + 1}
                   </td>
 
                   {columns.map((col) => (
-                    <td key={col} className="border px-3 py-2">
+                    <td key={col} className="border text-xs px-3 py-2">
                       {item[col] || ""}
                     </td>
                   ))}
-                  <td className="border px-3 py-2 relative">
+                  <td className="border text-xs px-3 py-2 relative">
                     <div className="flex justify-center space-x-2">
                       <button
                         onClick={() => handleCurrentrow(index, item)}
-                        className="text-blue-600"
+                        className="text-blue-600 "
                       >
                         <GripVertical size={16} />
                       </button>
@@ -419,7 +419,7 @@ export default function CRMClientPage() {
                           onClick={() => openModal("view Details")}
                           className="w-full text-left px-4 py-2 hover:bg-gray-100"
                         >
-                          <div className="flex">
+                          <div className="flex text-xs">
                             <FileUser size={16} className="mx-2" />
                             view Details
                           </div>
@@ -428,7 +428,7 @@ export default function CRMClientPage() {
                           onClick={() => openModal("Follow Up")}
                           className="w-full text-left px-4 py-2 hover:bg-gray-100"
                         >
-                          <div className="flex">
+                          <div className="flex text-xs">
                             <RefreshCcw size={16} className="mx-2" />
                             Follow Up
                           </div>
@@ -549,7 +549,7 @@ export default function CRMClientPage() {
                         <option disabled>Select Query</option>
                         {["Initial Contact", "Proposal", "Negotiation"].map(
                           (item, index) => (
-                            <option value={item}>{item}</option>
+                            <option value={item} className=""  >{item}</option>
                           )
                         )}
                       </select>
@@ -752,7 +752,7 @@ export default function CRMClientPage() {
                             <label>
                               <input
                                 name="followupstage"
-                                className="mx-2"
+                                className="mx-1 text-xs text-center "
                                 type="radio"
                                 value={item}
                                 onChange={handletypeChange}
@@ -770,13 +770,13 @@ export default function CRMClientPage() {
                           type="date"
                           name="nextfollowdate"
                           onChange={handletypeChange}
-                          className="my-1 px-2"
+                          className="my-1 px-2 text-xs"
                         />
                         <input
                           type="time"
                           name="nextfollowtime"
                           onChange={handletypeChange}
-                          className="my-1"
+                          className="my-1 text-xs"
                         />
                       </div>
                       <h6 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
