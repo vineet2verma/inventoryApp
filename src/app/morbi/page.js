@@ -75,7 +75,7 @@ export default function MorbiOrderPage() {
 
   const handleprev = () => {
     if (currentPage > 1) {
-      setLoading(true)
+      setLoading(true);
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
       fetchOrders(newPage);
@@ -83,21 +83,20 @@ export default function MorbiOrderPage() {
   };
 
   const handlenext = () => {
-
     if (totalPages > currentPage) {
-      setLoading(true)
+      setLoading(true);
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
       fetchOrders(newPage);
     }
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page = currentPage) => {
     const res = await fetch(
       `/api/morbi?page=${currentPage}&limit=${itemsPerPage}`
     );
     const data = await res.json();
-    console.log(data);
+    // console.log(data);
     setOrders(data.records);
     setTotalPages(data.totalPages);
     setLoading(false);
@@ -123,7 +122,7 @@ export default function MorbiOrderPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetchOrders();
+    fetchOrders(currentPage);
 
     if (socket.connected) {
       onConnect();
@@ -143,7 +142,7 @@ export default function MorbiOrderPage() {
     socket.on("disconnect", onDisconnect);
 
     socket.on("fetch-morbi-data", () => {
-      fetchOrders();
+      fetchOrders(currentPage);
 
       showNotification("Hi !!", {
         body: "Data Update Sucessfully",
@@ -154,7 +153,7 @@ export default function MorbiOrderPage() {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
     };
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     setrightread(user.user?.pmorbi.includes("read"));
@@ -378,7 +377,7 @@ export default function MorbiOrderPage() {
 
     socket.emit("update-morbi", "true");
 
-    fetchOrders();
+    fetchOrders(currentPage);
     showToast(editingId ? "Order updated" : "Order created");
     setFormData({
       date: moment().format("YYYY-MM-DD"),
@@ -400,7 +399,6 @@ export default function MorbiOrderPage() {
     setModalOpen(false);
     setModal1Open(false);
     setSubmitting(false); // Done submitting
-    
   };
 
   const handleEdit = (order) => {
@@ -425,7 +423,7 @@ export default function MorbiOrderPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
-      fetchOrders();
+      fetchOrders(currentPage);
       showToast("Order deleted", "error");
     } else showToast("Tile Name did not match", "error");
   };
@@ -481,9 +479,10 @@ export default function MorbiOrderPage() {
         <LoadingSpinner />
       ) : (
         rightread && (
-          <div className="p-4 max-w-7xl mx-auto ">
+          <div className="p-4 w-screen h-[100vh] overflow-auto ">
             <div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 ">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 top-0 ">
                 <div className="grid grid-cols-2 gap-2 ">
                   <button
                     onClick={() => router.push("/dashboard")}
@@ -958,43 +957,43 @@ export default function MorbiOrderPage() {
                         <td className="p-2 border text-wrap">
                           {order.tilename}
                         </td>
-                        <td className="p-2 border text-wrap">{order.coname}</td>
-                        <td className="p-2 border text-wrap">{order.size}</td>
-                        <td className="p-2 border text-wrap">{order.qty}</td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">{order.coname}</td>
+                        <td className="p-2 border text-wrap text-xs">{order.size}</td>
+                        <td className="p-2 border text-wrap text-xs">{order.qty}</td>
+                        <td className="p-2 border text-wrap text-xs">
                           {order.customername}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.location}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.salesman}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.orderconfirmation}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.salesmanremarks}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.availability}
                         </td>
 
-                        <td className="p-2 border">
+                        <td className="p-2 border text-xs">
                           {order.readydate
                             ? moment(order.readydate).format("DD/MM/YYYY")
                             : ""}
                         </td>
-                        <td className="p-2 border">
+                        <td className="p-2 border text-xs">
                           {order.transitdate
                             ? moment(order.transitdate).format("DD/MM/YYYY")
                             : ""}
                         </td>
-                        <td className="p-2 border text-wrap">
+                        <td className="p-2 border text-wrap text-xs">
                           {order.remarks}
                         </td>
 
-                        <td className=" items-center text-wrap px-2 py-2 flex ">
+                        <td className=" items-center text-wrap text-xs px-2 py-2 flex ">
                           {(user.user?.role == "admin" ||
                             (user.user?.name == "Ankush" &&
                               order.readydate == "")) && (
@@ -1063,6 +1062,7 @@ export default function MorbiOrderPage() {
             {/* Page Number Buttons */}
             <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
               <button
+                disabled={loading || currentPage <= 1}
                 className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
                 onClick={() => {
                   handleprev();
@@ -1071,9 +1071,11 @@ export default function MorbiOrderPage() {
                 Prev
               </button>
               <p>
-                <strong>{currentPage}</strong>
+                Page <strong>{currentPage}</strong> of{" "}
+                <strong>{totalPages}</strong>
               </p>
               <button
+                disabled={loading || currentPage >= totalPages}
                 className="bg-green-500 px-5 py-2 rounded-2xl border-1"
                 onClick={() => {
                   handlenext();
