@@ -42,7 +42,7 @@ export default function CRMClientPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     salesperson: "",
-    status : "",
+    status: "",
     // followupstage: "",
     nextfollowdate: "",
     search: "",
@@ -141,7 +141,7 @@ export default function CRMClientPage() {
   };
 
   const handlePagination = (direction) => {
-    console.log(direction)
+    console.log(direction);
     if (direction === "prev" && currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
@@ -241,9 +241,10 @@ export default function CRMClientPage() {
   const handleDelete = async (id) => {
     if (confirm("Are You Sure Want to Delete ?? ")) {
       const res = await fetch(`/api/crmclient?id=${id}`, { method: "DELETE" });
-      if (res.ok){
+      if (res.ok) {
         closeModal();
-        fetchData(currentPage)};
+        fetchData(currentPage);
+      }
     }
   };
 
@@ -272,9 +273,7 @@ export default function CRMClientPage() {
         .includes(filters.salesperson.toLowerCase());
     const matchesFollowupStage =
       !filters.status ||
-      item.status
-        ?.toLowerCase()
-        .includes(filters.status.toLowerCase());
+      item.status?.toLowerCase().includes(filters.status.toLowerCase());
     const matchesNextFollowDate =
       !filters.nextfollowdate ||
       item.nextfollowdate
@@ -308,8 +307,8 @@ export default function CRMClientPage() {
     fetchData();
 
     if (resp.success) {
-      setIsEditable(false)
-      setActiveModal(null)
+      setIsEditable(false);
+      setActiveModal(null);
       alert("Data Updated Sucessfully");
     }
   }
@@ -557,7 +556,9 @@ export default function CRMClientPage() {
                               "Survey",
                               "Other",
                             ].map((item) => (
-                              <option key={item} value={item}>{item}</option>
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
                             ))}
                           </select>
                         ) : col == "salesperson" ? (
@@ -569,14 +570,16 @@ export default function CRMClientPage() {
                               "Name Three",
                               "Name Four",
                             ].map((item, index) => (
-                              <option key={index} value={item}>{item}</option>
+                              <option key={index} value={item}>
+                                {item}
+                              </option>
                             ))}
                           </select>
                         ) : col == "leadtype" ? (
                           <select name={col} onChange={handleChange}>
                             <option disabled>Select Query</option>
                             {["Hot", "Warm", "Cold"].map((item) => (
-                              <option key={item}  value={item} className="">
+                              <option key={item} value={item} className="">
                                 {item}
                               </option>
                             ))}
@@ -748,18 +751,16 @@ export default function CRMClientPage() {
                 {/* Modal Follow Up */}
                 {modalfollowup && (
                   <div className="grid grid-cols-1 gap-2 ">
-                    
                     <p className="px-2 bg-gray-200 text-black font-semibold max-w-full">
                       Lead Type
                     </p>
                     <div className="flex justify-around">
                       {["Hot", "Warm", "Cold"].map((item) => (
-                        <label key={item} >
+                        <label key={item}>
                           <input
                             key={item}
                             name="leadtype"
                             className="mx-2"
-                            defaultChecked={viewdetail.leadtype}
                             type="radio"
                             value={item}
                             onChange={handletypeChange}
@@ -800,7 +801,7 @@ export default function CRMClientPage() {
                           </h4>
                           <div className="flex justify-around">
                             {["Initial Contact", "Proposal", "Negotiation"].map(
-                              (item,index) => (
+                              (item, index) => (
                                 <label>
                                   <input
                                     key={index}
@@ -843,9 +844,13 @@ export default function CRMClientPage() {
                               defaultValue={viewdetail.followupType}
                               onChange={handletypeChange}
                             >
-                              {["Call", "Whatapp", "Email"].map((item, index) => (
-                                <option key={index} value={item}>{item}</option>
-                              ))}
+                              {["Call", "Whatapp", "Email"].map(
+                                (item, index) => (
+                                  <option key={index} value={item}>
+                                    {item}
+                                  </option>
+                                )
+                              )}
                             </select>
                           </div>
 
@@ -901,8 +906,10 @@ export default function CRMClientPage() {
                                 "No Response",
                                 "Not Interested",
                                 "Other",
-                              ].map((item,index) => (
-                                <option key={index} value={item}>{item}</option>
+                              ].map((item, index) => (
+                                <option key={index} value={item}>
+                                  {item}
+                                </option>
                               ))}
                             </select>
                           </div>
@@ -936,13 +943,13 @@ export default function CRMClientPage() {
               </div>
             </div>
           )}
-                    {/* Page Number Buttons */}
+          {/* Page Number Buttons */}
           <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
             <button
               disabled={loading || currentPage <= 1}
               className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
               onClick={() => {
-                handlePagination("prev")
+                handlePagination("prev");
                 // handleprev();
               }}
             >
@@ -956,14 +963,13 @@ export default function CRMClientPage() {
               disabled={loading || currentPage >= totalPages}
               className="bg-green-500 px-5 py-2 rounded-2xl border-1"
               onClick={() => {
-                handlePagination("next")
+                handlePagination("next");
                 // handlenext();
               }}
             >
               Next
             </button>
           </div>
-
         </div>
       )}
     </>

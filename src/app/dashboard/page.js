@@ -25,12 +25,12 @@ export default function Dashboard() {
   const [permissionbreakage, setpermissionbreakage] = useState(false);
   const [permissionitemstatus, setpermissionitemstatus] = useState(false);
   const [permissionquotation, setpermissionquotation] = useState(false);
-  const [permissionquotationimage, setpermissionquotationimage] = useState(false);
+  const [permissionquotationimage, setpermissionquotationimage] =
+    useState(false);
   const [permissionquotationview, setpermissionquotationview] = useState(false);
   const [permissionmorbi, setpermissionmorbi] = useState(false);
-  const [permissioncrm,setpermissioncrm]= useState(false);
+  const [permissioncrm, setpermissioncrm] = useState(false);
   const [permisson, setpermisson] = useState([]);
-  
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -89,7 +89,6 @@ export default function Dashboard() {
     setpermissionmorbi(user.user?.pmorbi.includes("read"));
     setpermisson(user.user?.ppermission.includes("read"));
     setpermissioncrm(user.user?.ppermission.includes("read"));
-    
   }, [user]);
 
   return (
@@ -303,7 +302,7 @@ export default function Dashboard() {
                   Permission
                 </button>
               )}
-              {user.user?.role == "admin" && (
+              {permissioncrm && (
                 <button
                   onClick={() => router.push("/crm")}
                   className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
