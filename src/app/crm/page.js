@@ -42,7 +42,8 @@ export default function CRMClientPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState({
     salesperson: "",
-    followupstage: "",
+    status : "",
+    // followupstage: "",
     nextfollowdate: "",
     search: "",
   });
@@ -53,7 +54,8 @@ export default function CRMClientPage() {
     "querytype",
     "salesperson",
     "nextfollowdate",
-    "followupstage",
+    "status",
+    // "followupstage",
     "referencetype",
   ];
 
@@ -115,9 +117,10 @@ export default function CRMClientPage() {
       ],
       [
         {
-          key: "followupstage",
+          key: "status",
+          // key: "followupstage",
           subtitle: "Follow Up Stage",
-          detail: itemarray.followupstage,
+          detail: itemarray.status,
         },
         {
           key: "referencetype",
@@ -137,18 +140,14 @@ export default function CRMClientPage() {
     setviewdetail(itemarray);
   };
 
-  const handleprev = () => {
-    if (currentPage > 1) {
-      setloading(true);
+  const handlePagination = (direction) => {
+    console.log(direction)
+    if (direction === "prev" && currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
       fetchData(newPage);
     }
-  };
-
-  const handlenext = () => {
-    if (totalPages > currentPage) {
-      setloading(true);
+    if (direction === "next" && currentPage < totalPages) {
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
       fetchData(newPage);
@@ -217,7 +216,7 @@ export default function CRMClientPage() {
     const method = editingId ? "PUT" : "POST";
     const payload = editingId
       ? { ...form, _id: editingId, lastcontact: new Date() }
-      : { ...form, followupstage: "Initial Contact", lastcontact: new Date() };
+      : { ...form, status: "Initial Contact", lastcontact: new Date() };
 
     const res = await fetch("/api/crmclient", {
       method,
@@ -242,7 +241,9 @@ export default function CRMClientPage() {
   const handleDelete = async (id) => {
     if (confirm("Are You Sure Want to Delete ?? ")) {
       const res = await fetch(`/api/crmclient?id=${id}`, { method: "DELETE" });
-      if (res.ok) fetchData(currentPage);
+      if (res.ok){
+        closeModal();
+        fetchData(currentPage)};
     }
   };
 
@@ -270,10 +271,10 @@ export default function CRMClientPage() {
         ?.toLowerCase()
         .includes(filters.salesperson.toLowerCase());
     const matchesFollowupStage =
-      !filters.followupstage ||
-      item.followupstage
+      !filters.status ||
+      item.status
         ?.toLowerCase()
-        .includes(filters.followupstage.toLowerCase());
+        .includes(filters.status.toLowerCase());
     const matchesNextFollowDate =
       !filters.nextfollowdate ||
       item.nextfollowdate
@@ -307,6 +308,8 @@ export default function CRMClientPage() {
     fetchData();
 
     if (resp.success) {
+      setIsEditable(false)
+      setActiveModal(null)
       alert("Data Updated Sucessfully");
     }
   }
@@ -371,9 +374,9 @@ export default function CRMClientPage() {
               />
               <input
                 type="text"
-                name="followupstage"
+                name="status"
                 placeholder="Filter by Followup Stage"
-                value={filters.followupstage}
+                value={filters.status}
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
               />
@@ -716,7 +719,7 @@ export default function CRMClientPage() {
                             "Lead Type": viewdetail.leadtype,
                           },
                           {
-                            "Follow Up Stage": viewdetail.followupstage,
+                            "Follow Up Stage": viewdetail.status,
                           },
                           {
                             "Sales Person": viewdetail.salesperson,
@@ -786,7 +789,7 @@ export default function CRMClientPage() {
                             setfollowuptab(false);
                           }}
                         >
-                          <strong>Lead Clossing...</strong>
+                          <strong>Lead Clossing</strong>
                         </button>
                       </div>
 
@@ -801,9 +804,9 @@ export default function CRMClientPage() {
                                 <label>
                                   <input
                                     key={index}
-                                    name="followupstage"
+                                    name="status"
                                     className="mx-1 text-xs text-center "
-                                    defaultChecked={viewdetail.followupstage}
+                                    // defaultChecked={viewdetail.status}
                                     type="radio"
                                     value={item}
                                     onChange={handletypeChange}
@@ -871,8 +874,9 @@ export default function CRMClientPage() {
                               <label key={item}>
                                 <input
                                   key={item}
-                                  name="closingstage"
+                                  name="status"
                                   className="mx-2"
+                                  // defaultChecked="item"
                                   type="radio"
                                   value={item}
                                   onChange={handletypeChange}
@@ -932,28 +936,34 @@ export default function CRMClientPage() {
               </div>
             </div>
           )}
-          {/* Page Number Buttons */}
+                    {/* Page Number Buttons */}
           <div className="flex justify-between px-5 items-center max-w-100 m-auto mt-5">
             <button
+              disabled={loading || currentPage <= 1}
               className="bg-yellow-500 px-5 py-2 rounded-2xl border-1"
               onClick={() => {
-                handleprev();
+                handlePagination("prev")
+                // handleprev();
               }}
             >
               Prev
             </button>
             <p>
-              <strong>{currentPage}</strong>
+              Page <strong>{currentPage}</strong> of{" "}
+              <strong>{totalPages}</strong>
             </p>
             <button
+              disabled={loading || currentPage >= totalPages}
               className="bg-green-500 px-5 py-2 rounded-2xl border-1"
               onClick={() => {
-                handlenext();
+                handlePagination("next")
+                // handlenext();
               }}
             >
               Next
             </button>
           </div>
+
         </div>
       )}
     </>

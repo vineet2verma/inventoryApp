@@ -25,11 +25,12 @@ export default function Dashboard() {
   const [permissionbreakage, setpermissionbreakage] = useState(false);
   const [permissionitemstatus, setpermissionitemstatus] = useState(false);
   const [permissionquotation, setpermissionquotation] = useState(false);
-  const [permissionquotationimage, setpermissionquotationimage] =
-    useState(false);
+  const [permissionquotationimage, setpermissionquotationimage] = useState(false);
   const [permissionquotationview, setpermissionquotationview] = useState(false);
   const [permissionmorbi, setpermissionmorbi] = useState(false);
+  const [permissioncrm,setpermissioncrm]= useState(false);
   const [permisson, setpermisson] = useState([]);
+  
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -87,6 +88,8 @@ export default function Dashboard() {
     setpermissionquotationview(user.user?.pquotationview.includes("read"));
     setpermissionmorbi(user.user?.pmorbi.includes("read"));
     setpermisson(user.user?.ppermission.includes("read"));
+    setpermissioncrm(user.user?.ppermission.includes("read"));
+    
   }, [user]);
 
   return (

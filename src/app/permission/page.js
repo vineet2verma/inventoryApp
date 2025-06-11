@@ -18,7 +18,10 @@ const permissionFields = [
   'pquotationimage',
   'pquotationview',
   'pmorbi',
-  'ppermission'
+  'ppermission',
+  'pcrm',
+  'pchklistmast',
+  'pchecklisttask',
 ]
 
 const actions = ['read', 'create', 'update', 'delete']
@@ -113,11 +116,7 @@ export default function PermissionsPage () {
     })
 
     const result = await req.json()
-
-    // settokenlink(result.token)
-
     settokenlink(`/resetpassword/${result.token} `)
-
     setviewtoken(true)
   }
 
@@ -132,7 +131,7 @@ export default function PermissionsPage () {
           Home
         </button>
         <h1 className='text-3xl font-bold mb-2 text-center'>
-          User Permission Management
+          User Permission
         </h1>
       </div>
 

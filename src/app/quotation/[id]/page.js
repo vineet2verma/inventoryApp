@@ -773,9 +773,9 @@ export default function QuotationPage({}) {
               <div className="text-lg font-bold">
                 Grand Total: ₹{grandTotal.toFixed(2)}
               </div>
-              <div className="text-lg font-bold">
-                {/* <p>{"Amount :- "}{converter.toWords(grandTotal.toFixed(2))}</p> */}
-              </div>
+              {/* <div className="text-lg font-bold">
+                <pre className="text-wrap text-xs max-w-100 ">{"( "}{converter.toWords(grandTotal.toFixed(2))}{" )"}</pre>
+              </div> */}
             </div>
           </div>
 
