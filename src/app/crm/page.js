@@ -553,8 +553,8 @@ export default function CRMClientPage() {
                               "Price Quota",
                               "Survey",
                               "Other",
-                            ].map((item, index) => (
-                              <option value={item}>{item}</option>
+                            ].map((item) => (
+                              <option key={item} value={item}>{item}</option>
                             ))}
                           </select>
                         ) : col == "salesperson" ? (
@@ -566,14 +566,14 @@ export default function CRMClientPage() {
                               "Name Three",
                               "Name Four",
                             ].map((item, index) => (
-                              <option value={item}>{item}</option>
+                              <option key={index} value={item}>{item}</option>
                             ))}
                           </select>
                         ) : col == "leadtype" ? (
                           <select name={col} onChange={handleChange}>
                             <option disabled>Select Query</option>
-                            {["Hot", "Warm", "Cold"].map((item, index) => (
-                              <option value={item} className="">
+                            {["Hot", "Warm", "Cold"].map((item) => (
+                              <option key={item}  value={item} className="">
                                 {item}
                               </option>
                             ))}
@@ -591,7 +591,7 @@ export default function CRMClientPage() {
                               "Event",
                               "Other",
                             ].map((item, index) => (
-                              <option value={item} className="">
+                              <option key={index} value={item} className="">
                                 {item}
                               </option>
                             ))}
@@ -745,14 +745,15 @@ export default function CRMClientPage() {
                 {/* Modal Follow Up */}
                 {modalfollowup && (
                   <div className="grid grid-cols-1 gap-2 ">
-                    <newline />
+                    
                     <p className="px-2 bg-gray-200 text-black font-semibold max-w-full">
                       Lead Type
                     </p>
                     <div className="flex justify-around">
                       {["Hot", "Warm", "Cold"].map((item) => (
-                        <label>
+                        <label key={item} >
                           <input
+                            key={item}
                             name="leadtype"
                             className="mx-2"
                             defaultChecked={viewdetail.leadtype}
@@ -796,9 +797,10 @@ export default function CRMClientPage() {
                           </h4>
                           <div className="flex justify-around">
                             {["Initial Contact", "Proposal", "Negotiation"].map(
-                              (item) => (
+                              (item,index) => (
                                 <label>
                                   <input
+                                    key={index}
                                     name="followupstage"
                                     className="mx-1 text-xs text-center "
                                     defaultChecked={viewdetail.followupstage}
@@ -838,8 +840,8 @@ export default function CRMClientPage() {
                               defaultValue={viewdetail.followupType}
                               onChange={handletypeChange}
                             >
-                              {["Call", "Whatapp", "Email"].map((item) => (
-                                <option value={item}>{item}</option>
+                              {["Call", "Whatapp", "Email"].map((item, index) => (
+                                <option key={index} value={item}>{item}</option>
                               ))}
                             </select>
                           </div>
@@ -866,9 +868,10 @@ export default function CRMClientPage() {
                           </h4>
                           <div className="flex justify-around">
                             {["Closing Won", "Closing Lost"].map((item) => (
-                              <label>
+                              <label key={item}>
                                 <input
-                                  name="status"
+                                  key={item}
+                                  name="closingstage"
                                   className="mx-2"
                                   type="radio"
                                   value={item}
@@ -894,8 +897,8 @@ export default function CRMClientPage() {
                                 "No Response",
                                 "Not Interested",
                                 "Other",
-                              ].map((item) => (
-                                <option value={item}>{item}</option>
+                              ].map((item,index) => (
+                                <option key={index} value={item}>{item}</option>
                               ))}
                             </select>
                           </div>
@@ -905,14 +908,13 @@ export default function CRMClientPage() {
                           <div>
                             <input
                               className="my-2 px-2 border w-full rounded-xl"
-                              name="remarks"
+                              name="closingamount"
                               rows={3}
                             ></input>
                           </div>
                           <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
-                            Closing Remarks / Notes
+                            Closing / Delivery Remarks
                           </h4>
-
                           <div>
                             <textarea
                               className="my-2 px-2 border w-full rounded-xl"

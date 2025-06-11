@@ -462,7 +462,7 @@ export default function QuotationPage({}) {
                 </button>
               )} */}
 
-              {/* {showedit && (
+              {showedit && quotation.date==moment(new Date()).format("YYYY-MM-DD")  && (
                 <button
                   onClick={() => {
                     handleEdit("edit");
@@ -471,7 +471,7 @@ export default function QuotationPage({}) {
                 >
                   Edit
                 </button>
-              )} */}
+              )}
 
               {btnclientDetails && (
                 <button

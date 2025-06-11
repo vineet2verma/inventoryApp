@@ -10,19 +10,23 @@ const crmClientSchema = new mongoose.Schema(
     shippingaddress: { type: String, require: false },
     companyname: { type: String, require: false },
     querytype: { type: String, require: false }, // price, Product Inquire, buy
-    remarks: { type: String, require: false },
-    followupremarks: { type: String, require: false },
     leadtype: { type: String, require: false }, // hot , warm , cold
+    remarks: { type: String, require: false },
     salesperson: { type: String, require: false }, // sale person
-    parent: { type: String, require: false },
-    referencetype: { type: String, require: false }, // ref
-    protentialvalue: { type: String, require: false }, // 5000, 10000,20000, 100000
     nextfollowdate: { type: String, require: false }, // date
-    nextfollowtime: { type: String, require: false }, // time
+    protentialvalue: { type: String, require: false }, // 5000, 10000,20000, 100000
+    referencetype: { type: String, require: false }, // ref
     followupstage: { type: String, require: false }, // intial, poposal, negotiation
+    nextfollowtime: { type: String, require: false }, // time
     followupType: { type: String, require: false }, // call , whatapp, email
-    lastcontact: { type: String, require: false },
-    status: { type: String, require: false }, // Open, Close
+    followupremarks: { type: String, require: false }, // follow up remarks
+    lastcontact: { type: String, require: false }, // last contact / update
+    closingstage : { type: String, require: false }, // closing stage
+    closingtype : { type: String, require: false }, // closing type 
+    closingamount : { type: String, require: false }, // closing amount
+    closingremarks : { type: String, require: false }, // closing remarks
+    status: { type: String, require: false, default: "Active" }, // Open, Close
+    parent: { type: String, require: false },
   },
   { timestamps: true }
 );

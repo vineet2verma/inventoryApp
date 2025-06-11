@@ -995,7 +995,7 @@ export default function MorbiOrderPage() {
 
                         <td className=" items-center text-wrap text-xs px-2 py-2 flex ">
                           {(user.user?.role == "admin" ||
-                            (user.user?.name == "purchase" &&
+                            (user.user?.role == "purchase" &&
                               order.readydate == "")) && (
                             <button
                               onClick={() => {
