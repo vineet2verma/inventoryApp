@@ -167,6 +167,8 @@ export default function CRMClientPage() {
     setTotalPages(json.totalPages);
   };
 
+  use
+
   useEffect(() => {
     // const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
     // setusername(currentUser);

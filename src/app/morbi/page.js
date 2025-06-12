@@ -996,7 +996,7 @@ export default function MorbiOrderPage() {
                         <td className=" items-center text-wrap text-xs px-2 py-2 flex ">
                           {(user.user?.role == "admin" ||
                             (user.user?.role == "purchase" &&
-                              order.readydate == "")) && (
+                              order.readydate == "") && order.orderconfirmation!="Cancel" ) && (
                             <button
                               onClick={() => {
                                 handleOpen2modal(
@@ -1013,7 +1013,7 @@ export default function MorbiOrderPage() {
                             </button>
                           )}
 
-                          {(rightedit && order.transitdate == "" && user.user.name==order.salesman ) && (
+                          {(rightedit && order.transitdate == "" && order.orderconfirmation!='Cancel' && user.user.name==order.salesman ) && (
                             <button
                               onClick={() => handleEdit(order)}
                               className="px-1 text-green-500 "
