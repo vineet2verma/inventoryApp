@@ -29,6 +29,14 @@ export default function QuotationPage() {
 
   const [showdownload, setShowDownload] = useState(false);
   const [showimagename, setShowimagename] = useState(true);
+  const [userlist, setuserlist] = useState([]);
+
+  const fetchusers = async () => {
+    const res = await fetch("/api/getallusers");
+    const data = await res.json();
+    const userlistdata = data.data.map((item) => item.name);
+    setuserlist(userlistdata.sort());
+  };
 
   const fetchQuotations = async () => {
     const res = await fetch("/api/quotation");
@@ -37,6 +45,7 @@ export default function QuotationPage() {
 
   useEffect(() => {
     fetchQuotations();
+    fetchusers();
   }, []);
 
   useEffect(() => {
@@ -128,11 +137,11 @@ export default function QuotationPage() {
     afterDiscount +
     gstAmt +
     Number(quotation.cuttingCharges || 0) +
-    Number(quotation.cuttingCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cuttingCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.cartageCharges || 0) +
-    Number(quotation.cartageCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cartageCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.packingCharges || 0) +
-    Number(quotation.packingCharges*quotation.gstRate/100 || 0);
+    Number((quotation.packingCharges * quotation.gstRate) / 100 || 0);
 
   const handlemodelSubmit = () => {
     const newErrors = {};
@@ -309,17 +318,10 @@ export default function QuotationPage() {
                               })
                             }
                           >
-                            <option value="">Select Sales Person</option>
-                            <option value="alveena">Alveena</option>
-                            <option value="Amit sharma">Amit Sharma</option>
-                            <option value="Aditya">Aditya</option>
-                            <option value="ajeet">Ajeet</option>
-                            <option value="Reshma">Reshma</option>
-                            <option value="Simran">Simran</option>
-                            <option value="Sonam">Sonam</option>
-                            <option value="Test">Test</option>
-                            <option value="Vikas">Vikas</option>
-                            <option value="vin verma">vin verma</option>
+                            <option selected>Select Sales Person</option>
+                            {userlist.map((item) => (
+                              <option value={item}>{item}</option>
+                            ))}
                           </select>
                           {errors.saleperson && (
                             <p className="text-red-500 text-xs">
@@ -583,7 +585,7 @@ export default function QuotationPage() {
                       <input
                         type="number"
                         className="w-full  px-1 text-center"
-                        value={item.qtypersqft ?? "" }
+                        value={item.qtypersqft ?? ""}
                         onChange={(e) =>
                           handleItemChange(index, "qtypersqft", e.target.value)
                         }

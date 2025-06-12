@@ -16,13 +16,20 @@ export default function QuotationPage() {
   const [rightcreate, setrightcreate] = useState(false);
   const [rightedit, setrightedit] = useState(false);
   const [rightdelete, setrightdelete] = useState(false);
-
   const [showCharges, setShowCharges] = useState(false);
   const [showClientModal, setShowClientModal] = useState(false);
-  // const [qnumber, setqnumber] = useState("");
   const [showdownload, setShowDownload] = useState(false);
   const [errors, setErrors] = useState({});
   const [showimagename, setShowimagename] = useState(true);
+  const [userlist, setuserlist] = useState([]);
+  const [discountlumsum, setdiscountlumsum] = useState(false);
+
+  const fetchusers = async () => {
+    const res = await fetch("/api/getallusers");
+    const data = await res.json();
+    const userlistdata = data.data.map((item) => item.name);
+    setuserlist(userlistdata.sort());
+  };
 
   const fetchQuotations = async () => {
     const res = await fetch("/api/quotation");
@@ -31,6 +38,7 @@ export default function QuotationPage() {
 
   useEffect(() => {
     fetchQuotations();
+    fetchusers();
   }, []);
 
   useEffect(() => {
@@ -301,18 +309,10 @@ export default function QuotationPage() {
                             })
                           }
                         >
-                          <option value="">Select Sales Person</option>
-                          <option value="">Select Sales Person</option>
-                          <option value="alveena">Alveena</option>
-                          <option value="Amit sharma">Amit Sharma</option>
-                          <option value="Aditya">Aditya</option>
-                          <option value="ajeet">Ajeet</option>
-                          <option value="Reshma">Reshma</option>
-                          <option value="Simran">Simran</option>
-                          <option value="Sonam">Sonam</option>
-                          <option value="Test">Test</option>
-                          <option value="Vikas">Vikas</option>
-                          <option value="vin verma">vin verma</option>
+                          <option selected>Select User</option>
+                          {userlist.map((item) => (
+                            <option value={item}>{item}</option>
+                          ))}
                         </select>
                         {errors.saleperson && (
                           <p className="text-red-500 text-xs">
@@ -765,6 +765,7 @@ export default function QuotationPage() {
                 <h3 className="text-lg font-semibold mb-4">Enter Charges</h3>
                 <div className="space-y-3">
                   <div>
+                    <p>chk</p>
                     <label>Discount (%)</label>
                     <input
                       type="number"

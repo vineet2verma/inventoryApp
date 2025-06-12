@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import crmclientmast from "@/app/api/models/crmMast";
 
-
 // GET - Read with Pagination
 export async function GET(req) {
-  
   try {
     await connectToDatabase();
 
@@ -15,20 +13,24 @@ export async function GET(req) {
     const username = searchParams.get("user") || "";
     const skip = (page - 1) * limit;
 
-    // console.log(
-    //   `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
-    // );
+    console.log(
+      `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
+    );
 
-    let query = {};
+    let query = { status: { $not: /closed/i } };
 
-    if (username !== "admin") {
-      query = { salesperson: username };
-    }
+    // if (page > 0) {
+    //   query = { ...query, salesperson: "Ajeet" };
+    // }
+
+    // if (username !== "admin" || username !== "undefined") {
+    //   query = { salesperson: username };
+    // }
 
     const total = await crmclientmast.countDocuments();
     const totalPages = Math.ceil(total / limit);
     const data = await crmclientmast
-      .find()
+      .find(query)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });

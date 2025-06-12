@@ -12,13 +12,13 @@ import {
 import { useEffect, useState, useRef } from "react";
 import InfoCard from "@/app/components/card_component";
 import InfoCardInput from "../components/card_input";
-import { LoginUserFunc } from "../context/loginuser";
+import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
 import { useRouter } from "next/navigation";
 
 export default function CRMClientPage() {
-  const {user}  = LoginUserFunc();
+  const { user } = LoginUserFunc();
   const router = useRouter();
   const [username, setusername] = useState("");
   const [viewdetail, setviewdetail] = useState({});
@@ -35,12 +35,13 @@ export default function CRMClientPage() {
   const submenuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 50; // Number of items per page
   const [data, setData] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [userlist, setuserlist] = useState([]);
   const [filters, setFilters] = useState({
     salesperson: "",
     status: "",
@@ -60,9 +61,16 @@ export default function CRMClientPage() {
     "referencetype",
   ];
 
+  const fetchusers = async () => {
+    const res = await fetch("/api/getallusers");
+    const data = await res.json();
+    const userlistdata = data.data.map((item) => item.name);
+    setuserlist(userlistdata.sort());
+  };
+
   const handleCurrentrow = (index, itemarray) => {
-    console.log("index => ", index);
-    console.log("itemarray => ", itemarray);
+    // console.log("index => ", index);
+    // console.log("itemarray => ", itemarray);
 
     const mergedSections = [
       [
@@ -142,7 +150,7 @@ export default function CRMClientPage() {
   };
 
   const handlePagination = (direction) => {
-    console.log(direction);
+    // console.log(direction);
     console.log("pagination username => ", username);
 
     if (direction === "prev" && currentPage > 1) {
@@ -157,9 +165,15 @@ export default function CRMClientPage() {
     }
   };
 
+  useEffect(() => {
+    const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
+    setusername(currentUser);
+    console.log("use effect username =>", currentUser);
+  }, [user]);
+
   const fetchData = async (currentPage) => {
     const res = await fetch(
-      `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}`
+      `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${username}`
     );
     const json = await res.json();
     if (json.success) setData(json.data);
@@ -167,16 +181,10 @@ export default function CRMClientPage() {
     setTotalPages(json.totalPages);
   };
 
-  
-
   useEffect(() => {
-    // const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
-    // setusername(currentUser);
-    // console.log(user.user?.name);
-    // console.log("use effect username =>", currentUser);
-
+    fetchusers();
     fetchData(currentPage);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -425,80 +433,84 @@ export default function CRMClientPage() {
                         (item) => item.salesperson === user.user?.name
                       )
                   )
-                  // filteredData
-                  .map((item, index) => (
-                    <tr
-                      key={item._id}
-                      className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
-                    >
-                      <td key={index} className="border text-xs px-3 py-2">
-                        {index + 1}
-                      </td>
-
-                      {columns.map((col) => (
-                        <td key={col} className="border text-xs px-3 py-2">
-                          {col == "createdAt"
-                            ? moment(item[col]).format("DD/MM/YYYY")
-                            : item[col]}
+                    // filteredData
+                    .map((item, index) => (
+                      <tr
+                        key={item._id}
+                        className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
+                      >
+                        <td key={index} className="border text-xs px-3 py-2">
+                          {index + 1}
                         </td>
-                      ))}
-                      <td className="border text-xs px-3 py-2 relative">
-                        <div className="flex justify-center space-x-2">
-                          <button
-                            onClick={() => handleCurrentrow(index, item)}
-                            className="text-blue-600 "
-                          >
-                            <GripVertical size={16} />
-                          </button>
-                          {/* <button
+
+                        {columns.map((col) => (
+                          <td key={col} className="border text-xs px-3 py-2">
+                            {col == "createdAt"
+                              ? moment(item[col]).format("DD/MM/YYYY")
+                              : item[col]}
+                          </td>
+                        ))}
+                        <td className="border text-xs px-3 py-2 relative">
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={() => handleCurrentrow(index, item)}
+                              className="text-blue-600 "
+                            >
+                              <GripVertical size={16} />
+                            </button>
+                            {/* <button
                         onClick={() => handleEdit(item)}
                         className="text-blue-600"
                       >
                         <Pencil size={16} />
                       </button> */}
-                        </div>
-
-                        {openMenuIndex === index && (
-                          <div
-                            ref={submenuRef}
-                            className="absolute right-0 mt-1 w-36 bg-white border shadow rounded z-20"
-                          >
-                            <button
-                              onClick={() => openModal("view Details")}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                            >
-                              <div className="flex text-xs">
-                                <FileUser size={16} className="mx-2" />
-                                view Details
-                              </div>
-                            </button>
-                            <button
-                              onClick={() => openModal("Follow Up")}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                            >
-                              <div className="flex text-xs">
-                                <RefreshCcw size={16} className="mx-2" />
-                                Follow Up
-                              </div>
-                            </button>
-
-                            {user.user?.role == "admin" ? <button
-                              onClick={() => {
-                                handleDelete(item._id);
-                              }}
-                              // onClick={() => openModal("Delete")}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                            >
-                              <div className="flex">
-                                <Trash2 size={16} className="mx-2" />
-                                Delete
-                              </div>
-                            </button>:''}
                           </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))
+
+                          {openMenuIndex === index && (
+                            <div
+                              ref={submenuRef}
+                              className="absolute right-0 mt-1 w-36 bg-white border shadow rounded z-20"
+                            >
+                              <button
+                                onClick={() => openModal("view Details")}
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                              >
+                                <div className="flex text-xs">
+                                  <FileUser size={16} className="mx-2" />
+                                  view Details
+                                </div>
+                              </button>
+                              <button
+                                onClick={() => openModal("Follow Up")}
+                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                              >
+                                <div className="flex text-xs">
+                                  <RefreshCcw size={16} className="mx-2" />
+                                  Follow Up
+                                </div>
+                              </button>
+
+                              {user.user?.role == "admin" ? (
+                                <button
+                                  onClick={() => {
+                                    handleDelete(item._id);
+                                  }}
+                                  // onClick={() => openModal("Delete")}
+                                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                >
+                                  <div className="flex">
+                                    <Trash2 size={16} className="mx-2" />
+                                    Delete
+                                  </div>
+                                </button>
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))
                 ) : (
                   <tr>
                     <td
@@ -560,7 +572,6 @@ export default function CRMClientPage() {
                             name={col}
                             type="number"
                             min={0}
-                            max={999999999}
                             value={form[col] || ""}
                             onChange={handleChange}
                             className="p-2 border rounded"
@@ -581,13 +592,8 @@ export default function CRMClientPage() {
                           </select>
                         ) : col == "salesperson" ? (
                           <select name={col} onChange={handleChange}>
-                            <option disabled>Select Name</option>
-                            {[
-                              "Name One",
-                              "Name Two",
-                              "Name Three",
-                              "Name Four",
-                            ].map((item, index) => (
+                            <option selected>Select Name</option>
+                            {userlist.map((item, index) => (
                               <option key={index} value={item}>
                                 {item}
                               </option>
