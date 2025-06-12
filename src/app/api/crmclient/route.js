@@ -2,15 +2,28 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import crmclientmast from "@/app/api/models/crmMast";
 
+
 // GET - Read with Pagination
 export async function GET(req) {
+  
   try {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 20;
+    const username = searchParams.get("user") || "";
     const skip = (page - 1) * limit;
+
+    // console.log(
+    //   `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
+    // );
+
+    let query = {};
+
+    if (username !== "admin") {
+      query = { salesperson: username };
+    }
 
     const total = await crmclientmast.countDocuments();
     const totalPages = Math.ceil(total / limit);

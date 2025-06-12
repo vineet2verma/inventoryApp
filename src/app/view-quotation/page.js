@@ -23,7 +23,7 @@ export default function ViewQuotation() {
   const [showfilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 20; // Number of items per page
 
   const { user } = LoginUserFunc();
 

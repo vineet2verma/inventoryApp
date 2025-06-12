@@ -88,7 +88,7 @@ export default function Dashboard() {
     setpermissionquotationview(user.user?.pquotationview.includes("read"));
     setpermissionmorbi(user.user?.pmorbi.includes("read"));
     setpermisson(user.user?.ppermission.includes("read"));
-    setpermissioncrm(user.user?.ppermission.includes("read"));
+    setpermissioncrm(user.user?.pcrm.includes("read"));
   }, [user]);
 
   return (
@@ -97,7 +97,7 @@ export default function Dashboard() {
         <LoadingSpinner />
       ) : (
         <>
-          {user.user?.name == "vin verma" && <SideMenu />}
+          {user.user?.role == "admin" && <SideMenu />}
           <div className={`min-h-screen pl-18 bg-gray-100 px-5 pt-2`}>
             {/* Header */}
             <header className="flex justify-between items-center bg-white shadow p-4 mb-3 rounded-xl">

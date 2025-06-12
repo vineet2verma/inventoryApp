@@ -20,7 +20,7 @@ const permissionFields = [
   'pmorbi',
   'ppermission',
   'pcrm',
-  'pchklistmast',
+  'pchecklistmast',
   'pchecklisttask',
 ]
 

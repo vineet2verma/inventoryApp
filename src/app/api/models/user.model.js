@@ -23,6 +23,9 @@ const UserSchema = new mongoose.Schema(
     pquotationimage: { type: mongoose.Schema.Types.Mixed, default: [] },
     pquotationview: { type: mongoose.Schema.Types.Mixed, default: [] },
     ppermission: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pcrm: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pchecklistmast: { type: mongoose.Schema.Types.Mixed, default: [] },
+    pchecklisttask: { type: mongoose.Schema.Types.Mixed, default: [] },
   },
   { timestamps: true }
 );

@@ -15,11 +15,12 @@ import InfoCardInput from "../components/card_input";
 import { LoginUserFunc } from "../context/loginuser";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
-//
 import { useRouter } from "next/navigation";
+
 export default function CRMClientPage() {
+  const {user}  = LoginUserFunc();
   const router = useRouter();
-  const user = LoginUserFunc();
+  const [username, setusername] = useState("");
   const [viewdetail, setviewdetail] = useState({});
   const [sections, setSections] = useState({});
   const [loading, setloading] = useState(true);
@@ -142,6 +143,8 @@ export default function CRMClientPage() {
 
   const handlePagination = (direction) => {
     console.log(direction);
+    console.log("pagination username => ", username);
+
     if (direction === "prev" && currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
@@ -163,6 +166,15 @@ export default function CRMClientPage() {
     setloading(false);
     setTotalPages(json.totalPages);
   };
+
+  useEffect(() => {
+    // const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
+    // setusername(currentUser);
+    // console.log(user.user?.name);
+    // console.log("use effect username =>", currentUser);
+
+    fetchData(currentPage);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -198,10 +210,6 @@ export default function CRMClientPage() {
       setmodalfollowup(false);
     }
   }, [activeModal]);
-
-  useEffect(() => {
-    fetchData(currentPage);
-  }, []);
 
   const handletypeChange = (e) => {
     setviewdetail({ ...viewdetail, [e.target.name]: e.target.value });
@@ -304,7 +312,7 @@ export default function CRMClientPage() {
 
     const resp = await req.json();
 
-    fetchData();
+    fetchData(currentPage);
 
     if (resp.success) {
       setIsEditable(false);
@@ -408,7 +416,15 @@ export default function CRMClientPage() {
               </thead>
               <tbody>
                 {filteredData.length > 0 ? (
-                  filteredData.map((item, index) => (
+                  (user.user?.role === "admin" ||
+                  user.user?.role === "super admin"
+                    ? filteredData
+                    : filteredData.filter(
+                        (item) => item.salesperson === user.user?.name
+                      )
+                  )
+                  // filteredData
+                  .map((item, index) => (
                     <tr
                       key={item._id}
                       className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
@@ -464,7 +480,7 @@ export default function CRMClientPage() {
                               </div>
                             </button>
 
-                            <button
+                            {user.user?.role == "admin" ? <button
                               onClick={() => {
                                 handleDelete(item._id);
                               }}
@@ -475,7 +491,7 @@ export default function CRMClientPage() {
                                 <Trash2 size={16} className="mx-2" />
                                 Delete
                               </div>
-                            </button>
+                            </button>:''}
                           </div>
                         )}
                       </td>
