@@ -509,7 +509,7 @@ export default function QuotationPage() {
                 <th className="border px-2 py-1">Qty/Box</th>
                 <th className="border px-2 py-1">Price</th>
                 <th className="border px-2 py-1">Amount</th>
-                <th className="border px-2 py-1 print:hidden">Action</th>
+                {!showdownload &&  <th className="border px-2 py-1 print:hidden">Action</th>}
               </tr>
             </thead>
 
@@ -533,7 +533,7 @@ export default function QuotationPage() {
                         </p>
                       )}
 
-                      {showimagename && (
+                      {showimagename && !showdownload && (
                         <input
                           type="file"
                           accept="image/*"
@@ -617,24 +617,24 @@ export default function QuotationPage() {
                       (Number(item.qtypersqft) || 0) * (Number(item.price) || 0)
                     ).toFixed(2)}
                   </td>
-                  <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
+                  {!showdownload && <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
                     <button
                       className="text-red-500 "
                       onClick={() => deleteItem(index)}
                     >
                       🗑️
                     </button>
-                  </td>
+                  </td>}
                 </tr>
               ))}
             </tbody>
           </table>
-          <button
+          { showCharges && <button
             onClick={addItem}
             className="mt-2 px-4 py-1 border rounded print:hidden hover:bg-gray-100"
           >
             + Add Item
-          </button>
+          </button>}
 
           <div className="mt-4 flex justify-between">
             {/* Bank Detail Left Side */}
@@ -765,7 +765,7 @@ export default function QuotationPage() {
                 <h3 className="text-lg font-semibold mb-4">Enter Charges</h3>
                 <div className="space-y-3">
                   <div>
-                    <p>chk</p>
+                    <p></p>
                     <label>Discount (%)</label>
                     <input
                       type="number"

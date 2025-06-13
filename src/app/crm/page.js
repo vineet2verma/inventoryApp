@@ -245,7 +245,7 @@ export default function CRMClientPage() {
       "referencetype",
     ];
 
-    for (let field of requiredFields) {      
+    for (let field of requiredFields) {
       if (!form[field] || form[field].trim() === "") {
         alert(`${field} is required!`);
         return;
@@ -417,7 +417,7 @@ export default function CRMClientPage() {
                 <option value={item} >{item}</option>
               ))}
               </select> */}
-              
+
               <input
                 type="text"
                 name="salesperson"
@@ -848,7 +848,7 @@ export default function CRMClientPage() {
                       ))}
                     </div>
                     <div>
-                      <div className=" grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <button
                           className={`px-2 ${
                             followuptab ? "bg-gray-200" : ""
@@ -902,12 +902,14 @@ export default function CRMClientPage() {
                             <input
                               type="date"
                               name="nextfollowdate"
+                              required
                               onChange={handletypeChange}
                               className="my-1 px-2 text-xs"
                             />
                             <input
                               type="time"
                               name="nextfollowtime"
+                              required
                               onChange={handletypeChange}
                               className="my-1 text-xs"
                             />
