@@ -22,7 +22,7 @@ export default function QuotationPage() {
   const [errors, setErrors] = useState({});
   const [showimagename, setShowimagename] = useState(true);
   const [userlist, setuserlist] = useState([]);
-  const [discountlumsum, setdiscountlumsum] = useState(false);
+  const [discounttype, setDiscounttype] = useState("On");
 
   const fetchusers = async () => {
     const res = await fetch("/api/getallusers");
@@ -122,7 +122,13 @@ export default function QuotationPage() {
     0
   );
 
-  const discountAmt = (subtotal * quotation.discount) / 100;
+  // var discountAmt = 0;
+  // if(discounttype=="On"){
+  const  discountAmt = (subtotal * quotation.discount) / 100;
+  // }else{
+  //   discountAmt = quotation.discount;
+  // }
+  
   const afterDiscount = subtotal - discountAmt;
   const gstAmt = (afterDiscount * quotation.gstRate) / 100;
   const grandTotal =
@@ -509,7 +515,9 @@ export default function QuotationPage() {
                 <th className="border px-2 py-1">Qty/Box</th>
                 <th className="border px-2 py-1">Price</th>
                 <th className="border px-2 py-1">Amount</th>
-                {!showdownload &&  <th className="border px-2 py-1 print:hidden">Action</th>}
+                {!showdownload && (
+                  <th className="border px-2 py-1 print:hidden">Action</th>
+                )}
               </tr>
             </thead>
 
@@ -617,24 +625,28 @@ export default function QuotationPage() {
                       (Number(item.qtypersqft) || 0) * (Number(item.price) || 0)
                     ).toFixed(2)}
                   </td>
-                  {!showdownload && <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
-                    <button
-                      className="text-red-500 "
-                      onClick={() => deleteItem(index)}
-                    >
-                      🗑️
-                    </button>
-                  </td>}
+                  {!showdownload && (
+                    <td className="border px-2 py-1 text-center max-w-2  print:hidden ">
+                      <button
+                        className="text-red-500 "
+                        onClick={() => deleteItem(index)}
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
-          { showCharges && <button
-            onClick={addItem}
-            className="mt-2 px-4 py-1 border rounded print:hidden hover:bg-gray-100"
-          >
-            + Add Item
-          </button>}
+          {showCharges && (
+            <button
+              onClick={addItem}
+              className="mt-2 px-4 py-1 border rounded print:hidden hover:bg-gray-100"
+            >
+              + Add Item
+            </button>
+          )}
 
           <div className="mt-4 flex justify-between">
             {/* Bank Detail Left Side */}
@@ -737,7 +749,7 @@ export default function QuotationPage() {
                   <tr key={i}>
                     <td className="text-xs py-0.2 pl-3 flex">
                       {"* "}
-                      {field}{" "}
+                      {field}
                     </td>
                   </tr>
                 ))}
@@ -765,8 +777,31 @@ export default function QuotationPage() {
                 <h3 className="text-lg font-semibold mb-4">Enter Charges</h3>
                 <div className="space-y-3">
                   <div>
-                    <p></p>
-                    <label>Discount (%)</label>
+                    {/* <div className="flex gap-x-1">
+                      <span className="mr-2">Discount Type</span>
+                    <input
+                      type="radio"
+                      name="discounttype"
+                      value="On"
+                      checked={discounttype === "On"}
+                      onChange={() => setDiscounttype("On")}
+                      className="border px-0 py-1"
+                    />
+                    <span className="ml-1">On</span>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="discounttype"
+                        value="Off"
+                        checked={discounttype === "Off"}
+                        onChange={() => setDiscounttype("Off")}
+                        className="border px-2 py-1"
+                      />
+                      <span className="ml-2">Off</span>
+                    </label>
+                    </div> */}
+
+                    <label>{`Discount ( ${discounttype==="On"?"In Percentage":"In Amount "} )  `}</label>
                     <input
                       type="number"
                       className="border w-full px-2 py-1 "
