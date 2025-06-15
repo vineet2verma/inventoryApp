@@ -1,6 +1,6 @@
 // Editable Quotation Page Matching PDF Design
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, FilePlus2, useRef } from "react";
 import { LoginUserFunc } from "@/app/context/loginuser";
 import { ArrowBigLeft } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
@@ -42,7 +42,12 @@ export default function QuotationPage({}) {
       setShowDownload(false);
     }
     if (type == "new") {
-      setQuotation({ ...quotation, orderId: "" });
+      setQuotation({
+        ...quotation,
+        orderId: false,
+        date: moment(new Date()).format("YYYY-MM-DD"),
+      });
+
       setShowEdit(false);
       setBtnClientDetails(true);
       setBtnAddItem(true);
@@ -55,7 +60,11 @@ export default function QuotationPage({}) {
   const handleNew = () => {
     console.log("New Create");
     // setQuotation((quotation.orderId = ""));
-    setQuotation({ ...quotation, orderId: "" });
+    setQuotation({
+      ...quotation,
+      orderId: "",
+      date: moment(new Date()).format("YYYY-MM-DD"),
+    });
   };
 
   useEffect(() => {
@@ -162,11 +171,11 @@ export default function QuotationPage({}) {
     afterDiscount +
     gstAmt +
     Number(quotation.cuttingCharges || 0) +
-    Number(quotation.cuttingCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cuttingCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.cartageCharges || 0) +
-    Number(quotation.cartageCharges*quotation.gstRate/100 || 0) +
+    Number((quotation.cartageCharges * quotation.gstRate) / 100 || 0) +
     Number(quotation.packingCharges || 0) +
-    Number(quotation.packingCharges*quotation.gstRate/100 || 0);
+    Number((quotation.packingCharges * quotation.gstRate) / 100 || 0);
 
   const handlechargesChanges = () => {
     setShowCharges(true);
@@ -228,8 +237,19 @@ export default function QuotationPage({}) {
     });
 
     let result = await res.json();
+
+    console.log("result =>  ", result);
+
     if (result.success) {
       setLoading(false);
+
+      setQuotation({
+        ...quotation,
+        orderId: result.data.orderId,
+        gstRate: result.data.gstRate,
+        date: moment(result.data.date).format("YYYY-MM-DD"),
+      });
+
       alert("Quotation Updated Scussfully ");
     } else {
       console.log("failed to post record in quotation ", result);
@@ -451,6 +471,28 @@ export default function QuotationPage({}) {
                   Download
                 </button>
               )}
+
+              {showedit && (
+                <button
+                  onClick={() => {
+                    handleEdit("edit");
+                  }}
+                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+              )}
+              {showedit && (
+                <button
+                  onClick={() => {
+                    handleEdit("new");
+                  }}
+                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
+                >
+                  New
+                </button>
+              )}
+
               {/* {showedit && (
                 <button
                   onClick={() => {
@@ -461,17 +503,6 @@ export default function QuotationPage({}) {
                   New
                 </button>
               )} */}
-
-              {showedit && quotation.date==moment(new Date()).format("YYYY-MM-DD")  && (
-                <button
-                  onClick={() => {
-                    handleEdit("edit");
-                  }}
-                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-              )}
 
               {btnclientDetails && (
                 <button
@@ -510,16 +541,15 @@ export default function QuotationPage({}) {
                   Order ID:
                 </td>
                 <td className="p-2 border border-r w-40">
-                  {quotation.orderId.trim()}
+                  {quotation.orderId}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Date:
                 </td>
-                <td className="p-2 border border-r">{quotation.date.trim()}</td>
+                <td className="p-2 border border-r">{quotation.date}</td>
               </tr>
 
               <tr className="border border-gray-300">
-                
                 <td className="p-2 border border-r text-xs font-semibold ">
                   Client:
                 </td>
@@ -529,7 +559,7 @@ export default function QuotationPage({}) {
                 <td className="p-2 border border-r text-xs font-semibold">
                   GSTIN:
                 </td>
-                <td className="p-2 border border-r">{quotation.gst.trim()}</td>
+                <td className="p-2 border border-r">{quotation.gst}</td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Salesperson:
                 </td>
@@ -542,13 +572,19 @@ export default function QuotationPage({}) {
                 <td className="p-2 border border-r text-xs font-semibold">
                   Billing Address:
                 </td>
-                <td className="p-2 border border-r max-w-[250px] text-wrap" colSpan={2}>
+                <td
+                  className="p-2 border border-r max-w-[250px] text-wrap"
+                  colSpan={2}
+                >
                   {quotation.billingAddress.trim()}
                 </td>
                 <td className="p-2 border border-r text-xs font-semibold">
                   Shipping Address:
                 </td>
-                <td className="p-2 border border-r max-w-xs text-wrap" colSpan={2}>
+                <td
+                  className="p-2 border border-r max-w-xs text-wrap"
+                  colSpan={2}
+                >
                   {quotation.shippingAddress.trim()}
                 </td>
               </tr>
@@ -636,7 +672,7 @@ export default function QuotationPage({}) {
                     <input
                       type="number"
                       className="w-full  px-1 text-center"
-                      value={item.qtypersqft ?? "" }
+                      value={item.qtypersqft ?? ""}
                       disabled={showedit ? true : false}
                       onChange={(e) =>
                         handleItemChange(index, "qtypersqft", e.target.value)
@@ -652,7 +688,7 @@ export default function QuotationPage({}) {
                     <input
                       type="number"
                       className="w-full  px-1 text-center"
-                      value={item.qtyperbox ?? ""  }
+                      value={item.qtyperbox ?? ""}
                       disabled={showedit ? true : false}
                       onChange={(e) =>
                         handleItemChange(index, "qtyperbox", e.target.value)
@@ -762,13 +798,31 @@ export default function QuotationPage({}) {
                 </div>
               )}
               {quotation.cuttingCharges > 0 && (
-                <div>Cutting Charges: ₹{parseFloat(quotation.cuttingCharges) + parseFloat(quotation.cuttingCharges*gstRate/100) }</div>
+                <div>
+                  Cutting Charges: ₹
+                  {parseFloat(quotation.cuttingCharges) +
+                    parseFloat(
+                      (quotation.cuttingCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               {quotation.cartageCharges > 0 && (
-                <div>Cartage Charges: ₹{parseFloat(quotation.cartageCharges)+ parseFloat(quotation.cartageCharges*quotation.gstRate/100) }</div>
+                <div>
+                  Cartage Charges: ₹
+                  {parseFloat(quotation.cartageCharges) +
+                    parseFloat(
+                      (quotation.cartageCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               {quotation.packingCharges > 0 && (
-                <div>Packing Charges: ₹{parseFloat(quotation.packingCharges) * parseFloat(quotation.packingCharges*quotation.gstRate/100)  }</div>
+                <div>
+                  Packing Charges: ₹
+                  {parseFloat(quotation.packingCharges) *
+                    parseFloat(
+                      (quotation.packingCharges * quotation.gstRate) / 100
+                    )}
+                </div>
               )}
               <div className="text-lg font-bold">
                 Grand Total: ₹{grandTotal.toFixed(2)}

@@ -31,7 +31,7 @@ export async function GET(req) {
     const totalPages = Math.ceil(total / limit);
     const data = await crmclientmast
       .find(query)
-      .skip(skip)
+      // .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
 

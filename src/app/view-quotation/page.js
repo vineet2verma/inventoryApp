@@ -3,7 +3,7 @@ import moment from "moment";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { House, FileText, Trash2 } from "lucide-react";
+import { House, FileText, Trash2, FilePlus2 } from "lucide-react";
 import { LoginUserFunc } from "../context/loginuser";
 import LoadingSpinner from "../components/waiting";
 import * as XLSX from "xlsx";
@@ -89,6 +89,10 @@ export default function ViewQuotation() {
         alert(err.message);
       }
     }
+  }
+
+  async function handlenew(id) {
+    console.log(id);
   }
 
   const handleExcelExport = () => {
@@ -251,6 +255,7 @@ export default function ViewQuotation() {
                         >
                           <FileText />
                         </Link>
+
                         {user.user?.role === "admin" && (
                           <button
                             onClick={() => handledelete(q._id)}

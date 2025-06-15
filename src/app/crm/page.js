@@ -222,6 +222,7 @@ export default function CRMClientPage() {
   }, [activeModal]);
 
   const handletypeChange = (e) => {
+    console.log("=> ", e.target.name, "  ", e.target.value);
     setviewdetail({ ...viewdetail, [e.target.name]: e.target.value });
   };
 
@@ -234,7 +235,22 @@ export default function CRMClientPage() {
     const method = editingId ? "PUT" : "POST";
     const payload = editingId
       ? { ...form, _id: editingId, lastcontact: new Date() }
-      : { ...form, status: "Initial Contact", lastcontact: new Date() };
+      : {
+          ...form,
+          status: "Initial Contact",
+          lastcontact: new Date(),
+          followupremarks: [
+            ...viewdetail.followupremarks,
+            viewdetail.followupremarks,
+          ],
+
+          // followupremarks: [
+          //   ...(Array.isArray(viewdetail.followupremarks)
+          //     ? [...viewdetail.followupremarks, followupremarks]
+          //     : []),
+          //   viewdetail.followupremarks,
+          // ],
+        };
 
     const res = await fetch("/api/crmclient", {
       method,
@@ -247,6 +263,7 @@ export default function CRMClientPage() {
       setEditingId(null);
       setShowForm(false);
       fetchData(currentPage);
+      console.log(res);
     }
   };
 
