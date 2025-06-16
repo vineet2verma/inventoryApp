@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
+import StatusCountChart from "../components/CrmCountChart";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ export default function Dashboard() {
   const [permissionmorbi, setpermissionmorbi] = useState(false);
   const [permissioncrm, setpermissioncrm] = useState(false);
   const [permisson, setpermisson] = useState([]);
+  const [crmnewdata, setcrmnewdata] = useState([]);
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -65,9 +67,21 @@ export default function Dashboard() {
     }
   };
 
+  const fetchCrmChartStatus = async () => {
+    try {
+      const res = await fetch("api/crmclient?page=1&user=admin");
+      const data = await res.json();
+      setcrmnewdata(data);
+    } catch (err) {
+      console.log("Failed to fetch CRM Count Records", err);
+    }
+  };
+
   useEffect(() => {
-    fetchMastDataCount();
-    fetchItemDetailCount();
+    fetchCrmChartStatus();
+
+    // fetchMastDataCount();
+    // fetchItemDetailCount();
 
     setLoading(false);
   }, []);
@@ -115,78 +129,83 @@ export default function Dashboard() {
             </header>
 
             {/* Main Content */}
-            {/* <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
-              <div className="grid grid-cols-2 mb-2 ">
-                <h6 className="text-left px-2 font-semibold ">Status :</h6>
-                <h6 className="text-right px-2 font-semibold ">{today}</h6>
+            <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
+                <div className="grid grid-cols-2 mb-2 ">
+                  <h6 className="text-left px-2 font-semibold ">Status :</h6>
+                  <h6 className="text-right px-2 font-semibold ">{today}</h6>
+                </div>
+                <div className="py-1 ">
+                  <table className="w-full font-bold ">
+                    <tbody>
+                      <tr className="grid grid-cols-2 w-full bg-blue-300 rounded-3xl py-0.5 mb-1">
+                        <td className="px-2 font-bold ">Total Hold</td>
+                        <td className="text-right px-2 ">
+                          {itemdetailcount.totalholdcount}
+                        </td>
+                      </tr>
+                      <tr className="grid grid-cols-2 w-full">
+                        <td className=" px-2 ">Today Hold</td>
+                        <td className="text-right px-2 ">
+                          {itemdetailcount.todayholdcount}
+                        </td>
+                      </tr>
+                      <tr className="grid grid-cols-2 w-full">
+                        <td className=" px-2 ">Today Out</td>
+                        <td className="text-right px-2 ">
+                          {itemdetailcount.todayoutcount}
+                        </td>
+                      </tr>
+                      <tr className="grid grid-cols-2 w-full">
+                        <td className=" px-2 ">Today Cancel</td>
+                        <td className="text-right px-2 ">
+                          {itemdetailcount.todaycancelcount}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div className="py-1 ">
-                <table className="w-full font-bold ">
+
+              <div className="bg-white text-xs p-4 rounded-xl shadow">
+                <div className="grid grid-cols-2 max-w-full ">
+                  <h2 className=" font-semibold ">Status :</h2>
+                  <h2 className="text-right font-semibold ">Type</h2>
+                </div>
+                <table className="w-full my-3 font-bold">
                   <tbody>
-                    <tr className="grid grid-cols-2 w-full bg-blue-300 rounded-3xl py-0.5 mb-1">
-                      <td className="px-2 font-bold ">Total Hold</td>
-                      <td className="text-right px-2 ">
-                        {itemdetailcount.totalholdcount}
+                    <tr className="grid grid-cols-2 w-full">
+                      <td>Regular</td>
+                      <td className="text-right font-semibold">
+                        {mastdata.regularcount}
                       </td>
                     </tr>
                     <tr className="grid grid-cols-2 w-full">
-                      <td className=" px-2 ">Today Hold</td>
-                      <td className="text-right px-2 ">
-                        {itemdetailcount.todayholdcount}
+                      <td>Discontinue</td>
+                      <td className="text-right font-semibold">
+                        {mastdata.discontinuecount}
                       </td>
                     </tr>
                     <tr className="grid grid-cols-2 w-full">
-                      <td className=" px-2 ">Today Out</td>
-                      <td className="text-right px-2 ">
-                        {itemdetailcount.todayoutcount}
-                      </td>
-                    </tr>
-                    <tr className="grid grid-cols-2 w-full">
-                      <td className=" px-2 ">Today Cancel</td>
-                      <td className="text-right px-2 ">
-                        {itemdetailcount.todaycancelcount}
+                      <td>On Order</td>
+                      <td className="text-right font-semibold">
+                        {mastdata.onordercount}
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-            </div>
 
-            <div className="bg-white text-xs p-4 rounded-xl shadow">
-              <div className="grid grid-cols-2 max-w-full ">
-                <h2 className=" font-semibold ">Status :</h2>
-                <h2 className="text-right font-semibold ">Type</h2>
+              <div className="bg-white p-6 rounded-2xl shadow">
+                <h2 className="text-xl font-semibold mb-2">Notifications</h2>
+                {/* <p className="text-gray-600">You have 3 new messages.</p> */}
+
+                <StatusCountChart
+                  apiData={crmnewdata}
+                  username={user.user?.name}
+                />
               </div>
-              <table className="w-full my-3 font-bold">
-                <tbody>
-                  <tr className="grid grid-cols-2 w-full">
-                    <td>Regular</td>
-                    <td className="text-right font-semibold">
-                      {mastdata.regularcount}
-                    </td>
-                  </tr>
-                  <tr className="grid grid-cols-2 w-full">
-                    <td>Discontinue</td>
-                    <td className="text-right font-semibold">
-                      {mastdata.discontinuecount}
-                    </td>
-                  </tr>
-                  <tr className="grid grid-cols-2 w-full">
-                    <td>On Order</td>
-                    <td className="text-right font-semibold">
-                      {mastdata.onordercount}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl shadow">
-              <h2 className="text-xl font-semibold mb-2">Notifications</h2>
-              <p className="text-gray-600">You have 3 new messages.</p>
-            </div>
-          </main> */}
+            </main>
 
             {/* Navigation Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 pt-4">

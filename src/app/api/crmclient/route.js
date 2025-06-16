@@ -9,7 +9,7 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 50;
+    const limit = parseInt(searchParams.get("limit"));
     const username = searchParams.get("user") || "";
     const skip = (page - 1) * limit;
 
@@ -17,23 +17,24 @@ export async function GET(req) {
       `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
     );
 
-    let query = {}
+    let query = {};
 
     // let query = { status: { $not: /closed/i}};
 
-    // if (page > 0) {
-    //   query = { ...query, salesperson: "Ajeet" };
-    // }
+    if (username !== "admin" || username !== "undefined") {
+      query = { salesperson: username };
+    }
+    if (username == "admin") {
+      query = {};
+    }
 
-    // if (username !== "admin" || username !== "undefined") {
-    //   query = { salesperson: username };
-    // }
-
-    const total = await crmclientmast.countDocuments();
+    const datalength = await crmclientmast.find(query).sort({ createdAt: -1 });
+    const total = datalength.length;
     const totalPages = Math.ceil(total / limit);
+
     const data = await crmclientmast
       .find(query)
-      // .skip(skip)
+      .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
 

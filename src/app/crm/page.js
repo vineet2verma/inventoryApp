@@ -35,13 +35,14 @@ export default function CRMClientPage() {
   const submenuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 100; // Number of items per page
+  const itemsPerPage = 10; // Number of items per page
   const [data, setData] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [userlist, setuserlist] = useState([]);
+  const [prevfollowup, setprevfollowup] = useState([]);
   const [errors, setErrors] = useState({});
   const [filters, setFilters] = useState({
     salesperson: "",
@@ -157,25 +158,26 @@ export default function CRMClientPage() {
     if (direction === "prev" && currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
-      fetchData(newPage);
+      fetchData(newPage, username);
     }
     if (direction === "next" && currentPage < totalPages) {
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
-      fetchData(newPage);
+
+      fetchData(newPage, username);
     }
   };
 
   useEffect(() => {
-    const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
+    const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
     setusername(currentUser);
     console.log("use effect username =>", currentUser);
-    fetchData(currentUser);
+    fetchData(currentPage, currentUser);
   }, [user]);
 
-  const fetchData = async (currentPage) => {
+  const fetchData = async (currentPage, currentUser) => {
     const res = await fetch(
-      `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${username}`
+      `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
     );
     const json = await res.json();
     if (json.success) setData(json.data);
@@ -185,7 +187,7 @@ export default function CRMClientPage() {
 
   useEffect(() => {
     fetchusers();
-    fetchData(currentPage);
+    // fetchData(currentPage, username);
   }, [user]);
 
   useEffect(() => {
@@ -214,6 +216,7 @@ export default function CRMClientPage() {
     if (activeModal === "Follow Up") {
       setmodalfollowup(true);
       setmodalview(false);
+      setprevfollowup(viewdetail.followupremarks);
       setmodaldelete(false);
     }
     if (activeModal === "Delete") {
@@ -225,7 +228,14 @@ export default function CRMClientPage() {
 
   const handletypeChange = (e) => {
     console.log("=> ", e.target.name, "  ", e.target.value);
-    setviewdetail({ ...viewdetail, [e.target.name]: e.target.value });
+    if (e.target.name == "followupremarks") {
+      setviewdetail({
+        ...viewdetail,
+        [e.target.name]: [e.target.value],
+      });
+    } else {
+      setviewdetail({ ...viewdetail, [e.target.name]: e.target.value });
+    }
   };
 
   const handleChange = (e) => {
@@ -260,6 +270,8 @@ export default function CRMClientPage() {
       ? { ...form, _id: editingId, lastcontact: new Date() }
       : { ...form, status: "Initial Contact", lastcontact: new Date() };
 
+    console.log(" =>  ", payload);
+
     const res = await fetch("/api/crmclient", {
       method,
       headers: { "Content-Type": "application/json" },
@@ -270,7 +282,7 @@ export default function CRMClientPage() {
       setForm({});
       setEditingId(null);
       setShowForm(false);
-      fetchData(currentPage);
+      fetchData(currentPage, username);
       console.log(res);
     }
   };
@@ -286,7 +298,7 @@ export default function CRMClientPage() {
       const res = await fetch(`/api/crmclient?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         closeModal();
-        fetchData(currentPage);
+        fetchData(currentPage, username);
       }
     }
   };
@@ -339,15 +351,19 @@ export default function CRMClientPage() {
   async function handleviewsave() {
     console.log("updated section data", viewdetail);
 
+    console.log("prev folow up=> ", prevfollowup);
+    console.log("form => ", form);
+    const newfollowup = [...prevfollowup, ...viewdetail.followupremarks];
+
     const req = await fetch("/api/crmclient", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(viewdetail),
+      body: JSON.stringify({ ...viewdetail, followupremarks: newfollowup }),
     });
 
     const resp = await req.json();
 
-    fetchData(currentPage);
+    fetchData(currentPage, username);
 
     if (resp.success) {
       setIsEditable(false);
@@ -421,10 +437,11 @@ export default function CRMClientPage() {
                 className="p-2 border rounded"
               >
                 <option selected>Select Sales Person</option>
-                {[...new Set(data.map(item => item.salesperson.trim()))].sort().map((salesperson,index)=>(
-                  <option key={index}>{salesperson}</option>
-                ))}
-                
+                {[...new Set(data.map((item) => item.salesperson.trim()))]
+                  .sort()
+                  .map((salesperson, index) => (
+                    <option key={index}>{salesperson}</option>
+                  ))}
               </select>
 
               <input
