@@ -9,7 +9,7 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 20;
+    const limit = parseInt(searchParams.get("limit")) || 50;
     const username = searchParams.get("user") || "";
     const skip = (page - 1) * limit;
 
@@ -17,7 +17,9 @@ export async function GET(req) {
       `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
     );
 
-    let query = { status: { $not: /closed/i } };
+    let query = {}
+
+    // let query = { status: { $not: /closed/i}};
 
     // if (page > 0) {
     //   query = { ...query, salesperson: "Ajeet" };

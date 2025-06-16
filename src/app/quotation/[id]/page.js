@@ -223,9 +223,6 @@ export default function QuotationPage({}) {
       alert("Please fill all required fields.");
       return;
     }
-    // setLoading(true);
-
-    console.log("quotation => ", quotation);
 
     const method = quotation.orderId == "" ? "POST" : "PUT";
     const url = "/api/quotation";
@@ -471,6 +468,7 @@ export default function QuotationPage({}) {
                   Download
                 </button>
               )}
+<<<<<<< HEAD
 
               {showedit && (
                 <button
@@ -494,6 +492,9 @@ export default function QuotationPage({}) {
               )}
 
               {/* {showedit && (
+=======
+              {showedit && (
+>>>>>>> ea17b73e74701f589d134593aa906f973b00416c
                 <button
                   onClick={() => {
                     handleEdit("new");
@@ -502,8 +503,22 @@ export default function QuotationPage({}) {
                 >
                   New
                 </button>
-              )} */}
+              )}
 
+<<<<<<< HEAD
+=======
+              {user.user?.role.includes("admin","super admin")  && (
+                <button
+                  onClick={() => {
+                    handleEdit("edit");
+                  }}
+                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
+                >
+                  Edit
+                </button>
+              )}
+
+>>>>>>> ea17b73e74701f589d134593aa906f973b00416c
               {btnclientDetails && (
                 <button
                   onClick={() => setShowClientModal(true)}
