@@ -35,13 +35,14 @@ export default function CRMClientPage() {
   const submenuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 50; // Number of items per page
+  const itemsPerPage = 100; // Number of items per page
   const [data, setData] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [userlist, setuserlist] = useState([]);
+  const [errors, setErrors] = useState({});
   const [filters, setFilters] = useState({
     salesperson: "",
     status: "",
@@ -399,7 +400,7 @@ export default function CRMClientPage() {
           </div>
           {/* Filters */}
           {showFilter && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <input
                 type="text"
                 name="search"
@@ -408,25 +409,27 @@ export default function CRMClientPage() {
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
               />
-              <select
+              {/* <select
                 name="salesperson"
                 value={filters.salesperson}
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
-              />
-              {/* {userlistdata.map((item)=>(
-                <option value={item} >{item}</option>
-              ))}
-              </select> */}
-
-              <input
+              /> */}
+              <select
                 type="text"
                 name="salesperson"
                 placeholder="Filter by Salesperson"
                 value={filters.salesperson}
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
-              />
+              >
+                <option selected>Select Sales Person</option>
+                {[...new Set(data.map(item => item.salesperson.trim()))].sort().map((salesperson,index)=>(
+                  <option key={index}>{salesperson}</option>
+                ))}
+                
+              </select>
+
               <input
                 type="text"
                 name="status"
@@ -435,14 +438,14 @@ export default function CRMClientPage() {
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
               />
-              <input
+              {/* <input
                 type="text"
                 name="nextfollowdate"
                 placeholder="Filter by Next Follow Date"
                 value={filters.nextfollowdate}
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
-              />
+              /> */}
             </div>
           )}
           {/* Table */}
@@ -469,7 +472,8 @@ export default function CRMClientPage() {
                   user.user?.role === "super admin"
                     ? filteredData
                     : filteredData.filter(
-                        (item) => item.salesperson.trim() === user.user?.name.trim()
+                        (item) =>
+                          item.salesperson.trim() === user.user?.name.trim()
                       )
                   )
                     // filteredData
@@ -957,7 +961,7 @@ export default function CRMClientPage() {
                             Closing Stage
                           </h4>
                           <div className="flex justify-around">
-                            {["Closing Won", "Closing Lost"].map((item) => (
+                            {["Closed Won", "Closed Lost"].map((item) => (
                               <label key={item}>
                                 <input
                                   key={item}
@@ -967,10 +971,16 @@ export default function CRMClientPage() {
                                   type="radio"
                                   value={item}
                                   onChange={handletypeChange}
+                                  required
                                 />
                                 {item}
                               </label>
                             ))}
+                            {errors.status && (
+                              <p className="text-red-500 text-sm">
+                                {errors.status}
+                              </p>
+                            )}
                           </div>
                           <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
                             Closing Reason
@@ -980,6 +990,7 @@ export default function CRMClientPage() {
                               name="closingreason"
                               className="my-2 w-full px-2 border rounded py-1"
                               onChange={handletypeChange}
+                              required
                             >
                               {[
                                 "Deal Won",
@@ -994,6 +1005,11 @@ export default function CRMClientPage() {
                                 </option>
                               ))}
                             </select>
+                            {errors.closingreason && (
+                              <p className="text-red-500 text-sm">
+                                {errors.closingreason}
+                              </p>
+                            )}
                           </div>
                           <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
                             Closing Amount
@@ -1003,8 +1019,14 @@ export default function CRMClientPage() {
                               className="my-2 px-2 border w-full rounded-xl"
                               name="closingamount"
                               rows={3}
+                              required
                             ></input>
                           </div>
+                          {errors.closingamount && (
+                            <p className="text-red-500 text-sm">
+                              {errors.closingamount}
+                            </p>
+                          )}
                           <h4 className="font-semibold my-2 bg-gray-200 px-2 max-w-full">
                             Closing / Delivery Remarks
                           </h4>
@@ -1013,7 +1035,13 @@ export default function CRMClientPage() {
                               className="my-2 px-2 border w-full rounded-xl"
                               name="closingRemarks"
                               rows={3}
+                              required
                             ></textarea>
+                            {errors.closingRemarks && (
+                              <p className="text-red-500 text-sm">
+                                {errors.closingRemarks}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}
