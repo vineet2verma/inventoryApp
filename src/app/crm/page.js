@@ -169,6 +169,7 @@ export default function CRMClientPage() {
     const currentUser = user.user?.role === "admin" ? "admin" : user.user?.name;
     setusername(currentUser);
     console.log("use effect username =>", currentUser);
+    fetchData(currentUser);
   }, [user]);
 
   const fetchData = async (currentPage) => {
@@ -462,12 +463,13 @@ export default function CRMClientPage() {
                 </tr>
               </thead>
               <tbody>
+                {console.log(filteredData)}
                 {filteredData.length > 0 ? (
                   (user.user?.role === "admin" ||
                   user.user?.role === "super admin"
                     ? filteredData
                     : filteredData.filter(
-                        (item) => item.salesperson === user.user?.name
+                        (item) => item.salesperson.trim() === user.user?.name.trim()
                       )
                   )
                     // filteredData

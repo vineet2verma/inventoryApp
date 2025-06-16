@@ -214,9 +214,6 @@ export default function QuotationPage({}) {
       alert("Please fill all required fields.");
       return;
     }
-    // setLoading(true);
-
-    console.log("quotation => ", quotation);
 
     const method = quotation.orderId == "" ? "POST" : "PUT";
     const url = "/api/quotation";
@@ -451,7 +448,7 @@ export default function QuotationPage({}) {
                   Download
                 </button>
               )}
-              {/* {showedit && (
+              {showedit && (
                 <button
                   onClick={() => {
                     handleEdit("new");
@@ -460,9 +457,9 @@ export default function QuotationPage({}) {
                 >
                   New
                 </button>
-              )} */}
+              )}
 
-              {showedit && quotation.date==moment(new Date()).format("YYYY-MM-DD")  && (
+              {user.user?.role.includes("admin","super admin")  && (
                 <button
                   onClick={() => {
                     handleEdit("edit");
