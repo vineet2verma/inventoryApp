@@ -16,7 +16,7 @@ import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
 import { useRouter } from "next/navigation";
-
+import _ from "lodash";
 export default function CRMClientPage() {
   const { user } = LoginUserFunc();
   const router = useRouter();
@@ -65,7 +65,7 @@ export default function CRMClientPage() {
     const res = await fetch("/api/getallusers");
     const data = await res.json();
     const userlistdata = data.data.map((item) => item.name);
-    setuserlist(userlistdata.sort());
+    setuserlist(userlistdata);
   };
 
   const handleCurrentrow = (index, itemarray) => {
@@ -232,25 +232,31 @@ export default function CRMClientPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const requiredFields = [
+      "name",
+      "mobile",
+      "companyname",
+      "querytype",
+      "leadtype",
+      "remarks",
+      "salesperson",
+      "nextfollowdate",
+      "protentialvalue",
+      "referencetype",
+    ];
+
+    for (let field of requiredFields) {
+      if (!form[field] || form[field].trim() === "") {
+        alert(`${field} is required!`);
+        return;
+      }
+    }
+
     const method = editingId ? "PUT" : "POST";
     const payload = editingId
       ? { ...form, _id: editingId, lastcontact: new Date() }
-      : {
-          ...form,
-          status: "Initial Contact",
-          lastcontact: new Date(),
-          followupremarks: [
-            ...viewdetail.followupremarks,
-            viewdetail.followupremarks,
-          ],
-
-          // followupremarks: [
-          //   ...(Array.isArray(viewdetail.followupremarks)
-          //     ? [...viewdetail.followupremarks, followupremarks]
-          //     : []),
-          //   viewdetail.followupremarks,
-          // ],
-        };
+      : { ...form, status: "Initial Contact", lastcontact: new Date() };
 
     const res = await fetch("/api/crmclient", {
       method,
@@ -398,6 +404,17 @@ export default function CRMClientPage() {
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
               />
+              <select
+                name="salesperson"
+                value={filters.salesperson}
+                onChange={handleFilterChange}
+                className="p-2 border rounded"
+              />
+              {/* {userlistdata.map((item)=>(
+                <option value={item} >{item}</option>
+              ))}
+              </select> */}
+
               <input
                 type="text"
                 name="salesperson"
@@ -594,8 +611,13 @@ export default function CRMClientPage() {
                             className="p-2 border rounded"
                           />
                         ) : col == "querytype" ? (
-                          <select name={col} onChange={handleChange}>
-                            <option disabled>Select Query</option>
+                          <select
+                            name={col}
+                            onChange={handleChange}
+                            className="p-2 border rounded"
+                            value={form[col] || ""}
+                          >
+                            <option selected>Select Query</option>
                             {[
                               "Product Inquiry",
                               "Price Quota",
@@ -608,17 +630,25 @@ export default function CRMClientPage() {
                             ))}
                           </select>
                         ) : col == "salesperson" ? (
-                          <select name={col} onChange={handleChange}>
+                          <select
+                            name={col}
+                            onChange={handleChange}
+                            className="p-2 border rounded"
+                          >
                             <option selected>Select Name</option>
                             {userlist.map((item, index) => (
                               <option key={index} value={item}>
-                                {item}
+                                {_.capitalize(item)}
                               </option>
                             ))}
                           </select>
                         ) : col == "leadtype" ? (
-                          <select name={col} onChange={handleChange}>
-                            <option disabled>Select Query</option>
+                          <select
+                            name={col}
+                            onChange={handleChange}
+                            className="p-2 border rounded"
+                          >
+                            <option selected>Select Lead</option>
                             {["Hot", "Warm", "Cold"].map((item) => (
                               <option key={item} value={item} className="">
                                 {item}
@@ -626,7 +656,11 @@ export default function CRMClientPage() {
                             ))}
                           </select>
                         ) : col == "referencetype" ? (
-                          <select name={col} onChange={handleChange}>
+                          <select
+                            name={col}
+                            onChange={handleChange}
+                            className="p-2 border rounded"
+                          >
                             <option disabled selected>
                               Select Reference Type
                             </option>
@@ -811,7 +845,7 @@ export default function CRMClientPage() {
                       ))}
                     </div>
                     <div>
-                      <div className=" grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <button
                           className={`px-2 ${
                             followuptab ? "bg-gray-200" : ""
@@ -865,12 +899,14 @@ export default function CRMClientPage() {
                             <input
                               type="date"
                               name="nextfollowdate"
+                              required
                               onChange={handletypeChange}
                               className="my-1 px-2 text-xs"
                             />
                             <input
                               type="time"
                               name="nextfollowtime"
+                              required
                               onChange={handletypeChange}
                               className="my-1 text-xs"
                             />
