@@ -468,7 +468,6 @@ export default function QuotationPage({}) {
                   Download
                 </button>
               )}
-<<<<<<< HEAD
 
               {showedit && (
                 <button
@@ -491,34 +490,7 @@ export default function QuotationPage({}) {
                 </button>
               )}
 
-              {/* {showedit && (
-=======
-              {showedit && (
->>>>>>> ea17b73e74701f589d134593aa906f973b00416c
-                <button
-                  onClick={() => {
-                    handleEdit("new");
-                  }}
-                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
-                >
-                  New
-                </button>
-              )}
-
-<<<<<<< HEAD
-=======
-              {user.user?.role.includes("admin","super admin")  && (
-                <button
-                  onClick={() => {
-                    handleEdit("edit");
-                  }}
-                  className="px-4 py-2 text-xs bg-blue-600 text-white rounded hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-              )}
-
->>>>>>> ea17b73e74701f589d134593aa906f973b00416c
+               
               {btnclientDetails && (
                 <button
                   onClick={() => setShowClientModal(true)}
@@ -967,6 +939,7 @@ export default function QuotationPage({}) {
             </div>
           )}
         </div>
+        
       )}
     </>
   );
