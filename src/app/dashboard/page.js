@@ -67,9 +67,9 @@ export default function Dashboard() {
     }
   };
 
-  const fetchCrmChartStatus = async () => {
+  const fetchCrmChartStatus = async (currentuser) => {
     try {
-      const res = await fetch("api/crmclient?page=1&user=admin");
+      const res = await fetch(`api/crmclient?page=1&user=${currentuser}`);
       const data = await res.json();
       setcrmnewdata(data);
     } catch (err) {
@@ -77,12 +77,16 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    fetchCrmChartStatus();
+  useEffect(()=>{
+    const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
+    // setusername(currentUser);
+    // console.log("use effect username =>", currentUser);
+    fetchCrmChartStatus(currentUser);
+  },[user])
 
+  useEffect(() => {
     // fetchMastDataCount();
     // fetchItemDetailCount();
-
     setLoading(false);
   }, []);
 
@@ -130,7 +134,8 @@ export default function Dashboard() {
 
             {/* Main Content */}
             <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-              <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
+              {/* Notification 1 */}
+              {/* <div className=" bg-white text-xs px-2 py-2 rounded-xl shadow">
                 <div className="grid grid-cols-2 mb-2 ">
                   <h6 className="text-left px-2 font-semibold ">Status :</h6>
                   <h6 className="text-right px-2 font-semibold ">{today}</h6>
@@ -165,9 +170,10 @@ export default function Dashboard() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="bg-white text-xs p-4 rounded-xl shadow">
+                {/* Notification 2 */}
+              {/* <div className="bg-white text-xs p-4 rounded-xl shadow">
                 <div className="grid grid-cols-2 max-w-full ">
                   <h2 className=" font-semibold ">Status :</h2>
                   <h2 className="text-right font-semibold ">Type</h2>
@@ -194,16 +200,16 @@ export default function Dashboard() {
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> */}
 
               <div className="bg-white p-6 rounded-2xl shadow">
-                <h2 className="text-xl font-semibold mb-2">Notifications</h2>
+                {/* <h2 className="text-xl font-semibold mb-2">Notifications</h2> */}
                 {/* <p className="text-gray-600">You have 3 new messages.</p> */}
 
-                {/* <StatusCountChart
+                <StatusCountChart
                   apiData={crmnewdata}
                   username={user.user?.name}
-                /> */}
+                />
               </div>
             </main>
 

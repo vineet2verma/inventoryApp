@@ -169,7 +169,11 @@ export default function CRMClientPage() {
   };
 
   useEffect(() => {
-    const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
+  //   const currentUser = (user.user?.role.includes("admin") || user.user?.role.includes("crm")) 
+  // ? "admin" 
+  // : user.user?.name;
+
+    const currentUser = user.user?.role.includes("admin","crm") ? "admin" : user.user?.name;
     setusername(currentUser);
     console.log("use effect username =>", currentUser);
     fetchData(currentPage, currentUser);
@@ -179,7 +183,7 @@ export default function CRMClientPage() {
     const res = await fetch(
       `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
     );
-    const json = await res.json();
+    const json = await res.json();    
     if (json.success) setData(json.data);
     setloading(false);
     setTotalPages(json.totalPages);
@@ -478,7 +482,6 @@ export default function CRMClientPage() {
                 </tr>
               </thead>
               <tbody>
-                {console.log(filteredData)}
                 {filteredData.length > 0 ? (
                   (user.user?.role === "admin" ||
                   user.user?.role === "super admin"
@@ -545,7 +548,7 @@ export default function CRMClientPage() {
                                 </div>
                               </button>
 
-                              {user.user?.role == "admin" ? (
+                              {user.user?.role.includes("admin","super admin") ? (
                                 <button
                                   onClick={() => {
                                     handleDelete(item._id);
