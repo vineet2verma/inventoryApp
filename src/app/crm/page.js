@@ -35,7 +35,7 @@ export default function CRMClientPage() {
   const submenuRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 20; // Number of items per page
   const [data, setData] = useState([]);
   const [form, setForm] = useState({});
   const [editingId, setEditingId] = useState(null);
@@ -180,8 +180,6 @@ export default function CRMClientPage() {
   }, [user]);
 
   const fetchData = async (currentPage, currentUser) => {
-    var currentUser = "admin";
-
     const res = await fetch(
       `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
     );
