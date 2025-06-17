@@ -70,19 +70,21 @@ export default function Dashboard() {
   const fetchCrmChartStatus = async (currentuser) => {
     try {
       const res = await fetch(`api/crmclient?page=1&user=${currentuser}`);
+      // const res = await fetch(`api/crmclientcountstatus?user=alveena`); // crmclient?page=1&user=${currentuser}`);
       const data = await res.json();
+      // console.log("aabbcc   => ", `${data.result.alveena}`);
       setcrmnewdata(data);
     } catch (err) {
       console.log("Failed to fetch CRM Count Records", err);
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
     // setusername(currentUser);
     // console.log("use effect username =>", currentUser);
     fetchCrmChartStatus(currentUser);
-  },[user])
+  }, [user]);
 
   useEffect(() => {
     // fetchMastDataCount();
@@ -172,7 +174,7 @@ export default function Dashboard() {
                 </div>
               </div> */}
 
-                {/* Notification 2 */}
+              {/* Notification 2 */}
               {/* <div className="bg-white text-xs p-4 rounded-xl shadow">
                 <div className="grid grid-cols-2 max-w-full ">
                   <h2 className=" font-semibold ">Status :</h2>

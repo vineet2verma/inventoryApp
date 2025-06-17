@@ -26,20 +26,20 @@ const StatusCountChart = ({ apiData, username }) => {
       const statusMap = {};
 
       apiData.data.forEach((item) => {
-        const name = item.status
+        const name = item.status;
         // const name = item.status;
         // const status = item.salesperson;
 
         if (!statusMap[name]) {
-            statusMap[name] = 0;
-            //   statusMap[name] = new Set();
+          statusMap[name] = 0;
+          //   statusMap[name] = new Set();
         }
 
         // statusMap[name].add(status);
-        statusMap[name] += 1; 
+        statusMap[name] += 1;
       });
 
-      console.log(statusMap);
+      console.log("Final  =>  ", statusMap);
 
       const labels = Object.keys(statusMap);
       const dataCounts = labels.map((name) => statusMap[name]);
@@ -61,9 +61,7 @@ const StatusCountChart = ({ apiData, username }) => {
 
   return (
     <div className="w-full max-w-xl mx-auto mt-0">
-      <p className="text-xs font-bold mb-1 text-center">
-        CRM Status
-      </p>
+      <p className="text-xs font-bold mb-1 text-center">CRM Status</p>
       {chartData.labels && chartData.labels.length > 0 ? (
         <Bar
           data={chartData}
