@@ -469,7 +469,7 @@ export default function QuotationPage({}) {
                 </button>
               )}
 
-              {showedit && (
+              {user.user?.role.includes("admin","super admin") && (
                 <button
                   onClick={() => {
                     handleEdit("edit");
