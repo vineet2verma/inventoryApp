@@ -200,10 +200,10 @@ export default function Dashboard() {
                 <h2 className="text-xl font-semibold mb-2">Notifications</h2>
                 {/* <p className="text-gray-600">You have 3 new messages.</p> */}
 
-                <StatusCountChart
+                {/* <StatusCountChart
                   apiData={crmnewdata}
                   username={user.user?.name}
-                />
+                /> */}
               </div>
             </main>
 

@@ -349,10 +349,8 @@ export default function CRMClientPage() {
   });
 
   async function handleviewsave() {
-    console.log("updated section data", viewdetail);
+    // console.log("updated section data", viewdetail);
 
-    console.log("prev folow up=> ", prevfollowup);
-    console.log("form => ", form);
     const newfollowup = [...prevfollowup, ...viewdetail.followupremarks];
 
     const req = await fetch("/api/crmclient", {
@@ -961,10 +959,24 @@ export default function CRMClientPage() {
                             <textarea
                               className="my-2 px-2 border w-full rounded-xl"
                               name="followupremarks"
-                              defaultValue={viewdetail.followupremarks}
                               onChange={handletypeChange}
                               rows={3}
                             ></textarea>
+                          </div>
+                          <div className="pl-6">
+                            {prevfollowup.length > 0 ? (
+                              <ul className="list-disc">
+                                {[...prevfollowup]
+                                  .reverse()
+                                  .map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                  ))}
+                              </ul>
+                            ) : (
+                              <p className="text-gray-400 italic">
+                                No previous follow-ups.
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}
