@@ -169,17 +169,19 @@ export default function CRMClientPage() {
   };
 
   useEffect(() => {
-  //   const currentUser = (user.user?.role.includes("admin") || user.user?.role.includes("crm")) 
-  // ? "admin" 
-  // : user.user?.name;
+    const currentUser = (user.user?.role == "admin" || user.user?.role == "crm") 
+  ? "admin" 
+  : user.user?.name;
 
-    const currentUser = user.user?.role.includes("admin","crm") ? "admin" : user.user?.name;
+    // const currentUser = user.user?.role.includes("admin","crm") ? "admin" : user.user?.name;
     setusername(currentUser);
     console.log("use effect username =>", currentUser);
     fetchData(currentPage, currentUser);
   }, [user]);
 
   const fetchData = async (currentPage, currentUser) => {
+    var currentUser = "admin";
+
     const res = await fetch(
       `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
     );
@@ -379,8 +381,10 @@ export default function CRMClientPage() {
       {loading ? (
         <LoadingSpinner />
       ) : (
+      
         <div className="m-6">
           {/* Header */}
+          {/* {console.log(data)} */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-4">
             <div className="grid grid-cols-2 gap-2">
@@ -484,7 +488,8 @@ export default function CRMClientPage() {
               <tbody>
                 {filteredData.length > 0 ? (
                   (user.user?.role === "admin" ||
-                  user.user?.role === "super admin"
+                  user.user?.role === "super admin" ||
+                  user.user?.role === "crm"
                     ? filteredData
                     : filteredData.filter(
                         (item) =>
@@ -942,7 +947,6 @@ export default function CRMClientPage() {
                             <select
                               name="followupType"
                               className="my-2 w-full px-2 border rounded py-1"
-                              defaultValue={viewdetail.followupType}
                               onChange={handletypeChange}
                             >
                               {["Call", "Whatapp", "Email"].map(

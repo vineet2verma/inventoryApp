@@ -60,9 +60,9 @@ const StatusCountChart = ({ apiData, username }) => {
   }, [apiData]);
 
   return (
-    <div className="w-full max-w-xl mx-auto mt-2">
-      <p className="text-xl font-bold mb-1 text-center">
-        Status Variety per User
+    <div className="w-full max-w-xl mx-auto mt-0">
+      <p className="text-xs font-bold mb-1 text-center">
+        CRM Status
       </p>
       {chartData.labels && chartData.labels.length > 0 ? (
         <Bar
