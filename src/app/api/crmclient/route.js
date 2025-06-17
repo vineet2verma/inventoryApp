@@ -8,7 +8,7 @@ export async function GET(req) {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page")) ;
+    const page = parseInt(searchParams.get("page")) || 20;
     const limit = parseInt(searchParams.get("limit"));
     const username = searchParams.get("user") || "";
     const skip = (page - 1) * limit;

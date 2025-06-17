@@ -23,7 +23,8 @@ export default function ViewQuotation() {
   const [showfilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const itemsPerPage = 20; // Number of items per page
+  const [username, setusername] = useState("");
+  const itemsPerPage = 25; // Number of items per page
 
   const { user } = LoginUserFunc();
 
@@ -31,7 +32,7 @@ export default function ViewQuotation() {
     if (currentPage > 1) {
       const newPage = currentPage - 1;
       setCurrentPage(newPage);
-      fetchQuotation(newPage);
+      fetchQuotation(newPage, username);
     }
   };
 
@@ -39,17 +40,26 @@ export default function ViewQuotation() {
     if (totalPages > currentPage) {
       const newPage = currentPage + 1;
       setCurrentPage(newPage);
-      fetchQuotation(newPage);
+      fetchQuotation(newPage, username);
     }
   };
 
-  async function fetchQuotation(currentPage) {
+  useEffect(() => {
+    const currentUser =
+      (user.user?.role == "admin" || user.user?.role == "super admin")
+        ? "admin"
+        : user.user?.name;
+    setusername(currentUser);
+    fetchQuotation(currentPage, currentUser);
+  }, [user]);
+
+  async function fetchQuotation(currentPage, currentUser) {
     try {
       const res = await fetch(
-        `/api/quotation/view?page=${currentPage}&limit=${itemsPerPage}`
+        `/api/quotation/view?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
       );
       const data = await res.json();
-      setQuotations(data.records);
+      setQuotations(data.data);
       setTotalPages(data.totalPages);
       setLoading(false);
     } catch (err) {
@@ -58,7 +68,7 @@ export default function ViewQuotation() {
   }
 
   useEffect(() => {
-    fetchQuotation(currentPage);
+    fetchQuotation(currentPage,username);
   }, [currentPage]);
 
   const filteredQuotations = quotations.filter((q) => {
@@ -81,7 +91,7 @@ export default function ViewQuotation() {
 
         if (res.success) {
           alert("Quotation deleted successfully");
-          fetchQuotation(currentPage);
+          fetchQuotation(currentPage,username);
         } else {
           alert("Failed to delete quotation");
         }
@@ -224,13 +234,14 @@ export default function ViewQuotation() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredQuotations.length > 0 ? (
-                  (user.user?.role === "admin" ||
-                  user.user?.role === "super admin"
-                    ? filteredQuotations
-                    : filteredQuotations.filter(
-                        (item) => item.saleperson === user.user?.name
-                      )
-                  ).map((q, index) => (
+                  (
+                  //   user.user?.role === "admin" ||
+                  // user.user?.role === "super admin"
+                  //   ? filteredQuotations
+                  //   : filteredQuotations.filter(
+                  //       (item) => item.saleperson === user.user?.name
+                  //     )
+                  filteredQuotations).map((q, index) => (
                     <tr key={index} className="odd:bg-gray-200 even:bg-white">
                       <td className="px-2 text-center py-1 text-xs">
                         {moment(q.date).format("MM/DD/YYYY")}
@@ -289,7 +300,7 @@ export default function ViewQuotation() {
               Prev
             </button>
             <p>
-              <strong>{currentPage}</strong>
+              <strong>Page {currentPage} of {totalPages}</strong>
             </p>
             <button
               className="bg-green-500 px-5 py-2 rounded-2xl border-1"
