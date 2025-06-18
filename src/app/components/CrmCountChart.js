@@ -22,33 +22,46 @@ const StatusCountChart = ({ apiData, username }) => {
   useEffect(() => {
     console.log("API Data:", apiData);
 
-    if (apiData && Array.isArray(apiData.data) && apiData.data.length > 0) {
+    // if (apiData && Array.isArray(apiData.data) && apiData.data.length > 0) {
+    if (apiData && apiData.result) {
       const statusMap = {};
 
-      apiData.data.forEach((item) => {
-        const name = item.status;
-        // const name = item.status;
-        // const status = item.salesperson;
-
-        if (!statusMap[name]) {
-          statusMap[name] = 0;
-          //   statusMap[name] = new Set();
-        }
-
-        // statusMap[name].add(status);
-        statusMap[name] += 1;
+      Object.values(apiData.result).forEach((dailyData) => {
+        Object.entries(dailyData).forEach(([name, count]) => {
+          const formattedName = name.trim().toLocaleLowerCase();
+          statusMap[formattedName] = (statusMap[formattedName] || 0) + count;
+        });
       });
 
-      console.log("Final  =>  ", statusMap);
+      const labels = Object.keys(statusMap).map(
+        (name) => name.charAt(0).toUpperCase() + name.slice(1)
+      );
+      const dataCounts = Object.values(statusMap);
 
-      const labels = Object.keys(statusMap);
-      const dataCounts = labels.map((name) => statusMap[name]);
+      // apiData.data.forEach((item) => {
+      //   const name = item.status;
+      //   // const name = item.status;
+      //   // const status = item.salesperson;
+
+      //   if (!statusMap[name]) {
+      //     statusMap[name] = 0;
+      //     //   statusMap[name] = new Set();
+      //   }
+
+      //   // statusMap[name].add(status);
+      //   statusMap[name] += 1;
+      // });
+
+      // console.log("Final  =>  ", statusMap);
+
+      // const labels = Object.keys(statusMap);
+      // const dataCounts = labels.map((name) => statusMap[name]);
 
       setChartData({
         labels,
         datasets: [
           {
-            label: "Total Status Entries per User",
+            label: "Crm Entries Userwise",
             data: dataCounts,
             backgroundColor: "rgba(75, 192, 192, 0.6)",
             borderColor: "rgba(75, 192, 192, 1)",
@@ -85,3 +98,4 @@ const StatusCountChart = ({ apiData, username }) => {
 };
 
 export default StatusCountChart;
+

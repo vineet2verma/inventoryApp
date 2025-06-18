@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/app/api/models/connectDB";
 import crmclientmast from "@/app/api/models/crmMast";
-import { statfsSync } from "fs-extra";
 // import crmClient from '@/app/api/models/crmClient'; // Adjust this import based on your schema
 
 export async function GET(req) {

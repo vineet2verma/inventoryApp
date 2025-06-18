@@ -33,6 +33,8 @@ export default function Dashboard() {
   const [permissioncrm, setpermissioncrm] = useState(false);
   const [permisson, setpermisson] = useState([]);
   const [crmnewdata, setcrmnewdata] = useState([]);
+  const [crmstatusdata, setcrmstatusdata] = useState([]);
+  const [crmnextfollowup, setcrmnextfollowup] = useState([]);
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -67,13 +69,35 @@ export default function Dashboard() {
     }
   };
 
-  const fetchCrmChartStatus = async (currentuser) => {
+  const fetchCrmNextFollowUp = async (currentuser) => {
     try {
-      const res = await fetch(`api/crmclient?page=1&user=${currentuser}`);
-      // const res = await fetch(`api/crmclientcountstatus?user=alveena`); // crmclient?page=1&user=${currentuser}`);
+      const res = await fetch(`api/crmnextfollowupcount?user=${currentuser}`);
+      const data = await res.json();
+      console.log(data);
+      setcrmnextfollowup(data.data);
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  };
+
+  const fetchCrmEntiesUserWise = async (currentuser) => {
+    try {
+      // const res = await fetch(`api/crmclient?page=1&user=${currentuser}`);
+      const res = await fetch(`api/crmclientcountdatewise?user=${currentuser}`); // crmclient?page=1&user=${currentuser}`);
       const data = await res.json();
       // console.log("aabbcc   => ", `${data.result.alveena}`);
       setcrmnewdata(data);
+    } catch (err) {
+      console.log("Failed to fetch CRM Count Records", err);
+    }
+  };
+
+  const fetchCrmStatus = async (currentuser) => {
+    try {
+      const res = await fetch(`api/crmclientcountstatus?user=${currentuser}`);
+      const data = await res.json();
+      // console.log("aabbcc   => ", `${data.result.alveena}`);
+      setcrmstatusdata(data);
     } catch (err) {
       console.log("Failed to fetch CRM Count Records", err);
     }
@@ -83,7 +107,10 @@ export default function Dashboard() {
     const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
     // setusername(currentUser);
     // console.log("use effect username =>", currentUser);
-    fetchCrmChartStatus(currentUser);
+
+    // fetchCrmEntiesUserWise(currentUser);
+    fetchCrmStatus(currentUser);
+    fetchCrmNextFollowUp(currentUser);
   }, [user]);
 
   useEffect(() => {
@@ -204,15 +231,40 @@ export default function Dashboard() {
                 </table>
               </div> */}
 
-              <div className="bg-white p-6 rounded-2xl shadow">
-                {/* <h2 className="text-xl font-semibold mb-2">Notifications</h2> */}
-                {/* <p className="text-gray-600">You have 3 new messages.</p> */}
+              <div className="bg-white text-xs p-4 rounded-xl shadow">
+                <div className="grid grid-cols-2 max-w-full ">
+                  <h2 className=" font-semibold ">Status :</h2>
+                  <h2 className="text-right font-semibold ">Next Follow Up</h2>
+                </div>
+                <table className="w-full my-3 font-bold">
+                  <tbody>
+                    {Object.entries(crmnextfollowup).map(
+                      ([label, count], index) => (
+                        <tr key={index}>
+                          <td className="">
+                            {label}
+                          </td>
+                          <td className="text-right">{count}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
+              {/* <div className="bg-white p-2 rounded-xl shadow">
                 <StatusCountChart
                   apiData={crmnewdata}
                   username={user.user?.name}
                 />
-              </div>
+              </div> */}
+
+              {/* <div className="bg-white p-2 rounded-xl shadow">
+                <StatusCountChart
+                  apiData={crmstatusdata}
+                  username={user.user?.name}
+                />
+              </div> */}
             </main>
 
             {/* Navigation Buttons */}

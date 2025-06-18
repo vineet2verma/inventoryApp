@@ -20,12 +20,7 @@ const crmClientSchema = new mongoose.Schema(
     // followupstage: { type: String, require: false }, // intial, poposal, negotiation
     nextfollowtime: { type: String, require: false }, // time
     followupType: { type: String, require: false }, // call , whatapp, email
-
     followupremarks: { type: [], require: false }, // follow up remarks
-
-    // followupremarks: { type: String, require: false }, // follow up remarks
-
-    // closingstage : { type: String, require: false }, // closing stage
     closingtype: { type: String, require: false }, // closing type
     closingremarks: { type: String, require: false }, // closing remarks
     closingamount: { type: String, require: false }, // closing amount
