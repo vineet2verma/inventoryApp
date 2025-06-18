@@ -35,6 +35,7 @@ export default function Dashboard() {
   const [crmnewdata, setcrmnewdata] = useState([]);
   const [crmstatusdata, setcrmstatusdata] = useState([]);
   const [crmnextfollowup, setcrmnextfollowup] = useState([]);
+  const [ crmtotal, setcrmtotal] = useState([]);
 
   const tdate = new Date();
   const today = moment(tdate).format("DD / MMM / yyyy");
@@ -73,12 +74,24 @@ export default function Dashboard() {
     try {
       const res = await fetch(`api/crmnextfollowupcount?user=${currentuser}`);
       const data = await res.json();
-      console.log(data);
+      
       setcrmnextfollowup(data.data);
     } catch (err) {
       console.error("Failed to fetch records:", err);
     }
   };
+
+    const fetchCrmTotal = async (currentuser) => {
+    try {
+      const res = await fetch(`api/crmtotalcount?user=${currentuser}`);
+      const data = await res.json();
+      console.log("crm total ",data)
+      setcrmtotal(data.data);
+    } catch (err) {
+      console.error("Failed to fetch records:", err);
+    }
+  };
+
 
   const fetchCrmEntiesUserWise = async (currentuser) => {
     try {
@@ -111,6 +124,7 @@ export default function Dashboard() {
     // fetchCrmEntiesUserWise(currentUser);
     fetchCrmStatus(currentUser);
     fetchCrmNextFollowUp(currentUser);
+    fetchCrmTotal(currentUser)
   }, [user]);
 
   useEffect(() => {
@@ -241,9 +255,26 @@ export default function Dashboard() {
                     {Object.entries(crmnextfollowup).map(
                       ([label, count], index) => (
                         <tr key={index}>
-                          <td className="">
-                            {label}
-                          </td>
+                          <td className="">{label}</td>
+                          <td className="text-right">{count}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="bg-white text-xs p-4 rounded-xl shadow">
+                <div className="grid grid-cols-2 max-w-full ">
+                  <h2 className=" font-semibold ">Status :</h2>
+                  <h2 className="text-right font-semibold ">Crm Task</h2>
+                </div>
+                <table className="w-full my-3 font-bold">
+                  <tbody>
+                    {Object.entries(crmtotal).map(
+                      ([label, count], index) => (
+                        <tr key={index}>
+                          <td className="">{label}</td>
                           <td className="text-right">{count}</td>
                         </tr>
                       )
