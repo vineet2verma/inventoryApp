@@ -17,7 +17,7 @@ export default function FollowUpDashboard() {
 
   useEffect(() => {
     const currentUser =
-      user.user?.role == "admin" || user.user?.role == "crm"
+      user.user?.role == "admin" || user.user?.role == "crm" || user.user?.role == "super admin"
         ? "admin"
         : user.user?.name;
 
