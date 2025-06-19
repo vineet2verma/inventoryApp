@@ -248,7 +248,7 @@ export default function Dashboard() {
               <div className="bg-white text-xs p-4 rounded-xl shadow">
                 <div className="grid grid-cols-2 max-w-full ">
                   <h2 className=" font-semibold ">Status :</h2>
-                  <h2 className="text-right font-semibold ">Next Follow Up</h2>
+                  <h2 className="text-right font-semibold ">CRM Follow Up</h2>
                 </div>
                 <table className="w-full my-3 font-bold">
                   <tbody>

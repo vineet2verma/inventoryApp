@@ -18,16 +18,16 @@ export async function GET(req) {
     const leads = await crmclientmast.find(query);
 
     const statusCounts = {
-      total: leads.length,
-      complete: 0,
-      pending: 0,
+      Total: leads.length,
+      Complete: 0,
+      Pending: 0,
     };
 
     leads.forEach((lead) => {
       if (["Closed Won", "Closed Lost"].includes(lead.status)) {
-        statusCounts.complete += 1;
+        statusCounts.Complete += 1;
       } else {
-        statusCounts.pending += 1;
+        statusCounts.Pending += 1;
       }
     });
 

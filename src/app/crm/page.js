@@ -505,10 +505,11 @@ export default function CRMClientPage() {
                         </td>
 
                         {columns.map((col) => (
-                          <td key={col} className="border text-xs px-3 py-2">
+                          <td key={col} className={`border text-xs px-3 py-2`}>
                             {col == "createdAt"
                               ? moment(item[col]).format("DD/MM/YYYY")
                               : item[col]}
+                              
                           </td>
                         ))}
                         <td className="border text-xs px-3 py-2 relative">

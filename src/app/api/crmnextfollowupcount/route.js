@@ -175,9 +175,7 @@ export async function GET(req) {
         "Upcomming": next7daysCount,
         "Today": todayCount,
         "Last 7 Days": weeklyCount,
-        "Last 30 Days": monthlyCount,
-        // "Last 365 Days": yearlyCount,
-        
+        "Last 30 Days": monthlyCount        
       },
     });
   } catch (error) {
