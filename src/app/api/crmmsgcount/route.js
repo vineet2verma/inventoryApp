@@ -140,12 +140,12 @@ export async function GET(req) {
       success: true,
       data: result.map((item) => ({
         "Date" : startOfToday.toLocaleDateString(),
-        "Sales Person": item._id,
-        "New Client": item.newClient,
-        "Updated Client": item.updatedClient,
-        "Follow Up": item.followUp,
-        "Closed Won": item.closedWonToday,
-        "Closed Lost": item.closedLostToday,
+        "SalesPerson": item._id,
+        "NewClient": item.newClient,
+        "UpdatedClient": item.updatedClient,
+        "FollowUp": item.followUp,
+        "ClosedWon": item.closedWonToday,
+        "ClosedLost": item.closedLostToday,
       })),
     });
   } catch (error) {

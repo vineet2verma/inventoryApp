@@ -420,6 +420,14 @@ export default function Dashboard() {
                   CRM
                 </button>
               )}
+              {permissioncrm && (
+                <button
+                  onClick={() => router.push("/crmreport")}
+                  className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
+                >
+                  CRM Report
+                </button>
+              )}
               {user.user?.role == "admin" && (
                 <button
                   onClick={() => router.push("/checklistmast")}
