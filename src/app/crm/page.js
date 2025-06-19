@@ -72,7 +72,7 @@ export default function CRMClientPage() {
 
   const handleCurrentrow = (index, itemarray) => {
     // console.log("index => ", index);
-    // console.log("itemarray => ", itemarray);
+    
 
     const mergedSections = [
       [
@@ -152,7 +152,6 @@ export default function CRMClientPage() {
   };
 
   const handlePagination = (direction) => {
-    // console.log(direction);
     console.log("pagination username => ", username);
 
     if (direction === "prev" && currentPage > 1) {
@@ -169,7 +168,7 @@ export default function CRMClientPage() {
   };
 
   useEffect(() => {
-    const currentUser = (user.user?.role == "admin" || user.user?.role == "crm") 
+    const currentUser = (user.user?.role == "admin" || user.user?.role == "crm" || user.user?.role == "super admin"  )  
   ? "admin" 
   : user.user?.name;
 
