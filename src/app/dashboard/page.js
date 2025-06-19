@@ -117,7 +117,7 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const currentUser = user.user?.role == "admin" ? "admin" : user.user?.name;
+    const currentUser = (user.user?.role == "admin" || user.user?.role == "super admin" ) ? "admin" : user.user?.name;
     // setusername(currentUser);
     // console.log("use effect username =>", currentUser);
 
