@@ -21,8 +21,10 @@ export default function FollowUpDashboard() {
         ? "admin"
         : user.user?.name;
 
-    fetch(`api/crmmsgcount?user=${currentUser}`) // Adjust if needed
-      .then((res) => res.json())
+    fetch(`api/crmreportingcount?user=${currentUser}`) // Adjust if needed
+
+
+    .then((res) => res.json())
       .then((res) => {
         if (res.success) {
           setData(res.data);
