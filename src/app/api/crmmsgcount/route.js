@@ -30,7 +30,9 @@ export async function GET(req) {
             {
               $and: [
                 { updatedAt: { $gte: startOfToday, $lte: endOfToday } },
-                { createdAt: { $not: { $gte: startOfToday, $lte: endOfToday } } },
+                {
+                  createdAt: { $not: { $gte: startOfToday, $lte: endOfToday } },
+                },
               ],
             },
             {
@@ -92,7 +94,11 @@ export async function GET(req) {
                 {
                   $and: [
                     { $lt: ["$createdAt", startOfToday] },
-                    { $not: [{ $in: ["$status", ["Closed Won", "Closed Lost"]] }] },
+                    {
+                      $not: [
+                        { $in: ["$status", ["Closed Won", "Closed Lost"]] },
+                      ],
+                    },
                   ],
                 },
                 1,
@@ -139,17 +145,20 @@ export async function GET(req) {
     return NextResponse.json({
       success: true,
       data: result.map((item) => ({
-        "Date" : startOfToday.toLocaleDateString(),
-        "SalesPerson": item._id,
-        "NewClient": item.newClient,
-        "UpdatedClient": item.updatedClient,
-        "FollowUp": item.followUp,
-        "ClosedWon": item.closedWonToday,
-        "ClosedLost": item.closedLostToday,
+        Date: startOfToday.toLocaleDateString(),
+        SalesPerson: item._id,
+        NewClient: item.newClient,
+        UpdatedClient: item.updatedClient,
+        FollowUp: item.followUp,
+        ClosedWon: item.closedWonToday,
+        ClosedLost: item.closedLostToday,
       })),
     });
   } catch (error) {
     console.error("Error in grouped client count API:", error);
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
