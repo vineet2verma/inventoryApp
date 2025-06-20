@@ -8,28 +8,19 @@ export async function GET(req) {
     await connectToDatabase();
 
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page")) || 20;
-    const limit = parseInt(searchParams.get("limit"));
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "20", 10);
     const username = searchParams.get("user") || "";
+
     const skip = (page - 1) * limit;
 
-    console.log(
-      `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
-    );
+    let query = { status: { $not: /closed/i } };
 
-    let query = {};
-
-    // let query = { status: { $not: /closed/i}};
-
-    if (username !== "admin" || username !== "undefined") {
-      query = { salesperson: username };
-    }
-    if (username == "admin") {
-      query = {};
+    if (username && username !== "admin" && username !== "undefined") {
+      query.salesperson = username;
     }
 
-    const datalength = await crmclientmast.find(query).sort({ createdAt: -1 });
-    const total = datalength.length;
+    const total = await crmclientmast.countDocuments(query);
     const totalPages = Math.ceil(total / limit);
 
     const data = await crmclientmast
@@ -47,12 +38,66 @@ export async function GET(req) {
       data,
     });
   } catch (err) {
+    console.error("GET error:", err);
     return NextResponse.json(
       { success: false, error: err.message },
       { status: 500 }
     );
   }
 }
+
+
+
+// export async function GET(req) {
+//   try {
+//     await connectToDatabase();
+
+//     const { searchParams } = new URL(req.url);
+//     const page = parseInt(searchParams.get("page")) || 20;
+//     const limit = parseInt(searchParams.get("limit"));
+//     const username = searchParams.get("user") || "";
+//     const skip = (page - 1) * limit;
+
+//     console.log(
+//       `page = ${page}, limit = ${limit}, username = ${username}, skip = ${skip}`
+//     );
+
+//     // let query = {};
+
+//     let query = { status: { $not: /closed/i}};
+
+//     if (username && username !== "admin" && username !== "undefined") {
+//       query = {...query,  salesperson: username };
+//     }
+//     if (username == "admin") {
+//       query = {...query};
+//     }
+
+//     const datalength = await crmclientmast.find(query).sort({ createdAt: -1 });
+//     const total = datalength.length;
+//     const totalPages = Math.ceil(total / limit);
+
+//     const data = await crmclientmast
+//       .find(query)
+//       .skip(skip)
+//       .limit(limit)
+//       .sort({ createdAt: -1 });
+
+//     return NextResponse.json({
+//       success: true,
+//       page,
+//       limit,
+//       total,
+//       totalPages,
+//       data,
+//     });
+//   } catch (err) {
+//     return NextResponse.json(
+//       { success: false, error: err.message },
+//       { status: 500 }
+//     );
+//   }
+// }
 
 // POST - Create
 export async function POST(req) {

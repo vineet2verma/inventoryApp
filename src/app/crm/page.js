@@ -16,7 +16,7 @@ import { LoginUserFunc } from "@/app/context/loginuser";
 import moment from "moment";
 import LoadingSpinner from "../components/waiting";
 import { useRouter } from "next/navigation";
-import _ from "lodash";
+import _, { escape } from "lodash";
 export default function CRMClientPage() {
   const { user } = LoginUserFunc();
   const router = useRouter();
@@ -72,7 +72,6 @@ export default function CRMClientPage() {
 
   const handleCurrentrow = (index, itemarray) => {
     // console.log("index => ", index);
-    
 
     const mergedSections = [
       [
@@ -152,7 +151,7 @@ export default function CRMClientPage() {
   };
 
   const handlePagination = (direction) => {
-    console.log("pagination username => ", username);
+    // console.log("pagination username => ", username);
 
     if (direction === "prev" && currentPage > 1) {
       const newPage = currentPage - 1;
@@ -168,13 +167,16 @@ export default function CRMClientPage() {
   };
 
   useEffect(() => {
-    const currentUser = (user.user?.role == "admin" || user.user?.role == "crm" || user.user?.role == "super admin"  )  
-  ? "admin" 
-  : user.user?.name;
+    const currentUser =
+      user.user?.role == "admin" ||
+      user.user?.role == "crm" ||
+      user.user?.role == "super admin"
+        ? "admin"
+        : user.user?.name;
 
     // const currentUser = user.user?.role.includes("admin","crm") ? "admin" : user.user?.name;
     setusername(currentUser);
-    console.log("use effect username =>", currentUser);
+    // console.log("use effect username =>", currentUser);
     fetchData(currentPage, currentUser);
   }, [user]);
 
@@ -182,7 +184,7 @@ export default function CRMClientPage() {
     const res = await fetch(
       `/api/crmclient?page=${currentPage}&limit=${itemsPerPage}&user=${currentUser}`
     );
-    const json = await res.json();    
+    const json = await res.json();
     if (json.success) setData(json.data);
     setloading(false);
     setTotalPages(json.totalPages);
@@ -230,7 +232,7 @@ export default function CRMClientPage() {
   }, [activeModal]);
 
   const handletypeChange = (e) => {
-    console.log("=> ", e.target.name, "  ", e.target.value);
+    // console.log("=> ", e.target.name, "  ", e.target.value);
     if (e.target.name == "followupremarks") {
       setviewdetail({
         ...viewdetail,
@@ -268,12 +270,14 @@ export default function CRMClientPage() {
       }
     }
 
+    setloading(true);
+
     const method = editingId ? "PUT" : "POST";
     const payload = editingId
       ? { ...form, _id: editingId, lastcontact: new Date() }
       : { ...form, status: "Initial Contact", lastcontact: new Date() };
 
-    console.log(" =>  ", payload);
+    // console.log(" =>  ", payload);
 
     const res = await fetch("/api/crmclient", {
       method,
@@ -283,10 +287,11 @@ export default function CRMClientPage() {
 
     if (res.ok) {
       setForm({});
+      setloading(false);
       setEditingId(null);
       setShowForm(false);
       fetchData(currentPage, username);
-      console.log(res);
+      // console.log(res);
     }
   };
 
@@ -326,17 +331,19 @@ export default function CRMClientPage() {
   const filteredData = data.filter((item) => {
     const matchesSalesperson =
       !filters.salesperson ||
+      filters.salesperson === "All" ||
       item.salesperson
         ?.toLowerCase()
         .includes(filters.salesperson.toLowerCase());
     const matchesFollowupStage =
       !filters.status ||
+      filters.status === "All" ||
       item.status?.toLowerCase().includes(filters.status.toLowerCase());
-    const matchesNextFollowDate =
-      !filters.nextfollowdate ||
-      item.nextfollowdate
-        ?.toLowerCase()
-        .includes(filters.nextfollowdate.toLowerCase());
+    // const matchesNextFollowDate =
+    //   !filters.nextfollowdate ||
+    //   item.nextfollowdate
+    //     ?.toLowerCase()
+    //     .includes(filters.nextfollowdate.toLowerCase());
     const matchesSearch =
       !filters.search ||
       Object.values(item).some((val) =>
@@ -346,7 +353,7 @@ export default function CRMClientPage() {
     return (
       matchesSalesperson &&
       matchesFollowupStage &&
-      matchesNextFollowDate &&
+      // matchesNextFollowDate &&
       matchesSearch
     );
   });
@@ -378,7 +385,6 @@ export default function CRMClientPage() {
       {loading ? (
         <LoadingSpinner />
       ) : (
-      
         <div className="m-6">
           {/* Header */}
           {/* {console.log(data)} */}
@@ -400,7 +406,7 @@ export default function CRMClientPage() {
                 onClick={() => setShowFilter(!showFilter)}
                 className="bg-blue-600 text-white text-xs px-2 py-2 rounded"
               >
-                Show Filter
+                {showFilter ? "Hide Filter" : "Show Filter"}
               </button>
               <button
                 onClick={() => {
@@ -439,7 +445,7 @@ export default function CRMClientPage() {
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
               >
-                <option selected>Select Sales Person</option>
+                <option selected>All</option>
                 {[...new Set(data.map((item) => item.salesperson.trim()))]
                   .sort()
                   .map((salesperson, index) => (
@@ -447,14 +453,29 @@ export default function CRMClientPage() {
                   ))}
               </select>
 
-              <input
+              <select
                 type="text"
                 name="status"
-                placeholder="Filter by Followup Stage"
                 value={filters.status}
                 onChange={handleFilterChange}
                 className="p-2 border rounded"
-              />
+              >
+                <option value="All" selected>
+                  All
+                </option>
+                {[
+                  "Proposal",
+                  "Initial Contact",
+                  "Negotiation",
+                  "Closed Won",
+                  "Closed Lost",
+                ]
+                  .sort()
+                  .map((status, index) => (
+                    <option key={index}>{status}</option>
+                  ))}
+              </select>
+
               {/* <input
                 type="text"
                 name="nextfollowdate"
@@ -497,18 +518,25 @@ export default function CRMClientPage() {
                     .map((item, index) => (
                       <tr
                         key={item._id}
-                        className="hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white "
+                        className={`hover:bg-gray-50 text-center relative odd: bg-gray-200 even:bg-white ${
+                          item["nextfollowdate"] ==
+                          moment().format("YYYY-MM-DD")
+                            ? "bg-yellow-300"
+                            : ""
+                        }  `}
                       >
                         <td key={index} className="border text-xs px-3 py-2">
                           {index + 1}
                         </td>
 
                         {columns.map((col) => (
-                          <td key={col} className={`border text-xs px-3 py-2`}>
+                          <td
+                            key={col}
+                            className={`border text-xs px-3 py-2   `}
+                          >
                             {col == "createdAt"
                               ? moment(item[col]).format("DD/MM/YYYY")
                               : item[col]}
-                              
                           </td>
                         ))}
                         <td className="border text-xs px-3 py-2 relative">
@@ -551,7 +579,10 @@ export default function CRMClientPage() {
                                 </div>
                               </button>
 
-                              {user.user?.role.includes("admin","super admin") ? (
+                              {user.user?.role.includes(
+                                "admin",
+                                "super admin"
+                              ) ? (
                                 <button
                                   onClick={() => {
                                     handleDelete(item._id);
